@@ -1,7 +1,13 @@
 {
-    "home": "Inici",
-    "club": "Club",
-    "location":"Ubicació",
-    "sponsors": "Patrocinadors",
-    "registrations": "Inscripcions"
-}
+    "nav": {
+      "home": "INICI",
+      "club": "CLUB",
+      "location": "UBICACIÓ",
+      "sponsors": "PATROCINADORS",
+      "inscription": "INSCRIPCIÓ"
+    },
+    "home": {
+      "title": "ALGAIDA VOLEI CLUB"
+    }
+  }
+  

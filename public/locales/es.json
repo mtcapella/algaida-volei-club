@@ -1,7 +1,18 @@
 {
-    "home": "Inici",
-    "club": "Club",
-    "location":"Ubicació",
-    "sponsors": "Patrocinadors",
-    "registrations": "Inscripcions"
-}
+    "nav": {
+      "home": "INICIO",
+      "club": "CLUB",
+      "location": "LOCALIZACIÓN",
+      "sponsors": "SPONSORS",
+      "inscription": "INSCRIPCIÓN"
+    },
+    "home": {
+      "title": "ALGAIDA VOLEI CLUB"
+    },
+    "club": {
+      "title": "ALGAIDA VOLEI CLUB",
+      "description": "El Algaida Volei Club es un club de voleibol de la localidad de Algaida, Mallorca. Fundado en 2015, el club ha crecido rápidamente y ha logrado un gran éxito en competiciones locales y regionales. El club se centra en el desarrollo de jóvenes talentos y en la promoción del voleibol en la comunidad."
+    }
+     
+  }
+  

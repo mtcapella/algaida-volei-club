@@ -1,0 +1,52 @@
+.sectionClub {
+    width: 90%;
+    padding: 2rem 1rem;
+    margin: 0 auto; /* centrado horizontal */
+    background-color: #f9f9f9; /* Color de fondo opcional */
+  }
+  
+  .sectionClub h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Contenedor del grid */
+  .grid {
+    display: grid;
+    gap: 1rem;
+    /* Por defecto, 1 columna (mobile first) */
+    grid-template-columns: 1fr;
+  }
+  
+  /* Cada tarjeta de contenido */
+  .card {
+    background: #fff;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 4px;
+  }
+  
+  /* Para resoluciones mayores se cambia a 2 columnas */
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .sectionClub {
+        max-width: 1200px;
+        margin: 2rem auto; /* margen arriba y abajo para dar espacio */
+        padding: 1rem; /* espacio interno adicional si lo consideras necesario */
+      }
+  }
+  /* Para pantallas muy grandes, por ejemplo de 1440px en adelante */
+@media (min-width: 1440px) {
+    .sectionClub {
+      max-width: 1400px;
+    }
+  }
+  
+  /* O si quieres aún más flexibilidad para pantallas UltraWide */
+  @media (min-width: 1920px) {
+    .sectionClub {
+      max-width: 1600px;
+    }
+  }

@@ -1,0 +1,43 @@
+.sectionInicio {
+    position: relative;
+    width: 100%;
+    /* En móvil, por ejemplo, ocupamos 50% del viewport; puedes ajustar según wireframes */
+    height: 50vh;
+    overflow: hidden;
+  }
+  
+  .imageContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .backgroundImage {
+    /* Este estilo permite que la imagen se recorte (cover) sin distorsionarse */
+    object-fit: cover;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    /* Ajusta el color del texto según la imagen; por ejemplo, blanco */
+    color: #fff;
+    /* Si quieres un fondo semitransparente para resaltar el título */
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+  }
+  
+  /* Otras media queries si quisieras adaptar el tamaño en mobile-first */
+  @media (min-width: 768px) {
+    .sectionInicio {
+      height: 60vh;
+    }
+    .overlay h1 {
+      font-size: 2rem;
+    }
+  }
+  
