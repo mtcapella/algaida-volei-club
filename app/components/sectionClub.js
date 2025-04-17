@@ -6,24 +6,19 @@ import { useTranslation } from "react-i18next";
 import styles from "./sectionclub.module.css";
 
 export default function SectionClub() {
+  const { t } = useTranslation();
+
   return (
     <section className={styles.sectionClub} id="club">
-      <h2>Club</h2>
+      <h2>{t("club.title")}</h2>
       <div className={styles.grid}>
         <div className={styles.card}>
-          <h3>Título Columna 1</h3>
-          <p>
-            Contenido descriptivo para la primera columna relacionado con el
-            club. Aquí puedes poner información sobre la historia, misión o
-            servicios del club.
-          </p>
+          <h3>{t("club.titleColumn1")}</h3>
+          <p>{t("club.column1")}</p>
         </div>
         <div className={styles.card}>
-          <h3>Título Columna 2</h3>
-          <p>
-            Contenido descriptivo para la segunda columna. Por ejemplo, detalles
-            sobre instalaciones, actividades o noticias recientes del club.
-          </p>
+          <h3>{t("club.titleColumn2")}</h3>
+          <p>{t("club.column2")}</p>
         </div>
       </div>
     </section>

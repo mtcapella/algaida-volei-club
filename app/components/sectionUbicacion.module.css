@@ -1,0 +1,50 @@
+.sectionUbicacion {
+    width: 90%;
+    margin: 2rem auto;        /* centro + espacio arriba/abajo */
+    padding: 2rem 1rem;       /* respiración interna */
+    background-color: #f9f9f9;/* opcional */
+    border-radius: 4px;       /* opcional */
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* contenedor fluido del mapa */
+  .mapContainer {
+    position: relative;
+    width: 100%;
+    height: 300px;            /* altura móvil por defecto */
+    overflow: hidden;
+  }
+  
+  /* el iframe ocupa todo el contenedor */
+  .mapContainer iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  
+  /* desktop: dos breakpoints para más fluidez */
+  @media (min-width: 768px) {
+    .sectionUbicacion {
+      max-width: 1200px;
+    }
+    .mapContainer {
+      height: 400px;
+    }
+  }
+  
+  @media (min-width: 1440px) {
+    .sectionUbicacion {
+      max-width: 1400px;
+    }
+    .mapContainer {
+      height: 500px;
+    }
+  }
+  
