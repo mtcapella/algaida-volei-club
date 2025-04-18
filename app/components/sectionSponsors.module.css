@@ -1,0 +1,54 @@
+.sectionSponsors {
+    width: 90%;
+    margin: 2rem auto;
+    padding: 2rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  
+  .sponsorsGrid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    justify-items: center;
+  }
+  
+  .logoLink {
+    display: block;
+  }
+  
+  .logo {
+    object-fit: contain;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+  
+  .logo:hover {
+    opacity: 1;
+  }
+  
+  @media (min-width: 768px) {
+    .sectionSponsors {
+      max-width: 1200px;
+    }
+    .sponsorsGrid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .sectionSponsors {
+      max-width: 1200px;
+    }
+    .sponsorsGrid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  
