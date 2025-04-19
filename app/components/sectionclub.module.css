@@ -33,8 +33,8 @@
     }
     .sectionClub {
         max-width: 1200px;
-        margin: 2rem auto; /* margen arriba y abajo para dar espacio */
-        padding: 1rem; /* espacio interno adicional si lo consideras necesario */
+        margin: 2rem auto; 
+        padding: 1rem; 
       }
   }
   /* Para pantallas muy grandes, por ejemplo de 1440px en adelante */
@@ -44,7 +44,6 @@
     }
   }
   
-  /* O si quieres aún más flexibilidad para pantallas UltraWide */
   @media (min-width: 1920px) {
     .sectionClub {
       max-width: 1600px;
