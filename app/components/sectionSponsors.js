@@ -4,8 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./sectionSponsors.module.css";
 
+import i18n from "../i18nextInit.js";
+import { useTranslation } from "react-i18next";
+
 export default function SectionSponsors() {
-  // Array con datos de cada sponsor
+  const { t } = useTranslation();
+  // Array de datos de los patrocinadores urls, imágenes y alt
   const sponsors = [
     {
       src: "/img/sponsors/agromart.jpg",
@@ -51,7 +55,7 @@ export default function SectionSponsors() {
 
   return (
     <section id="sponsors" className={styles.sectionSponsors}>
-      <h2 className={styles.title}>Patrocinadores</h2>
+      <h2 className={styles.title}>{t("sponsors.title")}</h2>
       <div className={styles.sponsorsGrid}>
         {sponsors.map(({ src, href, alt }, i) => (
           <Link

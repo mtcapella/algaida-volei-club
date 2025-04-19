@@ -25,13 +25,13 @@ export default function Navbar() {
         <Link href="/">
           <span className={styles.link}>{t("nav.home")}</span>
         </Link>
-        <Link href="/club">
+        <Link href="/#club">
           <span className={styles.link}>{t("nav.club")}</span>
         </Link>
-        <Link href="/localizacion">
+        <Link href="/#ubicacion">
           <span className={styles.link}>{t("nav.location")}</span>
         </Link>
-        <Link href="/sponsors">
+        <Link href="/#sponsors">
           <span className={styles.link}>{t("nav.sponsors")}</span>
         </Link>
         <Link href="/inscripcion">

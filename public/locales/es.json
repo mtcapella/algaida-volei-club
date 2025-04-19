@@ -3,7 +3,7 @@
       "home": "INICIO",
       "club": "CLUB",
       "location": "LOCALIZACIÓN",
-      "sponsors": "SPONSORS",
+      "sponsors": "Patróncinadores",
       "inscription": "INSCRIPCIÓN"
     },
     "home": {
@@ -19,5 +19,8 @@
     "location": {
       "title": "LOCALIZACIÓN",
       "mapTitle": "Ubicación del Club"
+    },
+    "sponsors" : {
+      "title": "Patróncinadores"
     }
   }

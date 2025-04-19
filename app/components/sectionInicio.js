@@ -12,9 +12,8 @@ export default function SectionInicio() {
   return (
     <section className={styles.sectionInicio}>
       <div className={styles.imageContainer}>
-        {/* Utilizamos el componente Image con layout fill para cubrir el contenedor */}
         <Image
-          src="/img/logo.jpg" // Por ahora usamos el logo provisional; luego lo cambias
+          src="/img/hero.jpg"
           alt="Algaida Volei Club"
           fill
           className={styles.backgroundImage}
