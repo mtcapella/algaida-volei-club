@@ -37,6 +37,8 @@
   @media (min-width: 768px) {
     .sectionSponsors {
       max-width: 1200px;
+      margin: 2rem auto; 
+      padding: 1rem; 
     }
     .sponsorsGrid {
       grid-template-columns: repeat(4, 1fr);
@@ -51,4 +53,11 @@
       grid-template-columns: repeat(6, 1fr);
     }
   }
+
+  @media (min-width: 1440px) {
+    .sectionSponsors {
+      max-width: 1400px;
+    }
+  }
+
   
