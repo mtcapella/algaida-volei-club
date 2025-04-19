@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import styles from "./SectionInicio.module.css";
+import styles from "./sectionInicio.module.css";
 
 import i18n from "../i18nextInit.js";
 import { useTranslation } from "react-i18next";

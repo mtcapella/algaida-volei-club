@@ -1,7 +1,7 @@
 "use client";
 import i18n from "../i18nextInit.js";
 import { useTranslation } from "react-i18next";
-import styles from "./SectionUbicacion.module.css";
+import styles from "./sectionUbicacion.module.css";
 
 export default function SectionUbicacion() {
   const { t } = useTranslation();
