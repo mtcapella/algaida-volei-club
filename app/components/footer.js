@@ -13,6 +13,8 @@ export default function Footer() {
     // opcionalmente guardar en localStorage o cookie
   };
 
+  const { t } = useTranslation();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.top}>
@@ -60,9 +62,9 @@ export default function Footer() {
       </div>
 
       <div className={styles.bottom}>
-        <Link href="/politica-privacidad">Política de privacidad</Link>
-        <Link href="/aviso-legal">Aviso legal</Link>
-        <Link href="/cookies">Cookies</Link>
+        <Link href="/politica-privacidad">{t("footer.privatePolicy")}</Link>
+        <Link href="/aviso-legal">{t("footer.legal")}</Link>
+        <Link href="/cookies">{t("footer.cookies")}</Link>
       </div>
     </footer>
   );

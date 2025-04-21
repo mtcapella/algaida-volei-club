@@ -1,0 +1,52 @@
+/* inscripción: centrado y espaciado */
+.inscriptionPage {
+    width: 90%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  /* Override ligero de Steps */
+  .steps {
+    /* elimina fondos o bordes predeterminados */
+    background: none;
+    border: none;
+  }
+  
+  /* Por ejemplo, marcar paso activo en tu color */
+  .p-steps-item.p-highlight .p-steps-number {
+    background: var(--primary);
+    color: #fff;
+  }
+  
+  .stepContent {
+    margin-top: 2rem;
+  }
+
+  .panelContent {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .p-fileupload-upload,
+.p-fileupload-cancel {
+  display: none;
+}
+
+  
+  
+  .navButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }
+  
+  /* Opcional: mejorar responsive */
+  @media (min-width: 768px) {
+    .inscriptionPage {
+      max-width: 800px;
+    }
+  }
+  

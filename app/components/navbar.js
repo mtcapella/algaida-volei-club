@@ -34,7 +34,7 @@ export default function Navbar() {
         <Link href="/#sponsors">
           <span className={styles.link}>{t("nav.sponsors")}</span>
         </Link>
-        <Link href="/inscripcion">
+        <Link href="/inscription">
           <span className={styles.link}>{t("nav.inscription")}</span>
         </Link>
       </div>

@@ -1,13 +1,88 @@
 {
-    "nav": {
-      "home": "INICI",
-      "club": "CLUB",
-      "location": "UBICACIÓ",
-      "sponsors": "PATROCINADORS",
-      "inscription": "INSCRIPCIÓ"
+  "nav": {
+    "home": "INICI",
+    "club": "CLUB",
+    "location": "UBICACIÓ",
+    "sponsors": "PATROCINADORS",
+    "inscription": "INSCRIPCIÓ"
+  },
+  "home": {
+    "title": "ALGAIDA VOLEI CLUB"
+  },
+  "club": {
+    "title": "EL CLUB",
+    "titleColumn1": "Títol Columna 1",
+    "column1": "Contingut descriptiu per a la primera columna relacionat amb el club. Aquí pots posar informació sobre la història, la missió o els serveis del club.",
+    "titleColumn2": "Títol Columna 2",
+    "column2": "Contingut descriptiu per a la segona columna relacionat amb el club. Aquí pots posar informació sobre els entrenadors, les instal·lacions o qualsevol altre aspecte rellevant."
+  },
+  "location": {
+    "title": "UBICACIÓ",
+    "mapTitle": "Ubicació del Club"
+  },
+  "sponsors": {
+    "title": "PATROCINADORS"
+  },
+  "footer": {
+    "privatePolicy": "Política de privadesa",
+    "cookies": "Política de cookies",
+    "legal": "Avís legal"
+  },
+  "legalPages": {
+    "privacyPolicy": {
+      "title": "Política de privadesa",
+      "sections": [
+        {
+          "heading": "1. Responsable del tractament",
+          "content": "El responsable del tractament de les dades d’aquest formulari és Algaida Volei Club, amb domicili a Carrer X, Ciutat, País."
+        },
+        {
+          "heading": "2. Finalitat del tractament",
+          "content": "Les dades s’utilitzen per gestionar inscripcions, emetre rebuts i comunicacions relacionades amb l’activitat del club."
+        },
+        {
+          "heading": "3. Drets dels interessats",
+          "content": "Pots exercir els drets d'accés, rectificació, supressió, oposició, limitació i portabilitat enviant un correu a contacto@algaidavolei.es."
+        },
+        {
+          "heading": "4. Conservació de les dades",
+          "content": "Les dades es conservaran durant la temporada esportiva vigent i fins que se sol·liciti la seva supressió."
+        }
+      ]
     },
-    "home": {
-      "title": "ALGAIDA VOLEI CLUB"
+    "legalNotice": {
+      "title": "Avís legal",
+      "sections": [
+        {
+          "heading": "1. Identificació del lloc web",
+          "content": "Aquest lloc web www.algaidavolei.es és gestionat per Algaida Volei Club (CIF: XXXX), amb domicili social a Carrer X, Ciutat."
+        },
+        {
+          "heading": "2. Condicions d’ús",
+          "content": "L’accés i ús d’aquest lloc web atorga la condició d’Usuari i accepta les condicions recollides en aquest Avís Legal."
+        },
+        {
+          "heading": "3. Propietat intel·lectual",
+          "content": "Els continguts, disseny i codi d’aquest lloc estan protegits per la normativa vigent en matèria de propietat intel·lectual."
+        }
+      ]
+    },
+    "cookiesPolicy": {
+      "title": "Política de cookies",
+      "sections": [
+        {
+          "heading": "1. Què són les cookies?",
+          "content": "Les cookies són petits fitxers que els llocs web envien al navegador de l’Usuari per emmagatzemar certa informació."
+        },
+        {
+          "heading": "2. Tipus de cookies que utilitzem",
+          "content": "Utilitzem cookies tècniques per al funcionament, d’anàlisi per obtenir informació estadística i de tercers (Google Analytics)."
+        },
+        {
+          "heading": "3. Desactivació i eliminació",
+          "content": "Pots configurar el teu navegador per rebutjar o eliminar les cookies. Consulta l’ajuda del teu navegador per a més detalls."
+        }
+      ]
     }
   }
-  
+}

@@ -1,0 +1,24 @@
+.sectionLegal {
+    width: 90%;
+    margin: 2rem auto;
+    padding: 2rem 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+  @media (min-width: 768px) {
+    .sectionLegal {
+      max-width: 1200px;
+      margin: 2rem auto; 
+      padding: 1rem; 
+    }
+  }
+  @media (min-width: 1024px) {
+    .sectionLegal {
+      max-width: 1200px;
+    }
+  }
+  @media (min-width: 1440px) {
+    .sectionLegal {
+      max-width: 1400px;
+    }
+  }

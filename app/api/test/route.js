@@ -5,7 +5,7 @@ import pool from "@/libs/mysql";
 export async function GET() {
   try {
     const db = await pool.getConnection();
-    const query = "SELECT 1 + 1 AS solution";
+    const query = "SELECT * from players";
     const [rows] = await db.execute(query);
     db.release();
 

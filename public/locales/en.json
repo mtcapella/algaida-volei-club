@@ -1,13 +1,88 @@
 {
-    "nav": {
-      "home": "HOME",
-      "club": "CLUB",
-      "location": "LOCATION",
-      "sponsors": "SPONSORS",
-      "inscription": "INSCRIPTION"
+  "nav": {
+    "home": "HOME",
+    "club": "CLUB",
+    "location": "LOCATION",
+    "sponsors": "SPONSORS",
+    "inscription": "INSCRIPTION"
+  },
+  "home": {
+    "title": "ALGAIDA VOLEI CLUB"
+  },
+  "club": {
+    "title": "THE CLUB",
+    "titleColumn1": "Column 1 Title",
+    "column1": "Descriptive content for the first column related to the club. Here you can put information about the history, mission, or services of the club.",
+    "titleColumn2": "Column 2 Title",
+    "column2": "Descriptive content for the second column related to the club. Here you can put information about the coaches, facilities, or any other relevant aspect."
+  },
+  "location": {
+    "title": "LOCATION",
+    "mapTitle": "Club Location"
+  },
+  "sponsors": {
+    "title": "SPONSORS"
+  },
+  "footer": {
+    "privatePolicy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "legal": "Legal Notice"
+  },
+  "legalPages": {
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "heading": "1. Data Controller",
+          "content": "The data controller for this site is Algaida Volei Club, located at Calle X, City, Country."
+        },
+        {
+          "heading": "2. Purpose of Processing",
+          "content": "Data is processed to manage registrations, issue receipts, and communicate club-related activities."
+        },
+        {
+          "heading": "3. Your Rights",
+          "content": "You may exercise your rights of access, rectification, deletion, objection, restriction, and portability by contacting contacto@algaidavolei.es."
+        },
+        {
+          "heading": "4. Data Retention",
+          "content": "Data will be retained for the duration of the current sports season and until removal is requested."
+        }
+      ]
     },
-    "home": {
-      "title": "ALGAIDA VOLEI CLUB"
+    "legalNotice": {
+      "title": "Legal Notice",
+      "sections": [
+        {
+          "heading": "1. Website Identification",
+          "content": "This website www.algaidavolei.es is operated by Algaida Volei Club (ID: XXXX), registered at Calle X, City."
+        },
+        {
+          "heading": "2. Terms of Use",
+          "content": "Use of this website grants the status of User and implies acceptance of these Legal Notice terms."
+        },
+        {
+          "heading": "3. Intellectual Property",
+          "content": "All content, design, and code are protected under applicable intellectual property laws."
+        }
+      ]
+    },
+    "cookiesPolicy": {
+      "title": "Cookie Policy",
+      "sections": [
+        {
+          "heading": "1. What are Cookies?",
+          "content": "Cookies are small files sent by websites to the user's browser to store certain information."
+        },
+        {
+          "heading": "2. Types of Cookies Used",
+          "content": "We use technical cookies for functionality, analytics cookies for statistical purposes, and third‑party cookies (Google Analytics)."
+        },
+        {
+          "heading": "3. Disabling Cookies",
+          "content": "You can configure your browser to refuse or delete cookies. Please refer to your browser's help section."
+        }
+      ]
     }
   }
-  
+}

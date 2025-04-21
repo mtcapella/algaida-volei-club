@@ -1,26 +1,88 @@
 {
-    "nav": {
-      "home": "INICIO",
-      "club": "CLUB",
-      "location": "LOCALIZACIÓN",
-      "sponsors": "Patróncinadores",
-      "inscription": "INSCRIPCIÓN"
+  "nav": {
+    "home": "INICIO",
+    "club": "CLUB",
+    "location": "LOCALIZACIÓN",
+    "sponsors": "PATROCINADORES",
+    "inscription": "INSCRIPCIÓN"
+  },
+  "home": {
+    "title": "ALGAIDA VOLEI CLUB"
+  },
+  "club": {
+    "title": "EL CLUB",
+    "titleColumn1": "Título Columna 1",
+    "column1": "Contenido descriptivo para la primera columna relacionado con el club. Aquí puedes poner información sobre la historia, misión o servicios del club.",
+    "titleColumn2": "Título Columna 2",
+    "column2": "Contenido descriptivo para la segunda columna relacionado con el club. Aquí puedes poner información sobre los entrenadores, instalaciones o cualquier otro aspecto relevante."
+  },
+  "location": {
+    "title": "LOCALIZACIÓN",
+    "mapTitle": "Ubicación del Club"
+  },
+  "sponsors": {
+    "title": "PATROCINADORES"
+  },
+  "footer": {
+    "privatePolicy": "Política de privacidad",
+    "cookies": "Política de cookies",
+    "legal": "Aviso legal"
+  },
+  "legalPages": {
+    "privacyPolicy": {
+      "title": "Política de privacidad",
+      "sections": [
+        {
+          "heading": "1. Responsable del tratamiento",
+          "content": "El responsable del tratamiento de los datos recogidos en este formulario es Algaida Volei Club, con domicilio en Calle X, Ciudad, País."
+        },
+        {
+          "heading": "2. Finalidad del tratamiento",
+          "content": "Los datos se utilizan para gestionar inscripciones, emitir recibos y comunicaciones relacionadas con la actividad del club."
+        },
+        {
+          "heading": "3. Derechos de los interesados",
+          "content": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad dirigiéndote a contacto@algaidavolei.es."
+        },
+        {
+          "heading": "4. Conservación de los datos",
+          "content": "Los datos se conservarán durante la temporada deportiva en curso y hasta que se solicite su supresión."
+        }
+      ]
     },
-    "home": {
-      "title": "ALGAIDA VOLEI CLUB"
+    "legalNotice": {
+      "title": "Aviso legal",
+      "sections": [
+        {
+          "heading": "1. Identificación del sitio web",
+          "content": "Este sitio web, www.algaidavolei.es, es operado por Algaida Volei Club (CIF: XXXX), con domicilio social en Calle X, Ciudad."
+        },
+        {
+          "heading": "2. Condiciones de uso",
+          "content": "El acceso y uso de este sitio web atribuye la condición de Usuario y acepta las condiciones recogidas en este Aviso Legal."
+        },
+        {
+          "heading": "3. Propiedad intelectual",
+          "content": "Los contenidos, diseño y código de este sitio están protegidos por la normativa vigente en materia de propiedad intelectual."
+        }
+      ]
     },
-    "club": {
-      "title": "El CLUB",
-      "titleColumn1": "Título Columna 1",
-      "column1": "Contenido descriptivo para la primera columna relacionado con el club. Aquí puedes poner información sobre la historia, misión o servicios del club.",
-      "titleColumn2": "Título Columna 2",
-      "column2": "Contenido descriptivo para la segunda columna relacionado con el club. Aquí puedes poner información sobre los entrenadores, instalaciones o cualquier otro aspecto relevante."
-    },
-    "location": {
-      "title": "LOCALIZACIÓN",
-      "mapTitle": "Ubicación del Club"
-    },
-    "sponsors" : {
-      "title": "Patróncinadores"
+    "cookiesPolicy": {
+      "title": "Política de cookies",
+      "sections": [
+        {
+          "heading": "1. ¿Qué son las cookies?",
+          "content": "Las cookies son pequeños archivos que los sitios web envían al navegador del Usuario para almacenar cierta información."
+        },
+        {
+          "heading": "2. Tipos de cookies que utilizamos",
+          "content": "Utilizamos cookies técnicas para el funcionamiento, de análisis para obtener información estadística y de terceros (Google Analytics)."
+        },
+        {
+          "heading": "3. Desactivación y eliminación",
+          "content": "Puedes configurar tu navegador para rechazar o eliminar todas las cookies. Consulta la ayuda de tu navegador para más detalles."
+        }
+      ]
     }
   }
+}
