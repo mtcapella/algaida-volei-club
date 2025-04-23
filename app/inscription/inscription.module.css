@@ -34,9 +34,16 @@
 .p-fileupload-cancel {
   display: none;
 }
-
+ /* Damos un poco de estilo para dar distinguibilidad a los links */
+  .link {
+    
+    text-decoration: underline;
+  }
   
-  
+  .link:hover {
+    text-decoration: none;
+    color: #0055aa;
+  }
   .navButtons {
     display: flex;
     justify-content: space-between;

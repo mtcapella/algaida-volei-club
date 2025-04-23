@@ -47,7 +47,11 @@ export default function InscriptionPage() {
       consentWeb: null,
       consentInstagram: null,
       consentOthers: null,
+      // opciones de pago
+      participateLottery: false,
+      splitPayment: false,
     },
+    shouldUnregister: false, // para que no se borren los valores de los campos al cambiar de panel
   });
 
   const {
@@ -57,10 +61,11 @@ export default function InscriptionPage() {
     setValue,
     setError,
     clearErrors,
+    handleSubmit,
     formState: { errors },
   } = methods;
 
-  // Helper: cálculo de edad y detección de menor
+  // cálculo de edad y detección de menor
   const birthDate = watch("birthDate");
   const age = birthDate
     ? Math.floor(
@@ -70,23 +75,24 @@ export default function InscriptionPage() {
     : null;
   const isMinor = age !== null && age < 18;
 
-  // Panel 1 → Fecha de nacimiento
+  // Panel 1 Fecha de nacimiento
   const onNextFromBirth = async () => {
     if (await trigger("birthDate")) stepperRef.current.nextCallback();
   };
 
-  // Panel 2 → DNI / Existencia + foto DNI
+  // Panel 2 DNI / Existencia y foto DNI
   const onNextFromDni = async () => {
     try {
       // validamos DNI y foto localmente
       const valid = await trigger(["dni", "dniFile"]);
       if (!valid) return;
 
+      // consultamos API para comprobar existencia y datos
       const dniVal = getValues("dni").toUpperCase();
       const res = await fetch(`/api/check-user/${dniVal}`);
       const data = await res.json();
 
-      // seteamos en el form
+      // si hay datos los seteamos en el form
       setValue("exists", data.exists);
       setValue("player", data.player ?? null);
       setValue("registration", data.registered ? data.registration : null);
@@ -106,10 +112,11 @@ export default function InscriptionPage() {
         });
         return;
       }
-
+      // si ya está inscrito pero no en temporada activa → desbloqueamos
       clearErrors("api");
       stepperRef.current.nextCallback();
     } catch (err) {
+      // si hay error en la API lo mostramos
       setError("api", {
         type: "manual",
         message: "Error al comprobar el DNI. Intenta de nuevo.",
@@ -117,7 +124,7 @@ export default function InscriptionPage() {
     }
   };
 
-  // Paso 3 → Datos personales
+  // Paso 3 Datos personales
   const onNextFromPersonal = async () => {
     const fields = ["first_name", "last_name", "email", "phone"];
     if (isMinor) {
@@ -126,13 +133,14 @@ export default function InscriptionPage() {
         "guardianLastName",
         "guardianDni",
         "guardianPhone",
-        "guardianEmail"
+        "guardianEmail",
+        "guardianRelationship"
       );
     }
     if (await trigger(fields)) stepperRef.current.nextCallback();
   };
 
-  // Paso 4 → Confirmaciones legales
+  // Paso 4 Confirmaciones legales
   const onNextFromLegal = async () => {
     const fields = [
       "acceptLOPD",
@@ -144,568 +152,660 @@ export default function InscriptionPage() {
     if (await trigger(fields)) stepperRef.current.nextCallback();
   };
 
+  const onFinalSubmit = async (data) => {
+    // lista de TODOS los campos que debe validar antes de “enviar”
+    const campos = [
+      "birthDate",
+      "dni",
+      "dniFile",
+      "first_name",
+      "last_name",
+      "email",
+      "phone",
+      // campos tutor si es menor…
+      "acceptLOPD",
+      "acceptEthics",
+      "consentWeb",
+      "consentInstagram",
+      "consentOthers",
+    ];
+    // dispara las reglas de validación para *todos* ellos
+    const valid = await methods.trigger(campos);
+    if (!valid) {
+      // si falla, vuelves al panel de “Confirmaciones legales”
+      stepperRef.current.activeIndex = 3;
+      return;
+    }
+    // aquí ya está todo limpio
+    console.log("¡Formulario correcto! Datos:", data);
+  };
+  // claculos para el resumen de la inscripción
+
+  const priceBase = 400;
+  const lotteryDiscount = 20;
+  const participateLottery = watch("participateLottery");
+  const splitPayment = watch("splitPayment");
+  const hasDebt = watch("hasDebt");
+  const pendingAmount = watch("pendingAmount");
+
+  // se calcula el total a pagar en función de si participa en la lotería
+  const totalSingle = participateLottery
+    ? priceBase - lotteryDiscount
+    : priceBase;
+
+  const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
+
   return (
     <FormProvider {...methods}>
-      <div className={styles.inscriptionCard}>
-        <Stepper
-          ref={stepperRef}
-          orientation="vertical"
-          style={{ maxWidth: "600px", margin: "0 auto" }}
-        >
-          {/* === Panel 1: Fecha de nacimiento === */}
-          <StepperPanel header="1. Fecha nacimiento">
-            <div className={styles.panelContent}>
-              <label htmlFor="birthDate">Fecha de nacimiento*</label>
-              <Controller
-                name="birthDate"
-                control={methods.control}
-                rules={{
-                  required: "La fecha es obligatoria",
-                  validate: (v) =>
-                    v <= new Date() || "No puede ser una fecha futura",
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Calendar
-                      id="birthDate"
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.value)}
-                      showIcon
-                      dateFormat="dd/mm/yy"
-                      placeholder="dd/mm/aaaa"
-                    />
-                    {fieldState.error && (
-                      <small className={styles.error}>
-                        {fieldState.error.message}
-                      </small>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-            <div className={styles.panelNav}>
-              <Button
-                label="Siguiente"
-                icon="pi pi-arrow-right"
-                onClick={onNextFromBirth}
-              />
-            </div>
-          </StepperPanel>
+      <form onSubmit={methods.handleSubmit(onFinalSubmit)}>
+        <div className={styles.inscriptionCard}>
+          <Stepper
+            ref={stepperRef}
+            orientation="vertical"
+            readOnly
+            style={{ maxWidth: "600px", margin: "0 auto" }}
+          >
+            {/* === Panel 1: Fecha de nacimiento === */}
+            <StepperPanel header="1. Fecha nacimiento">
+              <div className={styles.panelContent}>
+                <label htmlFor="birthDate">Fecha de nacimiento*</label>
+                <Controller
+                  name="birthDate"
+                  control={methods.control}
+                  rules={{
+                    required: "La fecha es obligatoria",
+                    validate: (v) =>
+                      v <= new Date() || "No puede ser una fecha futura",
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Calendar
+                        id="birthDate"
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        showIcon
+                        dateFormat="dd/mm/yy"
+                        placeholder="dd/mm/aaaa"
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+              <div className={styles.panelNav}>
+                <Button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  onClick={onNextFromBirth}
+                />
+              </div>
+            </StepperPanel>
 
-          {/* === Panel 2: DNI / Existencia y foto DNI === */}
-          <StepperPanel header="2. DNI / Existencia">
-            <div className={styles.panelContent}>
-              <label htmlFor="dni">DNI*</label>
-              <Controller
-                name="dni"
-                control={methods.control}
-                rules={{
-                  required: "El DNI es obligatorio",
-                  pattern: {
-                    value: /^[0-9A-Z]{8,9}$/,
-                    message: "Formato de DNI inválido",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
+            {/* === Panel 2: DNI / Existencia y foto DNI === */}
+            <StepperPanel header="2. DNI / Existencia">
+              <div className={styles.panelContent}>
+                <label htmlFor="dni">DNI*</label>
+                <Controller
+                  name="dni"
+                  control={methods.control}
+                  rules={{
+                    required: "El DNI es obligatorio",
+                    pattern: {
+                      value: /^[0-9A-Z]{8,9}$/,
+                      message: "Formato de DNI inválido",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        id="dni"
+                        type="text"
+                        {...field}
+                        className={styles.input}
+                        placeholder="12345678A"
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+
+                <label htmlFor="dniFile">Foto del DNI*</label>
+                <Controller
+                  name="dniFile"
+                  control={methods.control}
+                  rules={{
+                    required: "Debes subir la foto del DNI",
+                    validate: {
+                      isImage: (file) =>
+                        file?.type.startsWith("image/") || "Solo imágenes",
+                      maxSize: (file) =>
+                        file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        id="dniFile"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          field.onChange(e.target.files?.[0] ?? null)
+                        }
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+
+                {errors.api && (
+                  <small className={styles.error}>{errors.api.message}</small>
+                )}
+              </div>
+
+              <div className={styles.panelNav}>
+                <Button
+                  label="Atrás"
+                  severity="secondary"
+                  icon="pi pi-arrow-left"
+                  onClick={() => stepperRef.current.prevCallback()}
+                />
+                <Button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  onClick={onNextFromDni}
+                />
+              </div>
+            </StepperPanel>
+
+            {/* === Panel 3: Datos personales === */}
+            <StepperPanel header="3. Datos personales">
+              <div className={styles.panelContent}>
+                {/* Nombre/apellidos (readonly si existe) */}
+                <Controller
+                  name="first_name"
+                  control={methods.control}
+                  render={({ field }) => (
                     <input
-                      id="dni"
-                      type="text"
                       {...field}
+                      placeholder="Nombre"
                       className={styles.input}
-                      placeholder="12345678A"
+                      readOnly={getValues("exists")}
                     />
-                    {fieldState.error && (
-                      <small className={styles.error}>
-                        {fieldState.error.message}
-                      </small>
-                    )}
-                  </>
-                )}
-              />
-
-              <label htmlFor="dniFile">Foto del DNI*</label>
-              <Controller
-                name="dniFile"
-                control={methods.control}
-                rules={{
-                  required: "Debes subir la foto del DNI",
-                  validate: {
-                    isImage: (file) =>
-                      file?.type.startsWith("image/") || "Solo imágenes",
-                    maxSize: (file) =>
-                      file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
+                  )}
+                />
+                <Controller
+                  name="last_name"
+                  control={methods.control}
+                  render={({ field }) => (
                     <input
-                      id="dniFile"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        field.onChange(e.target.files?.[0] ?? null)
+                      {...field}
+                      placeholder="Apellidos"
+                      className={styles.input}
+                      readOnly={getValues("exists")}
+                    />
+                  )}
+                />
+
+                {/* Email */}
+                <Controller
+                  name="email"
+                  control={methods.control}
+                  rules={{
+                    required: "El email es obligatorio",
+                    pattern: {
+                      value: /^\S+@\S+\.\S+$/,
+                      message: "Email inválido",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        {...field}
+                        placeholder="ejemplo@dominio.com"
+                        className={styles.input}
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+
+                {/* Teléfono jugador */}
+                <Controller
+                  name="phone"
+                  control={methods.control}
+                  rules={{
+                    required: "El teléfono es obligatorio",
+                    pattern: {
+                      value: /^[0-9()+\s-]{7,20}$/,
+                      message: "Teléfono inválido",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        {...field}
+                        placeholder="Teléfono"
+                        className={styles.input}
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+
+                {/* Campos de tutor si es menor */}
+                {isMinor && (
+                  <>
+                    <h4>Datos del tutor legal</h4>
+                    <Controller
+                      name="guardianFirstName"
+                      control={methods.control}
+                      rules={{ required: "Nombre tutor obligatorio" }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <input
+                            {...field}
+                            placeholder="Nombre tutor"
+                            className={styles.input}
+                          />
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                    <Controller
+                      name="guardianLastName"
+                      control={methods.control}
+                      rules={{ required: "Apellidos tutor obligatorios" }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <input
+                            {...field}
+                            placeholder="Apellidos tutor"
+                            className={styles.input}
+                          />
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                    <Controller
+                      name="guardianDni"
+                      control={methods.control}
+                      rules={{
+                        required: "DNI tutor obligatorio",
+                        pattern: {
+                          value: /^[0-9A-Z]{8,9}$/,
+                          message: "DNI inválido",
+                        },
+                      }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <input
+                            {...field}
+                            placeholder="DNI tutor"
+                            className={styles.input}
+                          />
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                    <Controller
+                      name="guardianPhone"
+                      control={methods.control}
+                      rules={{ required: "Teléfono tutor obligatorio" }}
+                      render={({ field, fieldState }) => (
+                        <>
+                          <input
+                            {...field}
+                            placeholder="Teléfono tutor"
+                            className={styles.input}
+                          />
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
+                    {/* Email */}
+                    <Controller
+                      name="guardianEmail"
+                      control={methods.control}
+                      rules={
+                        isMinor
+                          ? {
+                              required: "El email del tutor es obligatorio",
+                              pattern: {
+                                value: /^\S+@\S+\.\S+$/,
+                                message: "Email inválido",
+                              },
+                            }
+                          : {}
                       }
+                      render={({ field, fieldState }) => (
+                        <>
+                          <input
+                            {...field}
+                            placeholder="ejemplo@dominio.com"
+                            className={styles.input}
+                          />
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
                     />
-                    {fieldState.error && (
-                      <small className={styles.error}>
-                        {fieldState.error.message}
-                      </small>
-                    )}
+
+                    <Controller
+                      name="guardianRelationship"
+                      control={methods.control}
+                      rules={
+                        isMinor
+                          ? { required: "Debes indicar el parentesco" }
+                          : {}
+                      }
+                      render={({ field, fieldState }) => (
+                        <>
+                          <select {...field} className={styles.input}>
+                            <option value="">Selecciona parentesco</option>
+                            <option value="padre">Padre</option>
+                            <option value="madre">Madre</option>
+                            <option value="tutor">Tutor</option>
+                          </select>
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </>
+                      )}
+                    />
                   </>
                 )}
-              />
+              </div>
+              <div className={styles.panelNav}>
+                <Button
+                  label="Atrás"
+                  severity="secondary"
+                  icon="pi pi-arrow-left"
+                  onClick={() => stepperRef.current.prevCallback()}
+                />
+                <Button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  onClick={onNextFromPersonal}
+                />
+              </div>
+            </StepperPanel>
 
-              {errors.api && (
-                <small className={styles.error}>{errors.api.message}</small>
-              )}
-            </div>
+            {/* === Panel 4: Confirmaciones legales === */}
 
-            <div className={styles.panelNav}>
-              <Button
-                label="Atrás"
-                severity="secondary"
-                icon="pi pi-arrow-left"
-                onClick={() => stepperRef.current.prevCallback()}
-              />
-              <Button
-                label="Siguiente"
-                icon="pi pi-arrow-right"
-                onClick={onNextFromDni}
-              />
-            </div>
-          </StepperPanel>
+            <StepperPanel header="4. Confirmaciones legales">
+              <div className={styles.panelContent}>
+                {/* LOPD */}
+                <Controller
+                  name="acceptLOPD"
+                  control={methods.control}
+                  rules={{ required: "Debes aceptar la LOPD" }}
+                  render={({ field, fieldState }) => (
+                    <div className={styles.checkbox}>
+                      <input
+                        type="checkbox"
+                        id="acceptLOPD"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                      <label htmlFor="acceptLOPD">
+                        He leído y acepto la&nbsp;
+                        <a
+                          href="/lopd"
+                          className={styles.link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          política de protección de datos (LOPD)
+                        </a>
+                      </label>
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </div>
+                  )}
+                />
 
-          {/* === Panel 3: Datos personales === */}
-          <StepperPanel header="3. Datos personales">
-            <div className={styles.panelContent}>
-              {/* Nombre/apellidos (readonly si existe) */}
-              <Controller
-                name="first_name"
-                control={methods.control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    placeholder="Nombre"
-                    className={styles.input}
-                    readOnly={getValues("exists")}
-                  />
-                )}
-              />
-              <Controller
-                name="last_name"
-                control={methods.control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    placeholder="Apellidos"
-                    className={styles.input}
-                    readOnly={getValues("exists")}
-                  />
-                )}
-              />
+                {/* Código ético */}
+                <Controller
+                  name="acceptEthics"
+                  control={methods.control}
+                  rules={{ required: "Debes aceptar el Código Ético" }}
+                  render={({ field, fieldState }) => (
+                    <div className={styles.checkbox}>
+                      <input
+                        type="checkbox"
+                        id="acceptEthics"
+                        checked={field.value}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                      <label htmlFor="acceptEthics">
+                        He leído y acepto el&nbsp;
+                        <a
+                          href="/codigo-etico"
+                          className={styles.link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Código Ético
+                        </a>
+                      </label>
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </div>
+                  )}
+                />
 
-              {/* Email */}
-              <Controller
-                name="email"
-                control={methods.control}
-                rules={{
-                  required: "El email es obligatorio",
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: "Email inválido",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <input
-                      {...field}
-                      placeholder="ejemplo@dominio.com"
-                      className={styles.input}
+                {/* Consentimientos de imagen */}
+                <fieldset className={styles.fieldset}>
+                  <legend>
+                    Autorización para&nbsp;
+                    <a
+                      href="/uso-imagenes"
+                      className={styles.link}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      uso de imagen&nbsp;
+                    </a>
+                    del/de la jugador/a en canales oficiales del club
+                  </legend>
+
+                  {[
+                    {
+                      name: "consentWeb",
+                      label: "¿Autoriza publicación en la página web?",
+                    },
+                    {
+                      name: "consentInstagram",
+                      label: "¿Autoriza publicación en Facebook e Instagram?",
+                    },
+                    {
+                      name: "consentOthers",
+                      label: "¿Autoriza uso en otras redes sociales oficiales?",
+                    },
+                  ].map(({ name, label }) => (
+                    <Controller
+                      key={name}
+                      name={name}
+                      control={methods.control}
+                      rules={{ required: `Debes responder sobre "${label}"` }}
+                      render={({ field, fieldState }) => (
+                        <div className={styles.radioGroup}>
+                          <label>{label}</label>
+                          <div>
+                            <RadioButton
+                              inputId={`${name}Yes`}
+                              name={field.name}
+                              value="yes"
+                              checked={field.value === "yes"}
+                              onChange={(e) => field.onChange(e.value)}
+                            />
+                            <label htmlFor={`${name}Yes`}>Sí</label>
+
+                            <RadioButton
+                              inputId={`${name}No`}
+                              name={field.name}
+                              value="no"
+                              checked={field.value === "no"}
+                              onChange={(e) => field.onChange(e.value)}
+                            />
+                            <label htmlFor={`${name}No`}>No</label>
+                          </div>
+                          {fieldState.error && (
+                            <small className={styles.error}>
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </div>
+                      )}
                     />
-                    {fieldState.error && (
-                      <small className={styles.error}>
-                        {fieldState.error.message}
-                      </small>
-                    )}
-                  </>
-                )}
-              />
+                  ))}
+                </fieldset>
+              </div>
 
-              {/* Teléfono jugador */}
-              <Controller
-                name="phone"
-                control={methods.control}
-                rules={{
-                  required: "El teléfono es obligatorio",
-                  pattern: {
-                    value: /^[0-9()+\s-]{7,20}$/,
-                    message: "Teléfono inválido",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <input
-                      {...field}
-                      placeholder="Teléfono"
-                      className={styles.input}
-                    />
-                    {fieldState.error && (
-                      <small className={styles.error}>
-                        {fieldState.error.message}
-                      </small>
-                    )}
-                  </>
-                )}
-              />
+              <div className={styles.panelNav}>
+                <Button
+                  label="Atrás"
+                  severity="secondary"
+                  icon="pi pi-arrow-left"
+                  onClick={() => stepperRef.current.prevCallback()}
+                />
+                <Button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  onClick={onNextFromLegal}
+                />
+              </div>
+            </StepperPanel>
+            {/* === Panel 5: Resumen y pago === */}
+            <StepperPanel header="5. Resumen y pago">
+              <div className={styles.panelContent}>
+                <h4>Resumen de tu inscripción</h4>
+                <p>
+                  <strong>Nombre:</strong> {getValues("first_name")}{" "}
+                  {getValues("last_name")}
+                </p>
+                <p>
+                  <strong>Importe total:</strong>{" "}
+                  {!splitPayment
+                    ? `${totalSingle} € en un único pago`
+                    : `Primer pago: ${firstSplit} €, resto ${
+                        priceBase - 250
+                      } € fuera de esta plataforma`}
+                </p>
 
-              {/* Campos de tutor si es menor */}
-              {isMinor && (
-                <>
-                  <h4>Datos del tutor legal</h4>
+                {/* Lotería */}
+                <div className={styles.checkbox}>
                   <Controller
-                    name="guardianFirstName"
+                    name="participateLottery"
                     control={methods.control}
-                    rules={{ required: "Nombre tutor obligatorio" }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <input
-                          {...field}
-                          placeholder="Nombre tutor"
-                          className={styles.input}
-                        />
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
+                    render={({ field }) => (
+                      <input
+                        type="checkbox"
+                        id="participateLottery"
+                        {...field}
+                        checked={field.value}
+                      />
                     )}
                   />
-                  <Controller
-                    name="guardianLastName"
-                    control={methods.control}
-                    rules={{ required: "Apellidos tutor obligatorios" }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <input
-                          {...field}
-                          placeholder="Apellidos tutor"
-                          className={styles.input}
-                        />
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
-                    )}
-                  />
-                  <Controller
-                    name="guardianDni"
-                    control={methods.control}
-                    rules={{
-                      required: "DNI tutor obligatorio",
-                      pattern: {
-                        value: /^[0-9A-Z]{8,9}$/,
-                        message: "DNI inválido",
-                      },
-                    }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <input
-                          {...field}
-                          placeholder="DNI tutor"
-                          className={styles.input}
-                        />
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
-                    )}
-                  />
-                  <Controller
-                    name="guardianPhone"
-                    control={methods.control}
-                    rules={{ required: "Teléfono tutor obligatorio" }}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <input
-                          {...field}
-                          placeholder="Teléfono tutor"
-                          className={styles.input}
-                        />
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
-                    )}
-                  />
-                  {/* Email */}
-                  <Controller
-                    name="guardianEmail"
-                    control={methods.control}
-                    rules={
-                      isMinor
-                        ? {
-                            required: "El email del tutor es obligatorio",
-                            pattern: {
-                              value: /^\S+@\S+\.\S+$/,
-                              message: "Email inválido",
-                            },
-                          }
-                        : {}
-                    }
-                    render={({ field, fieldState }) => (
-                      <>
-                        <input
-                          {...field}
-                          placeholder="ejemplo@dominio.com"
-                          className={styles.input}
-                        />
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
-                    )}
-                  />
+                  <label htmlFor="participateLottery">
+                    Participar en la lotería (– {lotteryDiscount} €)
+                  </label>
+                </div>
 
+                {/* Fraccionar */}
+                <div className={styles.checkbox}>
                   <Controller
-                    name="guardianRelationship"
+                    name="splitPayment"
                     control={methods.control}
-                    rules={
-                      isMinor ? { required: "Debes indicar el parentesco" } : {}
-                    }
-                    render={({ field, fieldState }) => (
-                      <>
-                        <select {...field} className={styles.input}>
-                          <option value="">Selecciona parentesco</option>
-                          <option value="padre">Padre</option>
-                          <option value="madre">Madre</option>
-                          <option value="tutor">Tutor</option>
-                        </select>
-                        {fieldState.error && (
-                          <small className={styles.error}>
-                            {fieldState.error.message}
-                          </small>
-                        )}
-                      </>
+                    render={({ field }) => (
+                      <input
+                        type="checkbox"
+                        id="splitPayment"
+                        {...field}
+                        checked={field.value}
+                      />
                     )}
                   />
-                </>
-              )}
-            </div>
-            <div className={styles.panelNav}>
-              <Button
-                label="Atrás"
-                severity="secondary"
-                icon="pi pi-arrow-left"
-                onClick={() => stepperRef.current.prevCallback()}
-              />
-              <Button
-                label="Siguiente"
-                icon="pi pi-arrow-right"
-                onClick={onNextFromPersonal}
-              />
-            </div>
-          </StepperPanel>
+                  <label htmlFor="splitPayment">
+                    Fraccionar pago (250 € ahora)
+                  </label>
+                </div>
 
-          {/* === Panel 4: Confirmaciones legales === */}
-          <StepperPanel header="4. Confirmaciones legales">
-            <div className={styles.panelContent}>
-              {/* LOPD */}
-              <Controller
-                name="acceptLOPD"
-                control={methods.control}
-                rules={{ required: "Debes aceptar la LOPD" }}
-                render={({ field }) => (
-                  <div className={styles.checkbox}>
-                    <input
-                      type="checkbox"
-                      id="acceptLOPD"
-                      {...field}
-                      checked={field.value}
-                    />
-                    <label htmlFor="acceptLOPD">
-                      He leído y acepto la&nbsp;
-                      <a href="/lopd" target="_blank">
-                        política de protección de datos (LOPD)
-                      </a>
-                    </label>
+                {/* Bloqueo por deuda */}
+                {hasDebt && (
+                  <div className={styles.error}>
+                    Tienes una deuda pendiente de {pendingAmount} €. <br />
+                    Ponte en contacto con el club.
                   </div>
                 )}
-              />
-              {errors.acceptLOPD && (
-                <small className={styles.error}>
-                  {errors.acceptLOPD.message}
-                </small>
-              )}
+              </div>
 
-              {/* Código ético */}
-              <Controller
-                name="acceptEthics"
-                control={methods.control}
-                rules={{ required: "Debes aceptar el Código Ético" }}
-                render={({ field }) => (
-                  <div className={styles.checkbox}>
-                    <input
-                      type="checkbox"
-                      id="acceptEthics"
-                      {...field}
-                      checked={field.value}
-                    />
-                    <label htmlFor="acceptEthics">
-                      He leído y acepto el&nbsp;
-                      <a href="/codigo-etico" target="_blank">
-                        Código Ético y buenas prácticas
-                      </a>
-                    </label>
-                  </div>
-                )}
-              />
-              {errors.acceptEthics && (
-                <small className={styles.error}>
-                  {errors.acceptEthics.message}
-                </small>
-              )}
-
-              {/* Consentimientos de imagen */}
-              <fieldset className={styles.fieldset}>
-                <legend>
-                  Autorización para uso de imagen del/de la jugador/a en canales
-                  oficiales del club
-                </legend>
-
-                <Controller
-                  name="consentWeb"
-                  control={methods.control}
-                  rules={{ required: "Debes responder sobre la web" }}
-                  render={({ field }) => (
-                    <div className={styles.radioGroup}>
-                      <label>¿Autoriza publicación en la página web?</label>
-                      <div>
-                        <RadioButton
-                          inputId="webYes"
-                          value="yes"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "yes"}
-                        />
-                        <label htmlFor="webYes">Sí</label>
-                        <RadioButton
-                          inputId="webNo"
-                          value="no"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "no"}
-                        />
-                        <label htmlFor="webNo">No</label>
-                      </div>
-                    </div>
-                  )}
+              <div className={styles.panelNav}>
+                <Button
+                  label="Atrás"
+                  severity="secondary"
+                  icon="pi pi-arrow-left"
+                  onClick={() => stepperRef.current.prevCallback()}
                 />
-                {errors.consentWeb && (
-                  <small className={styles.error}>
-                    {errors.consentWeb.message}
-                  </small>
-                )}
 
-                <Controller
-                  name="consentInstagram"
-                  control={methods.control}
-                  rules={{ required: "Debes responder sobre Instagram" }}
-                  render={({ field }) => (
-                    <div className={styles.radioGroup}>
-                      <label>
-                        ¿Autoriza publicación en Facebook e Instagram?
-                      </label>
-                      <div>
-                        <RadioButton
-                          inputId="instaYes"
-                          value="yes"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "yes"}
-                        />
-                        <label htmlFor="instaYes">Sí</label>
-                        <RadioButton
-                          inputId="instaNo"
-                          value="no"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "no"}
-                        />
-                        <label htmlFor="instaNo">No</label>
-                      </div>
-                    </div>
-                  )}
+                <Button
+                  label="Pagar"
+                  icon="pi pi-credit-card"
+                  type="submit"
+                  disabled={hasDebt}
                 />
-                {errors.consentInstagram && (
-                  <small className={styles.error}>
-                    {errors.consentInstagram.message}
-                  </small>
-                )}
-
-                <Controller
-                  name="consentOthers"
-                  control={methods.control}
-                  rules={{ required: "Debes responder sobre otras redes" }}
-                  render={({ field }) => (
-                    <div className={styles.radioGroup}>
-                      <label>
-                        ¿Autoriza uso en otras redes sociales oficiales?
-                      </label>
-                      <div>
-                        <RadioButton
-                          inputId="otherYes"
-                          value="yes"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "yes"}
-                        />
-                        <label htmlFor="otherYes">Sí</label>
-                        <RadioButton
-                          inputId="otherNo"
-                          value="no"
-                          {...field}
-                          onChange={(e) => field.onChange(e.value)}
-                          checked={field.value === "no"}
-                        />
-                        <label htmlFor="otherNo">No</label>
-                      </div>
-                    </div>
-                  )}
-                />
-                {errors.consentOthers && (
-                  <small className={styles.error}>
-                    {errors.consentOthers.message}
-                  </small>
-                )}
-              </fieldset>
-            </div>
-
-            <div className={styles.panelNav}>
-              <Button
-                label="Atrás"
-                severity="secondary"
-                icon="pi pi-arrow-left"
-                onClick={() => stepperRef.current.prevCallback()}
-              />
-              <Button
-                label="Siguiente"
-                icon="pi pi-arrow-right"
-                onClick={onNextFromLegal}
-              />
-            </div>
-          </StepperPanel>
-        </Stepper>
-      </div>
+              </div>
+            </StepperPanel>
+          </Stepper>
+        </div>
+      </form>
     </FormProvider>
   );
 }
