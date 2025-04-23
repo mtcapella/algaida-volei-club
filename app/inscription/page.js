@@ -75,85 +75,15 @@ export default function InscriptionPage() {
     : null;
   const isMinor = age !== null && age < 18;
 
-  // Panel 1 Fecha de nacimiento
-  const onNextFromBirth = async () => {
-    if (await trigger("birthDate")) stepperRef.current.nextCallback();
-  };
+  // funcion de navigeacion entre paneles
 
-  // Panel 2 DNI / Existencia y foto DNI
-  const onNextFromDni = async () => {
-    try {
-      // validamos DNI y foto localmente
-      const valid = await trigger(["dni", "dniFile"]);
-      if (!valid) return;
-
-      // consultamos API para comprobar existencia y datos
-      const dniVal = getValues("dni").toUpperCase();
-      const res = await fetch(`/api/check-user/${dniVal}`);
-      const data = await res.json();
-
-      // si hay datos los seteamos en el form
-      setValue("exists", data.exists);
-      setValue("player", data.player ?? null);
-      setValue("registration", data.registered ? data.registration : null);
-      setValue("hasDebt", data.hasDebt ?? false);
-      setValue("pendingAmount", data.pendingAmount ?? 0);
-      if (data.exists) {
-        setValue("playerId", data.player.playerId);
-        setValue("first_name", data.player.first_name);
-        setValue("last_name", data.player.last_name);
-      }
-
-      // si ya está inscrito en temporada activa → bloqueamos
-      if (data.exists && data.registered) {
-        setError("api", {
-          type: "manual",
-          message: "Ya estás inscrito/a en la temporada activa.",
-        });
-        return;
-      }
-      // si ya está inscrito pero no en temporada activa → desbloqueamos
-      clearErrors("api");
-      stepperRef.current.nextCallback();
-    } catch (err) {
-      // si hay error en la API lo mostramos
-      setError("api", {
-        type: "manual",
-        message: "Error al comprobar el DNI. Intenta de nuevo.",
-      });
-    }
-  };
-
-  // Paso 3 Datos personales
-  const onNextFromPersonal = async () => {
-    const fields = ["first_name", "last_name", "email", "phone"];
-    if (isMinor) {
-      fields.push(
-        "guardianFirstName",
-        "guardianLastName",
-        "guardianDni",
-        "guardianPhone",
-        "guardianEmail",
-        "guardianRelationship"
-      );
-    }
-    if (await trigger(fields)) stepperRef.current.nextCallback();
-  };
-
-  // Paso 4 Confirmaciones legales
-  const onNextFromLegal = async () => {
-    const fields = [
-      "acceptLOPD",
-      "acceptEthics",
-      "consentWeb",
-      "consentInstagram",
-      "consentOthers",
-    ];
-    if (await trigger(fields)) stepperRef.current.nextCallback();
+  const onNext = async (fields = []) => {
+    const valid = fields.length ? await trigger(fields) : true;
+    if (valid) stepperRef.current.nextCallback();
   };
 
   const onFinalSubmit = async (data) => {
-    // lista de TODOS los campos que debe validar antes de “enviar”
+    // Validar todos los campos requeridos
     const campos = [
       "birthDate",
       "dni",
@@ -162,24 +92,33 @@ export default function InscriptionPage() {
       "last_name",
       "email",
       "phone",
-      // campos tutor si es menor…
+      ...(isMinor
+        ? [
+            "guardianFirstName",
+            "guardianLastName",
+            "guardianDni",
+            "guardianPhone",
+            "guardianEmail",
+            "guardianRelationship",
+          ]
+        : []),
       "acceptLOPD",
       "acceptEthics",
       "consentWeb",
       "consentInstagram",
       "consentOthers",
     ];
-    // dispara las reglas de validación para *todos* ellos
-    const valid = await methods.trigger(campos);
+
+    const valid = await trigger(campos);
     if (!valid) {
-      // si falla, vuelves al panel de “Confirmaciones legales”
+      // llevar al panel 4 si falla
       stepperRef.current.activeIndex = 3;
       return;
     }
-    // aquí ya está todo limpio
-    console.log("¡Formulario correcto! Datos:", data);
+    console.log("¡Formulario correcto!", data);
   };
-  // claculos para el resumen de la inscripción
+
+  // claculos para el resumen de la inscripción y el pago
 
   const priceBase = 400;
   const lotteryDiscount = 20;
@@ -203,6 +142,7 @@ export default function InscriptionPage() {
             ref={stepperRef}
             orientation="vertical"
             readOnly
+            showNavigation={false}
             style={{ maxWidth: "600px", margin: "0 auto" }}
           >
             {/* === Panel 1: Fecha de nacimiento === */}
@@ -240,7 +180,7 @@ export default function InscriptionPage() {
                 <Button
                   label="Siguiente"
                   icon="pi pi-arrow-right"
-                  onClick={onNextFromBirth}
+                  onClick={() => onNext(["birthDate"])}
                 />
               </div>
             </StepperPanel>
@@ -324,7 +264,7 @@ export default function InscriptionPage() {
                 <Button
                   label="Siguiente"
                   icon="pi pi-arrow-right"
-                  onClick={onNextFromDni}
+                  onClick={() => onNext(["dni", "dniFile"])}
                 />
               </div>
             </StepperPanel>
@@ -566,7 +506,24 @@ export default function InscriptionPage() {
                 <Button
                   label="Siguiente"
                   icon="pi pi-arrow-right"
-                  onClick={onNextFromPersonal}
+                  onClick={() =>
+                    onNext(
+                      isMinor
+                        ? [
+                            "first_name",
+                            "last_name",
+                            "email",
+                            "phone",
+                            "guardianFirstName",
+                            "guardianLastName",
+                            "guardianDni",
+                            "guardianPhone",
+                            "guardianEmail",
+                            "guardianRelationship",
+                          ]
+                        : ["first_name", "last_name", "email", "phone"]
+                    )
+                  }
                 />
               </div>
             </StepperPanel>
@@ -719,7 +676,15 @@ export default function InscriptionPage() {
                 <Button
                   label="Siguiente"
                   icon="pi pi-arrow-right"
-                  onClick={onNextFromLegal}
+                  onClick={() =>
+                    onNext([
+                      "acceptLOPD",
+                      "acceptEthics",
+                      "consentWeb",
+                      "consentInstagram",
+                      "consentOthers",
+                    ])
+                  }
                 />
               </div>
             </StepperPanel>
