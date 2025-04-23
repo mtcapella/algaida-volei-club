@@ -83,6 +83,77 @@
           "content": "Pots configurar el teu navegador per rebutjar o eliminar les cookies. Consulta l’ajuda del teu navegador per a més detalls."
         }
       ]
+    },
+    "dataProtectionNotice": {
+      "title": "Protecció de Dades",
+      "sections": [
+        {
+          "heading": "1. Responsable del tractament",
+          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Adreça: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARS. Telèfon: 651873851. Correu electrònic: algaidavoleiclub@gmail.com. No existeix obligació de disposar d’un Delegat de Protecció de Dades segons l’article 37 del Reglament (UE) 2016/679."
+        },
+        {
+          "heading": "2. Finalitat del tractament",
+          "content": "Tractam la informació facilitada per prestar serveis esportius i formatius contractats, finalitats administratives, comptables, fiscals, oferir serveis segons interessos i realitzar la facturació. Es crearà un perfil comercial sense decisions automatitzades. Les dades es conservaran mentre hi hagi relació comercial i fins a 5 anys des de la darrera contractació, excepte si se'n sol·licita la supressió."
+        },
+        {
+          "heading": "3. Legitimació",
+          "content": "La base legal és l’execució del contracte segons el Codi de Comerç i Codi Civil. Per comunicacions comercials s’apliquen els articles 20 i 21 de la Llei 34/2002. Es demana consentiment per a ofertes comercials, la seva retirada no condiciona el servei. És obligatori facilitar les dades per prestar el servei. El consentiment és necessari per rebre comunicacions comercials."
+        },
+        {
+          "heading": "4. Destinataris",
+          "content": "No es cediran dades a tercers, excepte obligació legal. No es preveuen transferències internacionals ni decisions automatitzades aplicables."
+        },
+        {
+          "heading": "5. Drets dels interessats",
+          "content": "Tota persona té dret a saber si tractam les seves dades. Pot accedir, rectificar, suprimir, limitar el tractament, oposar-se i sol·licitar portabilitat. Pot reclamar davant l’Agència Espanyola de Protecció de Dades (www.agpd.es)."
+        }
+      ]
+    },
+    "imageConsent": {
+      "title": "Autorització d'Ús d'Imatge",
+      "sections": [
+        {
+          "heading": "1. Consentiment per a menors o majors d'edat",
+          "content": "El pare, mare o tutor legal (si el/la jugador/a és menor d'edat), o el/la mateix/a jugador/a (si és major d'edat), autoritza l'ús de la seva imatge i/o fotografies en activitats esportives i comunicatives del Club Volei Algaida. Aquesta autorització inclou la publicació a la pàgina web i xarxes socials del club, incloent-hi Facebook i Instagram."
+        },
+        {
+          "heading": "2. Informació sobre el tractament de dades",
+          "content": "Segons l'article 28 del RGPD, s'informa que Facebook Inc. i Instagram LLC actuaran com a encarregats del tractament de les dades (imatges). Les dades poden ser emmagatzemades als seus servidors als Estats Units. Aquesta autorització exclou usos que puguin vulnerar el dret a l'honor, intimitat o pròpia imatge segons la Llei Orgànica 1/1985. L'autorització és gratuïta i no genera drets econòmics."
+        },
+        {
+          "heading": "3. Consentiment explícit",
+          "content": "Seleccioneu la vostra decisió en cadascun dels apartats següents:\n1. Autoritza la publicació d'imatges a la web del club?\n2. Autoritza la publicació a Facebook i Instagram?\n3. Autoritza l'ús d'imatges a altres xarxes socials oficials del club?"
+        }
+      ]
+    },
+    "ethicCode": {
+      "title": "Codi Ètic i Normes de Convivència",
+      "sections": [
+        {
+          "heading": "1. Introducció",
+          "content": "Aquest codi ètic recull les pautes i normes que defineixen el comportament, les actituds i els valors esperats de totes les persones que formen part de l'Algaida Volei Club. El nostre objectiu és fomentar un ambient saludable, respectuós i compromès amb el desenvolupament esportiu i personal."
+        },
+        {
+          "heading": "2. Normes de convivència i comportament",
+          "content": "Respectar l'entrenador/a i els companys/es d'equip. Comentar els dubtes amb el tècnic, aprendre activament, ajudar als altres, evitar crítiques negatives i responsabilitzar-se del material esportiu propi."
+        },
+        {
+          "heading": "3. Funcionament dels entrenaments",
+          "content": "Puntualitat i assistència obligatòria. Respectar el material i instal·lacions. Vestir adequadament, evitar objectes que puguin provocar lesions, tenir cura de la salut i evitar l'ús del mòbil durant la sessió."
+        },
+        {
+          "heading": "4. Comportament en competició",
+          "content": "Uniformitat correcta, actitud esportiva, respecte a l'àrbitre, al rival i al públic. Notificar absències amb antelació. L'entrenador decideix la participació en funció de l'actitud i l'assistència."
+        },
+        {
+          "heading": "5. Decàleg de bones pràctiques",
+          "content": "1. Respectar les instal·lacions municipals. 2. Puntualitat i assistència obligatòria. 3. Cura del material del club. 4. Participació en altres categories si es requereix. 5. Respecte als entrenadors. 6. Criteris disciplinaris coherents amb els valors del club. 7. Comunicació a través de l’enllaç d’equip. 8. Implicació de les famílies. 9. Respecte durant entrenaments i partits. 10. Les queixes han de dirigir-se a l’enllaç de l’equip."
+        },
+        {
+          "heading": "6. Famílies i comunicació",
+          "content": "Les famílies són un pilar fonamental. Han de respectar les decisions dels entrenadors i dirigir les seves consultes a través del canal establert (persona enllaç). Evitar interferències tècniques durant els entrenaments i partits."
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,8 @@ import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { RadioButton } from "primereact/radiobutton";
+
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -18,6 +20,7 @@ export default function InscriptionPage() {
   const methods = useForm({
     mode: "onTouched",
     defaultValues: {
+      // campos del formulario
       birthDate: null,
       dni: "",
       dniFile: null,
@@ -31,12 +34,19 @@ export default function InscriptionPage() {
       last_name: "",
       email: "",
       phone: "",
+      // campos de tutor legal
       guardianFirstName: "",
       guardianLastName: "",
       guardianDni: "",
       guardianPhone: "",
       guardianEmail: "",
       guardianRelationship: "",
+      // variables de consentimiento
+      acceptLOPD: false,
+      acceptEthics: false,
+      consentWeb: null,
+      consentInstagram: null,
+      consentOthers: null,
     },
   });
 
@@ -67,12 +77,12 @@ export default function InscriptionPage() {
 
   // Panel 2 → DNI / Existencia + foto DNI
   const onNextFromDni = async () => {
-    // validamos DNI y foto localmente
-    const valid = await trigger(["dni", "dniFile"]);
-    if (!valid) return;
-
-    const dniVal = getValues("dni").toUpperCase();
     try {
+      // validamos DNI y foto localmente
+      const valid = await trigger(["dni", "dniFile"]);
+      if (!valid) return;
+
+      const dniVal = getValues("dni").toUpperCase();
       const res = await fetch(`/api/check-user/${dniVal}`);
       const data = await res.json();
 
@@ -105,6 +115,33 @@ export default function InscriptionPage() {
         message: "Error al comprobar el DNI. Intenta de nuevo.",
       });
     }
+  };
+
+  // Paso 3 → Datos personales
+  const onNextFromPersonal = async () => {
+    const fields = ["first_name", "last_name", "email", "phone"];
+    if (isMinor) {
+      fields.push(
+        "guardianFirstName",
+        "guardianLastName",
+        "guardianDni",
+        "guardianPhone",
+        "guardianEmail"
+      );
+    }
+    if (await trigger(fields)) stepperRef.current.nextCallback();
+  };
+
+  // Paso 4 → Confirmaciones legales
+  const onNextFromLegal = async () => {
+    const fields = [
+      "acceptLOPD",
+      "acceptEthics",
+      "consentWeb",
+      "consentInstagram",
+      "consentOthers",
+    ];
+    if (await trigger(fields)) stepperRef.current.nextCallback();
   };
 
   return (
@@ -412,13 +449,17 @@ export default function InscriptionPage() {
                   <Controller
                     name="guardianEmail"
                     control={methods.control}
-                    rules={{
-                      required: "El email es obligatorio",
-                      pattern: {
-                        value: /^\S+@\S+\.\S+$/,
-                        message: "Email inválido",
-                      },
-                    }}
+                    rules={
+                      isMinor
+                        ? {
+                            required: "El email del tutor es obligatorio",
+                            pattern: {
+                              value: /^\S+@\S+\.\S+$/,
+                              message: "Email inválido",
+                            },
+                          }
+                        : {}
+                    }
                     render={({ field, fieldState }) => (
                       <>
                         <input
@@ -434,15 +475,27 @@ export default function InscriptionPage() {
                       </>
                     )}
                   />
+
                   <Controller
                     name="guardianRelationship"
                     control={methods.control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        placeholder="Parentesco"
-                        className={styles.input}
-                      />
+                    rules={
+                      isMinor ? { required: "Debes indicar el parentesco" } : {}
+                    }
+                    render={({ field, fieldState }) => (
+                      <>
+                        <select {...field} className={styles.input}>
+                          <option value="">Selecciona parentesco</option>
+                          <option value="padre">Padre</option>
+                          <option value="madre">Madre</option>
+                          <option value="tutor">Tutor</option>
+                        </select>
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
                     )}
                   />
                 </>
@@ -458,28 +511,198 @@ export default function InscriptionPage() {
               <Button
                 label="Siguiente"
                 icon="pi pi-arrow-right"
-                onClick={async () => {
-                  // validamos solo los campos de este panel
-                  const campos = ["first_name", "last_name", "email", "phone"];
-                  if (isMinor) {
-                    campos.push(
-                      "guardianFirstName",
-                      "guardianLastName",
-                      "guardianDni",
-                      "guardianPhone"
-                    );
-                  }
-                  if (await trigger(campos)) {
-                    stepperRef.current.nextCallback();
-                  }
-                }}
+                onClick={onNextFromPersonal}
               />
             </div>
           </StepperPanel>
 
-          {/* === Panel 4: Confirmar y enviar === */}
-          <StepperPanel header="4. Confirmar y enviar">
-            {/* Aquí irá tu lógica de submit final */}
+          {/* === Panel 4: Confirmaciones legales === */}
+          <StepperPanel header="4. Confirmaciones legales">
+            <div className={styles.panelContent}>
+              {/* LOPD */}
+              <Controller
+                name="acceptLOPD"
+                control={methods.control}
+                rules={{ required: "Debes aceptar la LOPD" }}
+                render={({ field }) => (
+                  <div className={styles.checkbox}>
+                    <input
+                      type="checkbox"
+                      id="acceptLOPD"
+                      {...field}
+                      checked={field.value}
+                    />
+                    <label htmlFor="acceptLOPD">
+                      He leído y acepto la&nbsp;
+                      <a href="/lopd" target="_blank">
+                        política de protección de datos (LOPD)
+                      </a>
+                    </label>
+                  </div>
+                )}
+              />
+              {errors.acceptLOPD && (
+                <small className={styles.error}>
+                  {errors.acceptLOPD.message}
+                </small>
+              )}
+
+              {/* Código ético */}
+              <Controller
+                name="acceptEthics"
+                control={methods.control}
+                rules={{ required: "Debes aceptar el Código Ético" }}
+                render={({ field }) => (
+                  <div className={styles.checkbox}>
+                    <input
+                      type="checkbox"
+                      id="acceptEthics"
+                      {...field}
+                      checked={field.value}
+                    />
+                    <label htmlFor="acceptEthics">
+                      He leído y acepto el&nbsp;
+                      <a href="/codigo-etico" target="_blank">
+                        Código Ético y buenas prácticas
+                      </a>
+                    </label>
+                  </div>
+                )}
+              />
+              {errors.acceptEthics && (
+                <small className={styles.error}>
+                  {errors.acceptEthics.message}
+                </small>
+              )}
+
+              {/* Consentimientos de imagen */}
+              <fieldset className={styles.fieldset}>
+                <legend>
+                  Autorización para uso de imagen del/de la jugador/a en canales
+                  oficiales del club
+                </legend>
+
+                <Controller
+                  name="consentWeb"
+                  control={methods.control}
+                  rules={{ required: "Debes responder sobre la web" }}
+                  render={({ field }) => (
+                    <div className={styles.radioGroup}>
+                      <label>¿Autoriza publicación en la página web?</label>
+                      <div>
+                        <RadioButton
+                          inputId="webYes"
+                          value="yes"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "yes"}
+                        />
+                        <label htmlFor="webYes">Sí</label>
+                        <RadioButton
+                          inputId="webNo"
+                          value="no"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "no"}
+                        />
+                        <label htmlFor="webNo">No</label>
+                      </div>
+                    </div>
+                  )}
+                />
+                {errors.consentWeb && (
+                  <small className={styles.error}>
+                    {errors.consentWeb.message}
+                  </small>
+                )}
+
+                <Controller
+                  name="consentInstagram"
+                  control={methods.control}
+                  rules={{ required: "Debes responder sobre Instagram" }}
+                  render={({ field }) => (
+                    <div className={styles.radioGroup}>
+                      <label>
+                        ¿Autoriza publicación en Facebook e Instagram?
+                      </label>
+                      <div>
+                        <RadioButton
+                          inputId="instaYes"
+                          value="yes"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "yes"}
+                        />
+                        <label htmlFor="instaYes">Sí</label>
+                        <RadioButton
+                          inputId="instaNo"
+                          value="no"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "no"}
+                        />
+                        <label htmlFor="instaNo">No</label>
+                      </div>
+                    </div>
+                  )}
+                />
+                {errors.consentInstagram && (
+                  <small className={styles.error}>
+                    {errors.consentInstagram.message}
+                  </small>
+                )}
+
+                <Controller
+                  name="consentOthers"
+                  control={methods.control}
+                  rules={{ required: "Debes responder sobre otras redes" }}
+                  render={({ field }) => (
+                    <div className={styles.radioGroup}>
+                      <label>
+                        ¿Autoriza uso en otras redes sociales oficiales?
+                      </label>
+                      <div>
+                        <RadioButton
+                          inputId="otherYes"
+                          value="yes"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "yes"}
+                        />
+                        <label htmlFor="otherYes">Sí</label>
+                        <RadioButton
+                          inputId="otherNo"
+                          value="no"
+                          {...field}
+                          onChange={(e) => field.onChange(e.value)}
+                          checked={field.value === "no"}
+                        />
+                        <label htmlFor="otherNo">No</label>
+                      </div>
+                    </div>
+                  )}
+                />
+                {errors.consentOthers && (
+                  <small className={styles.error}>
+                    {errors.consentOthers.message}
+                  </small>
+                )}
+              </fieldset>
+            </div>
+
+            <div className={styles.panelNav}>
+              <Button
+                label="Atrás"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                onClick={() => stepperRef.current.prevCallback()}
+              />
+              <Button
+                label="Siguiente"
+                icon="pi pi-arrow-right"
+                onClick={onNextFromLegal}
+              />
+            </div>
           </StepperPanel>
         </Stepper>
       </div>

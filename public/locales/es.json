@@ -83,6 +83,77 @@
           "content": "Puedes configurar tu navegador para rechazar o eliminar todas las cookies. Consulta la ayuda de tu navegador para más detalles."
         }
       ]
+    },
+    "dataProtectionNotice": {
+      "title": "Protección de Datos",
+      "sections": [
+        {
+          "heading": "1. Responsable del tratamiento",
+          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Dirección: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARES. Teléfono: 651873851. Correo electrónico: algaidavoleiclub@gmail.com. No existe obligación de disponer de un Delegado de Protección de Datos de conformidad con el art. 37 del Reglamento (UE) 2016/679."
+        },
+        {
+          "heading": "2. Finalidad del tratamiento",
+          "content": "Tratamos la información facilitada para prestar servicios deportivos y formativos contratados, fines administrativos, contables, fiscales, ofrecer servicios deportivos según intereses y realizar facturación. Se elaborará un perfil comercial, sin decisiones automatizadas. Los datos se conservarán mientras exista relación comercial y hasta 5 años desde la última contratación, salvo que se solicite su supresión."
+        },
+        {
+          "heading": "3. Legitimación",
+          "content": "La base legal es la ejecución del contrato según el Código de Comercio y Código Civil. Para comunicaciones comerciales, se aplican los arts. 20 y 21 de la Ley 34/2002. El consentimiento se solicita para ofertas comerciales, sin que su retirada condicione el servicio. Es obligatorio facilitar los datos para prestar el servicio. El consentimiento es obligatorio para recibir comunicaciones comerciales."
+        },
+        {
+          "heading": "4. Destinatarios",
+          "content": "No se cederán datos a terceros, salvo obligación legal. No se prevén transferencias internacionales ni decisiones automatizadas aplicables."
+        },
+        {
+          "heading": "5. Derechos de los interesados",
+          "content": "Cualquier persona tiene derecho a confirmar si tratamos sus datos. Puede acceder, rectificar, suprimir, limitar el tratamiento, oponerse y solicitar portabilidad. Puede reclamar ante la Agencia Española de Protección de Datos (www.agpd.es)."
+        }
+      ]
+    },
+    "imageConsent": {
+      "title": "Autorización de Uso de Imagen",
+      "sections": [
+        {
+          "heading": "1. Consentimiento para menores o mayores de edad",
+          "content": "El padre, madre o tutor legal (en caso de que el/la jugador/a sea menor de edad), o el propio jugador/a (en caso de ser mayor de edad), autoriza la utilización de la imagen y/o fotografías del jugador/a en el marco de actividades deportivas y comunicativas del Algaida Volei Club. Esta autorización incluye la publicación de dichas imágenes en la página web oficial del club y sus redes sociales, incluyendo Facebook e Instagram."
+        },
+        {
+          "heading": "2. Información sobre el tratamiento de datos",
+          "content": "De acuerdo con el artículo 28 del RGPD, se informa que Facebook Inc. e Instagram LLC actuarán como encargados del tratamiento de los datos personales (imágenes). Los datos podrán almacenarse en sus servidores en Estados Unidos. Esta autorización excluye usos que vulneren el derecho al honor, la intimidad personal o la propia imagen conforme a la Ley Orgánica 1/1985. La autorización es gratuita y no genera derechos económicos por el uso de la imagen."
+        },
+        {
+          "heading": "3. Consentimiento explícito",
+          "content": "Seleccione su decisión en cada uno de los siguientes apartados:\n1. ¿Autoriza la publicación de imágenes en la página web del club?\n2. ¿Autoriza la publicación de imágenes en Facebook e Instagram?\n3. ¿Autoriza el uso de imágenes en otras redes sociales oficiales del club?"
+        }
+      ]
+    },
+    "ethicCode": {
+      "title": "Código Ético y Normas de Convivencia",
+      "sections": [
+        {
+          "heading": "1. Introducción",
+          "content": "Este código ético recoge las pautas y normas que definen el comportamiento, las actitudes y los valores esperados de todas las personas que forman parte del Algaida Volei Club. Nuestro objetivo es fomentar un ambiente saludable, respetuoso y comprometido con el desarrollo deportivo y personal."
+        },
+        {
+          "heading": "2. Normas de convivencia y comportamiento",
+          "content": "Respetar al entrenador/a y a los compañeros/as del equipo. Consultar dudas con el técnico, aprender activamente, ayudar a los demás, evitar críticas negativas y responsabilizarse del material deportivo propio."
+        },
+        {
+          "heading": "3. Funcionamiento de los entrenamientos",
+          "content": "Puntualidad y asistencia obligatoria. Respetar el material y las instalaciones. Vestimenta adecuada, evitar objetos que puedan causar lesiones, cuidar la salud y evitar el uso del móvil durante las sesiones."
+        },
+        {
+          "heading": "4. Comportamiento en competición",
+          "content": "Uniforme correcto, actitud deportiva, respeto al árbitro, rival y público. Avisar con antelación si no se puede asistir. La participación depende de la actitud y asistencia según el entrenador."
+        },
+        {
+          "heading": "5. Decálogo de buenas prácticas",
+          "content": "1. Respetar las instalaciones municipales. 2. Puntualidad y asistencia obligatoria. 3. Cuidar el material del club. 4. Participar en otras categorías si se requiere. 5. Respeto a los entrenadores. 6. Criterios disciplinarios coherentes con los valores del club. 7. Comunicación a través del enlace del equipo. 8. Implicación de las familias. 9. Respeto durante entrenamientos y partidos. 10. Las quejas deben dirigirse al enlace del equipo."
+        },
+        {
+          "heading": "6. Familias y comunicación",
+          "content": "Las familias son un pilar fundamental. Deben respetar las decisiones de los entrenadores y canalizar sus consultas a través del enlace del equipo. Evitar interferencias técnicas durante entrenamientos y partidos."
+        }
+      ]
     }
   }
 }

@@ -83,6 +83,77 @@
           "content": "You can configure your browser to refuse or delete cookies. Please refer to your browser's help section."
         }
       ]
+    },
+    "dataProtectionNotice": {
+      "title": "Data Protection",
+      "sections": [
+        {
+          "heading": "1. Data Controller",
+          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Address: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARES. Phone: +34 651873851. Email: algaidavoleiclub@gmail.com. There is no obligation to appoint a Data Protection Officer under Article 37 of Regulation (EU) 2016/679."
+        },
+        {
+          "heading": "2. Purpose of Processing",
+          "content": "We process the data you provide to deliver contracted sports and educational services for your child or dependent minor, as well as for administrative, accounting, and tax purposes, and for sending tailored service offers. A commercial profile will be created without automated decision-making. Data will be kept while the commercial relationship is active and up to 5 years after the last service unless deletion is requested."
+        },
+        {
+          "heading": "3. Legal Basis",
+          "content": "The legal basis is the performance of a contract, as per the Commercial and Civil Codes. Articles 20 and 21 of Law 34/2002 apply for commercial communications. Consent is requested for marketing communications and its withdrawal will not affect the contract. Providing personal data is required to deliver the service. Consent is required to receive commercial communications."
+        },
+        {
+          "heading": "4. Recipients",
+          "content": "No data will be shared with third parties, except as required by law. No international data transfers or automated decisions are foreseen."
+        },
+        {
+          "heading": "5. Data Subject Rights",
+          "content": "You have the right to confirm whether ALGAIDA VOLEI CLUB is processing your personal data. You may access, rectify, delete, restrict processing, object, or request data portability. You may lodge a complaint with the Spanish Data Protection Agency (www.agpd.es)."
+        }
+      ]
+    },
+    "imageConsent": {
+      "title": "Image Use Authorization",
+      "sections": [
+        {
+          "heading": "1. Consent for minors or adults",
+          "content": "The parent or legal guardian (if the player is underage), or the player themselves (if of legal age), authorizes the use of their image and/or photographs for sports and communication activities of Algaida Volei Club. This includes publication on the club’s official website and social networks including Facebook and Instagram."
+        },
+        {
+          "heading": "2. Data processing information",
+          "content": "In accordance with Article 28 of the GDPR, Facebook Inc. and Instagram LLC will act as data processors. Data may be stored on their servers in the United States. This authorization excludes uses that infringe upon the right to honor, privacy, or personal image as per Spanish Organic Law 1/1985. This authorization is free of charge and does not imply economic compensation."
+        },
+        {
+          "heading": "3. Explicit consent",
+          "content": "Please indicate your decision for each of the following:\n1. Do you authorize the publication of images on the club's website?\n2. Do you authorize publication on Facebook and Instagram?\n3. Do you authorize the use of images on other official social networks?"
+        }
+      ]
+    },
+    "ethicCode": {
+      "title": "Code of Ethics and Conduct",
+      "sections": [
+        {
+          "heading": "1. Introduction",
+          "content": "This code outlines the behavior, attitudes, and values expected of all members of Algaida Volei Club. Our goal is to promote a healthy, respectful environment committed to both athletic and personal development."
+        },
+        {
+          "heading": "2. Rules of behavior and coexistence",
+          "content": "Respect your coach and teammates. Discuss doubts with your coach, learn actively, support others, avoid criticism, and take responsibility for your own sports equipment."
+        },
+        {
+          "heading": "3. Training guidelines",
+          "content": "Punctuality and attendance are mandatory. Respect all materials and facilities. Wear appropriate clothing, avoid items that can cause injury, take care of your health, and keep phones off during sessions."
+        },
+        {
+          "heading": "4. Competition behavior",
+          "content": "Wear the proper uniform and show sportsmanship. Respect referees, opponents, and spectators. Notify the coach in advance if you cannot attend. Game time depends on attitude and attendance at training."
+        },
+        {
+          "heading": "5. Good practice decalogue",
+          "content": "1. Respect municipal facilities. 2. Be punctual and attend all events. 3. Take care of club gear. 4. Play with other teams if asked. 5. Respect coaches. 6. Disciplinary criteria must align with club values. 7. Use the team liaison for communication. 8. Families are key to the project. 9. Respect during games and training. 10. Address complaints to the team liaison."
+        },
+        {
+          "heading": "6. Families and communication",
+          "content": "Families are essential. They should respect coaches’ decisions and use the official communication channel via the team liaison. Avoid giving tactical instructions during games or training."
+        }
+      ]
     }
   }
 }

@@ -1,12 +1,12 @@
 "use client";
 import { useTranslation } from "react-i18next";
 
-export default function Lopd() {
+export default function ImageUse() {
   const { t } = useTranslation();
   return (
     <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>{t("legalPages.dataProtectionNotice.title")}</h1>
-      {t("legalPages.dataProtectionNotice.sections", {
+      <h1>{t("legalPages.imageConsent.title")}</h1>
+      {t("legalPages.imageConsent.sections", {
         returnObjects: true,
       }).map((section, index) => (
         <section key={index} style={{ marginBottom: "1.5rem" }}>
