@@ -5,6 +5,12 @@
     margin: 0 auto;
     padding: 1rem;
   }
+
+  .stepperContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0 2rem 0;
+  }
   
   /* Override ligero de Steps */
   .steps {
@@ -22,6 +28,8 @@
   .stepContent {
     margin-top: 2rem;
   }
+
+
 
 
 .noClick .p-stepper-nav .p-step {

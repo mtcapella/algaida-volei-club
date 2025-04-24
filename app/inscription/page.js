@@ -12,6 +12,9 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import styles from "./inscription.module.css";
+import generateLOPD from "@/libs/lopdPdf";
+import generateImageUse from "@/libs/imagePdf";
+import { uploadFile } from "@/libs/upload";
 
 export default function InscriptionPage() {
   const stepperRef = useRef(null);
@@ -112,11 +115,22 @@ export default function InscriptionPage() {
     const valid = await trigger(campos);
     if (!valid) {
       // llevar al panel 4 si falla
-      stepperRef.current.activeIndex = 3;
+      stepperRef.current.goToStep(3);
       return;
     }
     console.log("¡Formulario correcto!", data);
-  };
+    // generar el PDF de LOPD
+    const lopdFile = await generateLOPD(data);
+    const imageFile = await generateImageUse(data);
+    console.log("PDF generado", lopdFile);
+    console.log("PDF derechos imagen generado", imageFile);
+
+    const lopdUrl = await uploadFile(lopdFile, "lopd");
+    const imageUrl = await uploadFile(imageFile, "images");
+
+    console.log("LOPD PDF URL: ", lopdUrl);
+    console.log("ImageUse PDF URL: ", imageUrl);
+  }; // Closing the onFinalSubmit function
 
   // claculos para el resumen de la inscripción y el pago
 
@@ -142,9 +156,8 @@ export default function InscriptionPage() {
             ref={stepperRef}
             orientation="vertical"
             readOnly
-            showNavigation={false}
-            style={{ maxWidth: "600px", margin: "0 auto" }}
-            className={styles.noClick}
+            linear
+            className={styles.stepperContainer}
           >
             {/* === Panel 1: Fecha de nacimiento === */}
             <StepperPanel header="1. Fecha nacimiento">
@@ -179,6 +192,7 @@ export default function InscriptionPage() {
               </div>
               <div className={styles.panelNav}>
                 <Button
+                  type="button"
                   label="Siguiente"
                   icon="pi pi-arrow-right"
                   onClick={() => onNext(["birthDate"])}
@@ -257,6 +271,7 @@ export default function InscriptionPage() {
 
               <div className={styles.panelNav}>
                 <Button
+                  type="button"
                   label="Atrás"
                   severity="secondary"
                   icon="pi pi-arrow-left"
@@ -528,12 +543,14 @@ export default function InscriptionPage() {
               </div>
               <div className={styles.panelNav}>
                 <Button
+                  type="button"
                   label="Atrás"
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
                 <Button
+                  type="button"
                   label="Siguiente"
                   icon="pi pi-arrow-right"
                   onClick={() =>
@@ -698,12 +715,14 @@ export default function InscriptionPage() {
 
               <div className={styles.panelNav}>
                 <Button
+                  type="button"
                   label="Atrás"
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
                 <Button
+                  type="button"
                   label="Siguiente"
                   icon="pi pi-arrow-right"
                   onClick={() =>
@@ -784,6 +803,7 @@ export default function InscriptionPage() {
 
               <div className={styles.panelNav}>
                 <Button
+                  type="button"
                   label="Atrás"
                   severity="secondary"
                   icon="pi pi-arrow-left"
