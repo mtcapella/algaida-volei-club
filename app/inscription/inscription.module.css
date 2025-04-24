@@ -23,6 +23,11 @@
     margin-top: 2rem;
   }
 
+
+.noClick .p-stepper-nav .p-step {
+  pointer-events: none !important;
+}
+
   .panelContent {
     display: grid;
     grid-template-columns: 1fr;

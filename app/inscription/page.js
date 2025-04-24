@@ -144,6 +144,7 @@ export default function InscriptionPage() {
             readOnly
             showNavigation={false}
             style={{ maxWidth: "600px", margin: "0 auto" }}
+            className={styles.noClick}
           >
             {/* === Panel 1: Fecha de nacimiento === */}
             <StepperPanel header="1. Fecha nacimiento">
@@ -262,9 +263,38 @@ export default function InscriptionPage() {
                   onClick={() => stepperRef.current.prevCallback()}
                 />
                 <Button
+                  type="button"
                   label="Siguiente"
                   icon="pi pi-arrow-right"
-                  onClick={() => onNext(["dni", "dniFile"])}
+                  onClick={async () => {
+                    // 1) validamos formato
+                    const ok = await trigger(["dni", "dniFile"]);
+                    if (!ok) return;
+
+                    const val = getValues("dni").toUpperCase();
+                    try {
+                      const res = await fetch(`/api/check-user/${val}`);
+                      const data = await res.json();
+
+                      if (data.exists && data.registered) {
+                        setError("api", {
+                          type: "manual",
+                          message:
+                            "Ya estás inscrito/a en la temporada activa.",
+                        });
+                        return;
+                      }
+                      // si existe pero no está inscrito, o no existe:
+                      clearErrors("api");
+                      // aquí pasamos el array para que onNext valide dni y dniFile antes de avanzar
+                      onNext(["dni", "dniFile"]);
+                    } catch {
+                      setError("api", {
+                        type: "manual",
+                        message: "Error al comprobar el DNI. Intenta de nuevo.",
+                      });
+                    }
+                  }}
                 />
               </div>
             </StepperPanel>
