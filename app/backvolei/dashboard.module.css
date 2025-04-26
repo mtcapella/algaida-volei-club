@@ -1,0 +1,45 @@
+/* Estadísticas del dashboard */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .statCard {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .statTitle {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .statValue {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+  
+  /* Lista de jugadores por categoría */
+  .categoryList {
+    margin-top: 2rem;
+  }
+  
+  .categoryItem {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+
+  /* para que el icono sea algo mas grande */
+.statIcon {
+    font-size: 2rem;
+    color: #4a4a4a;
+    margin-bottom: 0.5rem;
+  }
+  

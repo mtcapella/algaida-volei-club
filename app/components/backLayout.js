@@ -17,8 +17,6 @@ export default function BackLayout({ children, onLogout }) {
   const linkClass = (href) =>
     `${styles.link} ${path === href ? styles.active : ""}`;
 
-  // función para cerrar sesión de firebase
-
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
@@ -29,6 +27,7 @@ export default function BackLayout({ children, onLogout }) {
           <ul>
             <li>
               <Link href="/backvolei" className={linkClass("/backvolei")}>
+                <i className={`pi pi-chart-bar ${styles.menuIcon}`}></i>
                 Dashboard
               </Link>
             </li>
@@ -39,6 +38,7 @@ export default function BackLayout({ children, onLogout }) {
                   path.startsWith("/backvolei/jugadores") ? styles.active : ""
                 }`}
               >
+                <i className={`pi pi-users ${styles.menuIcon}`}></i>
                 Jugadores
               </Link>
             </li>
@@ -49,6 +49,7 @@ export default function BackLayout({ children, onLogout }) {
                   path.startsWith("/backvolei/equipos") ? styles.active : ""
                 }`}
               >
+                <i className={`pi pi-briefcase ${styles.menuIcon}`}></i>
                 Equipos
               </Link>
             </li>
@@ -59,6 +60,7 @@ export default function BackLayout({ children, onLogout }) {
                   path.startsWith("/backvolei/categorias") ? styles.active : ""
                 }`}
               >
+                <i className={`pi pi-tags ${styles.menuIcon}`}></i>
                 Categorías
               </Link>
             </li>
@@ -69,6 +71,7 @@ export default function BackLayout({ children, onLogout }) {
                   path.startsWith("/backvolei/temporadas") ? styles.active : ""
                 }`}
               >
+                <i className={`pi pi-calendar ${styles.menuIcon}`}></i>
                 Temporadas
               </Link>
             </li>
@@ -79,6 +82,7 @@ export default function BackLayout({ children, onLogout }) {
                   path.startsWith("/backvolei/ajustes") ? styles.active : ""
                 }`}
               >
+                <i className={`pi pi-cog ${styles.menuIcon}`}></i>
                 Ajustes
               </Link>
             </li>
@@ -89,6 +93,7 @@ export default function BackLayout({ children, onLogout }) {
               onClick={onLogout}
               type="button"
             >
+              <i className={`pi pi-sign-out ${styles.menuIcon}`}></i>
               Cerrar sesión
             </button>
           </div>
