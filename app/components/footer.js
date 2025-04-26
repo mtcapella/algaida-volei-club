@@ -21,25 +21,25 @@ export default function Footer() {
         {/* Iconos RRSS */}
         <div className={styles.socials}>
           <a
-            href="https://facebook.com/algaidavolei"
+            href="https://www.facebook.com/p/Algaida-Volei-Club-100028388392932"
             target="_blank"
             aria-label="Facebook"
           >
             <i className="pi pi-facebook" />
           </a>
           <a
-            href="https://instagram.com/algaidavolei"
+            href="https://www.instagram.com/algaidavoleiclub"
             target="_blank"
             aria-label="Instagram"
           >
             <i className="pi pi-instagram" />
           </a>
           <a
-            href="https://twitter.com/algaidavolei"
+            href="https://www.tiktok.com/@algaidavoleiclub"
             target="_blank"
             aria-label="Twitter"
           >
-            <i className="pi pi-twitter" />
+            <i className="pi pi-tiktok" />
           </a>
         </div>
         {/* Selector de idioma */}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { useForm, FormProvider, Controller } from "react-hook-form";
+import { useForm, FormProvider, Controller, get } from "react-hook-form";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
@@ -61,10 +61,8 @@ export default function InscriptionPage() {
     trigger,
     watch,
     getValues,
-    setValue,
     setError,
     clearErrors,
-    handleSubmit,
     formState: { errors },
   } = methods;
 
@@ -86,7 +84,7 @@ export default function InscriptionPage() {
   };
 
   const onFinalSubmit = async (data) => {
-    // Validar todos los campos requeridos
+    // 1) Validar todos los campos requeridos
     const campos = [
       "birthDate",
       "dni",
@@ -118,20 +116,66 @@ export default function InscriptionPage() {
       stepperRef.current.goToStep(3);
       return;
     }
+
     console.log("¡Formulario correcto!", data);
-    // generar el PDF de LOPD
+
+    // 2) Generar los PDFs
     const lopdFile = await generateLOPD(data);
     const imageFile = await generateImageUse(data);
-    console.log("PDF generado", lopdFile);
-    console.log("PDF derechos imagen generado", imageFile);
 
-    const lopdUrl = await uploadFile(lopdFile, "lopd");
-    const imageUrl = await uploadFile(imageFile, "images");
+    // 3) Subir los tres archivos en paralelo
+    const [lopdUrl, imageUrl, dniUrl] = await Promise.all([
+      uploadFile(lopdFile, "lopd"),
+      uploadFile(imageFile, "images"),
+      uploadFile(data.dniFile, "dni"),
+    ]);
 
-    console.log("LOPD PDF URL: ", lopdUrl);
-    console.log("ImageUse PDF URL: ", imageUrl);
-  }; // Closing the onFinalSubmit function
+    // 4) Calcular cuotas
+    const participateLottery = watch("participateLottery");
+    const splitPayment = watch("splitPayment");
+    const priceBase = 400;
+    const lotteryDiscount = 20;
+    const totalSingle = participateLottery
+      ? priceBase - lotteryDiscount
+      : priceBase;
+    const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
 
+    // 5) Definir el amount a pagar ahora
+    const amount = splitPayment ? firstSplit : totalSingle;
+
+    // 6) Montar el payload
+    const payload = {
+      ...data,
+      lopdUrl,
+      imageUrl,
+      dniUrl,
+      // datos de pago
+      amount,
+      totalFee: totalSingle,
+      splitPayment,
+      participateLottery,
+    };
+    console.log("Payload a enviar:", payload);
+
+    // 7) Enviar al endpoint
+    const resp = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      console.error("Error inscripción:", err);
+      alert("Hubo un problema al inscribir. Comprueba la consola.");
+      return;
+    }
+
+    // 8) Éxito
+    alert(
+      "Inscripción realizada correctamente. Recibirás un email con la confirmación y el enlace de pago."
+    );
+  };
   // claculos para el resumen de la inscripción y el pago
 
   const priceBase = 400;

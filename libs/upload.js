@@ -1,5 +1,5 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "./firebaseClient";
+import { storage } from "./firebase"; // Asegúrate de que la ruta sea correcta
 
 // sube un archivo a Firebase Storage y devuelve la URL pública
 export async function uploadFile(file, folder) {
