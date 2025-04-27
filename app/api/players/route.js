@@ -32,7 +32,7 @@ export async function GET() {
           IFNULL(SUM(pay.amount), 0) AS totalPaid
        FROM players p
        INNER JOIN registrations r ON r.player_id = p.id
-       LEFT JOIN teams t ON r.team_id = t.id -- 🔥 aquí cambiamos a LEFT JOIN
+       LEFT JOIN teams t ON r.team_id = t.id
        INNER JOIN categories c ON r.category_id = c.id
        LEFT JOIN legal_guardians g ON g.player_id = p.id AND g.season_id = r.season_id
        LEFT JOIN payments pay ON pay.registration_id = r.id
@@ -71,12 +71,12 @@ export async function GET() {
       lastName: player.last_name,
       dni: player.dni,
       dateOfBirth: player.date_of_birth,
-      team: player.teamName || "Sin equipo", // 🔥 si no tiene equipo, devolvemos "Sin equipo"
+      team: player.teamName || "Sin equipo", // Cambiado a "Sin equipo" si no hay equipo
       category: player.categoryName,
       guardian: player.guardianName || null,
       guardianPhone: player.guardianPhone || null,
       paymentStatus:
-        parseFloat(player.totalPaid) >= cuotaBase ? "Paid" : "Pending",
+        parseFloat(player.totalPaid) >= cuotaBase ? "Pagado" : "Pendiente", // si el total pagado es mayor o igual a cuotaBase, está pagado
       documents: {
         dniUrl: documentsMap[player.playerId]?.dni || null,
         lopdUrl: documentsMap[player.playerId]?.lopd || null,

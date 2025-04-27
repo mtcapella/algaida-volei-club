@@ -1,0 +1,22 @@
+.documentsIcons {
+  display: flex;
+  gap: 5px;
+ align-content: center;
+
+}
+.documentsIcons > div {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+
+.actionsIcons {
+  display: flex;
+    justify-content: center;
+
+}
+.actionsIcons > div {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}

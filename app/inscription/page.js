@@ -61,6 +61,7 @@ export default function InscriptionPage() {
     trigger,
     watch,
     getValues,
+    setValue,
     setError,
     clearErrors,
     formState: { errors },
@@ -93,6 +94,7 @@ export default function InscriptionPage() {
       "last_name",
       "email",
       "phone",
+      "playerId",
       ...(isMinor
         ? [
             "guardianFirstName",
@@ -326,10 +328,6 @@ export default function InscriptionPage() {
                   label="Siguiente"
                   icon="pi pi-arrow-right"
                   onClick={async () => {
-                    // 1) validamos formato
-                    const ok = await trigger(["dni", "dniFile"]);
-                    if (!ok) return;
-
                     const val = getValues("dni").toUpperCase();
                     try {
                       const res = await fetch(`/api/check-user/${val}`);
@@ -343,11 +341,25 @@ export default function InscriptionPage() {
                         });
                         return;
                       }
-                      // si existe pero no está inscrito, o no existe:
+
                       clearErrors("api");
-                      // aquí pasamos el array para que onNext valide dni y dniFile antes de avanzar
+
+                      if (data.exists) {
+                        setValue("playerId", data.player.id); // guarda el ID del jugador
+                        setValue("first_name", data.player.first_name);
+                        setValue("last_name", data.player.last_name);
+                        setValue("playerId", data.player.playerId);
+                        setValue("exists", true); // marca que el jugador existe
+                      }
+
+                      // AHORA validamos todo lo necesario
+                      const ok = await trigger(["dni", "dniFile", "exists"]);
+                      if (!ok) return;
+
+                      // Y si todo va bien pasamos
                       onNext(["dni", "dniFile"]);
-                    } catch {
+                    } catch (error) {
+                      console.error(error);
                       setError("api", {
                         type: "manual",
                         message: "Error al comprobar el DNI. Intenta de nuevo.",

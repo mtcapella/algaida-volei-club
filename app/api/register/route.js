@@ -10,6 +10,8 @@ export async function POST(request) {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
 
+  console.log("data", data);
+
   try {
     // 1) Normalizar la fecha de nacimiento
     const dob = new Date(data.birthDate);

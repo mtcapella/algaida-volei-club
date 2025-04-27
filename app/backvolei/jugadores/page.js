@@ -11,6 +11,8 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
+import stytles from "./jugadores.module.css";
+
 export default function Players() {
   const [players, setPlayers] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -25,7 +27,37 @@ export default function Players() {
       .then((data) => setPlayers(data));
   }, []);
 
-  console.log("Jugadores:", players);
+  // Función para eliminar un jugador
+
+  const handleDelete = async (playerId, playerName) => {
+    try {
+      const response = await fetch(`/api/players/${playerId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.current.show({
+          severity: "success",
+          summary: "Jugador eliminado",
+          detail: `El jugador ${playerName} ha sido eliminado.`,
+          life: 3000,
+        });
+
+        setPlayers((prevPlayers) =>
+          prevPlayers.filter((player) => player.playerId !== playerId)
+        );
+      } else {
+        throw new Error("Error al eliminar el jugador");
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo eliminar el jugador. Inténtalo de nuevo.",
+        life: 3000,
+      });
+    }
+  };
 
   // Modulo para exportar a CSV
   const exportCSV = () => {
@@ -38,7 +70,6 @@ export default function Players() {
     });
   };
 
-  // Toolbar left template
   const leftToolbarTemplate = () => (
     <>
       <Button
@@ -99,12 +130,18 @@ export default function Players() {
           headerStyle={{ width: "3em" }}
         ></Column>
         <Column
-          field="name"
-          header="Name"
+          field="firstName"
+          header="Nombre"
           sortable
           filter
           filterElement={nameFilterTemplate}
-          style={{ minWidth: "12rem" }}
+        />
+        <Column
+          field="lastName"
+          header="Apellido"
+          sortable
+          filter
+          filterElement={nameFilterTemplate}
         />
         <Column
           field="dni"
@@ -112,44 +149,86 @@ export default function Players() {
           sortable
           filter
           filterPlaceholder="DNI"
-          style={{ minWidth: "8rem" }}
         />
         <Column
           field="category"
-          header="Category"
+          header="Categoría"
           sortable
           filter
           filterPlaceholder="Cat."
-          style={{ minWidth: "8rem" }}
         />
         <Column
           field="team"
-          header="Team"
+          header="Equipo"
           sortable
           filter
           filterPlaceholder="Team"
-          style={{ minWidth: "8rem" }}
         />
         <Column
           field="paymentStatus"
-          header="Paid?"
+          header="Pagado?"
           sortable
           filter
           filterPlaceholder="Status"
-          style={{ minWidth: "6rem" }}
         />
         <Column
-          header="Actions"
+          header="Acciones"
           body={(rowData) => (
-            <Button
-              icon="pi pi-pencil"
-              className="p-button-text"
-              onClick={() => {
-                /* your edit fn */
-              }}
-            />
+            <div className={stytles.actionsIcons}>
+              <Button
+                icon="pi pi-pencil"
+                className="p-button-text"
+                onClick={() => {
+                  console.log("Edit player:", rowData.playerId);
+                }}
+              />
+              <Button
+                icon="pi pi-trash"
+                className="p-button-text p-button-danger"
+                onClick={() =>
+                  handleDelete(
+                    rowData.playerId,
+                    `${rowData.firstName} ${rowData.lastName}`
+                  )
+                }
+              />
+            </div>
           )}
-          style={{ width: "6rem" }}
+        />
+        <Column
+          field="documents"
+          header="Documentos"
+          body={(rowData) => (
+            <div className={stytles.documentsIcons}>
+              {rowData.documents.dniUrl && (
+                <a
+                  href={rowData.documents.dniUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="pi pi-id-card" title="DNI"></i>
+                </a>
+              )}
+              {rowData.documents.lopdUrl && (
+                <a
+                  href={rowData.documents.lopdUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="pi pi-lock" title="LOPD"></i>
+                </a>
+              )}
+              {rowData.documents.usoImagenesUrl && (
+                <a
+                  href={rowData.documents.usoImagenesUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="pi pi-image" title="Uso de imágenes"></i>
+                </a>
+              )}
+            </div>
+          )}
         />
       </DataTable>
     </div>
