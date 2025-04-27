@@ -345,7 +345,6 @@ export default function InscriptionPage() {
                       clearErrors("api");
 
                       if (data.exists) {
-                        setValue("playerId", data.player.id); // guarda el ID del jugador
                         setValue("first_name", data.player.first_name);
                         setValue("last_name", data.player.last_name);
                         setValue("playerId", data.player.playerId);

@@ -6,28 +6,43 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
 import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Dropdown } from "primereact/dropdown";
+import { Calendar } from "primereact/calendar";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
-import stytles from "./jugadores.module.css";
+import styles from "./jugadores.module.css";
 
 export default function Players() {
   const [players, setPlayers] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedPlayers, setSelected] = useState(null);
+  const [selectedPlayers, setSelectedPlayers] = useState(null);
+  const [playerToEdit, setPlayerToEdit] = useState(null);
+  const [editDialogVisible, setEditDialogVisible] = useState(false);
   const dt = useRef(null);
   const toast = useRef(null);
 
-  // Fetcheamos los jugadores desde la API
+  // Cargar jugadores
   useEffect(() => {
-    fetch("/api/players")
-      .then((res) => res.json())
-      .then((data) => setPlayers(data));
+    fetchPlayers();
+    fetchTeams();
   }, []);
 
-  // Función para eliminar un jugador
+  const fetchPlayers = async () => {
+    const res = await fetch("/api/players");
+    const data = await res.json();
+    setPlayers(data);
+  };
+
+  const fetchTeams = async () => {
+    const res = await fetch("/api/teams");
+    const data = await res.json();
+    setTeams(data);
+  };
 
   const handleDelete = async (playerId, playerName) => {
     try {
@@ -42,33 +57,87 @@ export default function Players() {
           detail: `El jugador ${playerName} ha sido eliminado.`,
           life: 3000,
         });
-
-        setPlayers((prevPlayers) =>
-          prevPlayers.filter((player) => player.playerId !== playerId)
-        );
+        setPlayers((prev) => prev.filter((p) => p.playerId !== playerId));
       } else {
-        throw new Error("Error al eliminar el jugador");
+        throw new Error("Error al eliminar jugador");
       }
     } catch (error) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar el jugador. Inténtalo de nuevo.",
+        detail: "No se pudo eliminar el jugador.",
         life: 3000,
       });
     }
   };
 
-  // Modulo para exportar a CSV
-  const exportCSV = () => {
-    dt.current.exportCSV();
-    toast.current.show({
-      severity: "info",
-      summary: "Exported",
-      detail: "CSV file generated",
-      life: 2000,
+  const openEditDialog = (player) => {
+    setPlayerToEdit({
+      playerId: player.playerId,
+      firstName: player.firstName,
+      lastName: player.lastName,
+      teamId: teams.find((t) => t.name === player.team)?.id || null,
+      dateOfBirth: player.dateOfBirth ? new Date(player.dateOfBirth) : null, // convertir la fecha en objeto Date
     });
+    setEditDialogVisible(true);
   };
+
+  const handleSaveEdit = async () => {
+    try {
+      const { playerId, firstName, lastName, teamId, dateOfBirth } =
+        playerToEdit;
+
+      const response = await fetch(`/api/players/${playerId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          dateOfBirth: dateOfBirth
+            ? dateOfBirth.toISOString().split("T")[0]
+            : null, // yyyy-MM-dd
+          teamId,
+        }),
+      });
+
+      if (response.ok) {
+        toast.current.show({
+          severity: "success",
+          summary: "Jugador actualizado",
+          detail: "Los cambios han sido guardados.",
+          life: 3000,
+        });
+        setEditDialogVisible(false);
+        fetchPlayers();
+      } else {
+        throw new Error("Error al actualizar jugador");
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo actualizar el jugador.",
+        life: 3000,
+      });
+    }
+  };
+
+  const editDialogFooter = (
+    <div className={styles.modalFooter}>
+      <Button
+        label="Cancelar"
+        icon="pi pi-times"
+        onClick={() => setEditDialogVisible(false)}
+        className="p-button-text"
+      />
+      <Button
+        label="Guardar"
+        icon="pi pi-check"
+        onClick={handleSaveEdit}
+        autoFocus
+      />
+    </div>
+  );
 
   const leftToolbarTemplate = () => (
     <>
@@ -80,22 +149,19 @@ export default function Players() {
       <Button
         icon="pi pi-file"
         label="Export CSV"
-        className="p-button-success p-mr-2"
-        onClick={exportCSV}
+        className="p-button-success p-ml-2"
+        onClick={() => dt.current.exportCSV()}
       />
     </>
   );
 
-  // Column filters
-  const nameFilterTemplate = (options) => {
-    return (
-      <InputText
-        value={options.value}
-        onChange={(e) => options.filter(e.target.value, options.index)}
-        placeholder="Search by name"
-      />
-    );
-  };
+  const nameFilterTemplate = (options) => (
+    <InputText
+      value={options.value}
+      onChange={(e) => options.filter(e.target.value, options.index)}
+      placeholder="Buscar por nombre"
+    />
+  );
 
   return (
     <div className="p-m-4">
@@ -108,7 +174,7 @@ export default function Players() {
           type="search"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Global Search"
+          placeholder="Búsqueda global"
         />
       </div>
 
@@ -121,14 +187,11 @@ export default function Players() {
         sortMode="multiple"
         selectionMode="checkbox"
         selection={selectedPlayers}
-        onSelectionChange={(e) => setSelected(e.value)}
+        onSelectionChange={(e) => setSelectedPlayers(e.value)}
         globalFilter={globalFilter}
-        emptyMessage="No players found"
+        emptyMessage="No se encontraron jugadores"
       >
-        <Column
-          selectionMode="multiple"
-          headerStyle={{ width: "3em" }}
-        ></Column>
+        <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
         <Column
           field="firstName"
           header="Nombre"
@@ -155,32 +218,30 @@ export default function Players() {
           header="Categoría"
           sortable
           filter
-          filterPlaceholder="Cat."
+          filterPlaceholder="Categoría"
         />
         <Column
           field="team"
           header="Equipo"
           sortable
           filter
-          filterPlaceholder="Team"
+          filterPlaceholder="Equipo"
         />
         <Column
           field="paymentStatus"
-          header="Pagado?"
+          header="Pagado"
           sortable
           filter
-          filterPlaceholder="Status"
+          filterPlaceholder="Estado"
         />
         <Column
           header="Acciones"
           body={(rowData) => (
-            <div className={stytles.actionsIcons}>
+            <div className={styles.actionsIcons}>
               <Button
                 icon="pi pi-pencil"
                 className="p-button-text"
-                onClick={() => {
-                  console.log("Edit player:", rowData.playerId);
-                }}
+                onClick={() => openEditDialog(rowData)}
               />
               <Button
                 icon="pi pi-trash"
@@ -195,42 +256,72 @@ export default function Players() {
             </div>
           )}
         />
-        <Column
-          field="documents"
-          header="Documentos"
-          body={(rowData) => (
-            <div className={stytles.documentsIcons}>
-              {rowData.documents.dniUrl && (
-                <a
-                  href={rowData.documents.dniUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="pi pi-id-card" title="DNI"></i>
-                </a>
-              )}
-              {rowData.documents.lopdUrl && (
-                <a
-                  href={rowData.documents.lopdUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="pi pi-lock" title="LOPD"></i>
-                </a>
-              )}
-              {rowData.documents.usoImagenesUrl && (
-                <a
-                  href={rowData.documents.usoImagenesUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="pi pi-image" title="Uso de imágenes"></i>
-                </a>
-              )}
-            </div>
-          )}
-        />
       </DataTable>
+
+      {/* Modal de edición */}
+      <Dialog
+        header="Editar Jugador"
+        visible={editDialogVisible}
+        style={{ width: "450px" }}
+        modal
+        className="p-fluid"
+        footer={editDialogFooter}
+        onHide={() => setEditDialogVisible(false)}
+      >
+        {playerToEdit && (
+          <div className={styles.formEdit}>
+            <div className="field">
+              <label>Nombre</label>
+              <InputText
+                value={playerToEdit.firstName}
+                onChange={(e) =>
+                  setPlayerToEdit({
+                    ...playerToEdit,
+                    firstName: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Apellido</label>
+              <InputText
+                value={playerToEdit.lastName}
+                onChange={(e) =>
+                  setPlayerToEdit({ ...playerToEdit, lastName: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Fecha de nacimiento</label>
+              <Calendar
+                value={playerToEdit.dateOfBirth}
+                onChange={(e) =>
+                  setPlayerToEdit({ ...playerToEdit, dateOfBirth: e.value })
+                }
+                dateFormat="yy-mm-dd"
+                showIcon
+                showButtonBar
+              />
+            </div>
+
+            <div className="field">
+              <label>Equipo</label>
+              <Dropdown
+                value={playerToEdit.teamId}
+                options={teams}
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Selecciona un equipo"
+                onChange={(e) =>
+                  setPlayerToEdit({ ...playerToEdit, teamId: e.value })
+                }
+              />
+            </div>
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }
