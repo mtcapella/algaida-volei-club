@@ -19,13 +19,19 @@ export async function GET() {
 
     const seasonId = seasonResult[0].id;
 
-    // 2. Buscar equipos de la temporada activa
+    // 2. Buscar equipos + número de jugadores
     const [teamsResult] = await db.execute(
-      `SELECT id, name
-       FROM teams
-       WHERE season_id = ?
-       ORDER BY name ASC`,
-      [seasonId]
+      `SELECT 
+          t.id,
+          t.name,
+          t.coach_name,
+          COUNT(r.id) AS totalPlayers
+       FROM teams t
+       LEFT JOIN registrations r ON r.team_id = t.id AND r.season_id = ?
+       WHERE t.season_id = ?
+       GROUP BY t.id, t.name, t.coach_name
+       ORDER BY t.name ASC`,
+      [seasonId, seasonId]
     );
 
     return NextResponse.json(teamsResult);

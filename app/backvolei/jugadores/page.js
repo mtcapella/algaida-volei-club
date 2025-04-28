@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -9,6 +11,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -17,16 +20,33 @@ import "primeicons/primeicons.css";
 import styles from "./jugadores.module.css";
 
 export default function Players() {
+  /* ----------------------------- state & refs ---------------------------- */
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedPlayers, setSelectedPlayers] = useState(null);
   const [playerToEdit, setPlayerToEdit] = useState(null);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
+  const [newDialogVisible, setNewDialogVisible] = useState(false);
+  const [checkingDni, setCheckingDni] = useState(false);
+  const [dniChecked, setDniChecked] = useState(false);
+
   const dt = useRef(null);
   const toast = useRef(null);
 
-  // Cargar jugadores
+  /* ----------------------------- react‑form ------------------------------ */
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    getValues,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  /* ------------------------------- effects ------------------------------- */
   useEffect(() => {
     fetchPlayers();
     fetchTeams();
@@ -44,12 +64,12 @@ export default function Players() {
     setTeams(data);
   };
 
+  /* --------------------- helpers / acciones en tabla --------------------- */
   const handleDelete = async (playerId, playerName) => {
     try {
       const response = await fetch(`/api/players/${playerId}`, {
         method: "DELETE",
       });
-
       if (response.ok) {
         toast.current.show({
           severity: "success",
@@ -58,9 +78,7 @@ export default function Players() {
           life: 3000,
         });
         setPlayers((prev) => prev.filter((p) => p.playerId !== playerId));
-      } else {
-        throw new Error("Error al eliminar jugador");
-      }
+      } else throw new Error();
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -71,13 +89,14 @@ export default function Players() {
     }
   };
 
+  /* ------------------------------ editar --------------------------------- */
   const openEditDialog = (player) => {
     setPlayerToEdit({
       playerId: player.playerId,
       firstName: player.firstName,
       lastName: player.lastName,
       teamId: teams.find((t) => t.name === player.team)?.id || null,
-      dateOfBirth: player.dateOfBirth ? new Date(player.dateOfBirth) : null, // convertir la fecha en objeto Date
+      dateOfBirth: player.dateOfBirth ? new Date(player.dateOfBirth) : null,
     });
     setEditDialogVisible(true);
   };
@@ -86,16 +105,15 @@ export default function Players() {
     try {
       const { playerId, firstName, lastName, teamId, dateOfBirth } =
         playerToEdit;
-
       const response = await fetch(`/api/players/${playerId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName,
-          lastName,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
           dateOfBirth: dateOfBirth
             ? dateOfBirth.toISOString().split("T")[0]
-            : null, // yyyy-MM-dd
+            : null,
           teamId,
         }),
       });
@@ -109,9 +127,7 @@ export default function Players() {
         });
         setEditDialogVisible(false);
         fetchPlayers();
-      } else {
-        throw new Error("Error al actualizar jugador");
-      }
+      } else throw new Error();
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -122,135 +138,210 @@ export default function Players() {
     }
   };
 
-  const editDialogFooter = (
-    <div className={styles.modalFooter}>
-      <Button
-        label="Cancelar"
-        icon="pi pi-times"
-        onClick={() => setEditDialogVisible(false)}
-        className="p-button-text"
-      />
-      <Button
-        label="Guardar"
-        icon="pi pi-check"
-        onClick={handleSaveEdit}
-        autoFocus
-      />
-    </div>
-  );
+  /* --------------------------- comprobación DNI -------------------------- */
+  const handleCheckDni = async () => {
+    const dni = getValues("dni")?.toUpperCase().trim();
+    if (!dni || checkingDni) return;
 
-  const leftToolbarTemplate = () => (
-    <>
-      <Button
-        icon="pi pi-refresh"
-        className="p-button-text"
-        onClick={() => window.location.reload()}
-      />
-      <Button
-        icon="pi pi-file"
-        label="Export CSV"
-        className="p-button-success p-ml-2"
-        onClick={() => dt.current.exportCSV()}
-      />
-    </>
-  );
+    setCheckingDni(true);
+    try {
+      const res = await fetch(`/api/check-user/${dni}`);
+      const data = await res.json();
 
-  const nameFilterTemplate = (options) => (
-    <InputText
-      value={options.value}
-      onChange={(e) => options.filter(e.target.value, options.index)}
-      placeholder="Buscar por nombre"
-    />
-  );
+      // reset de errores previos
+      setError("dni", {});
 
+      if (data.exists && data.registered) {
+        toast.current.show({
+          severity: "error",
+          summary: "Jugador ya registrado",
+          detail: "Ya inscrito en la temporada activa.",
+          life: 3000,
+        });
+        setError("dni", { type: "duplicated", message: "Jugador ya inscrito" });
+        setDniChecked(false);
+        return;
+      }
+
+      if (data.exists && data.hasDebt) {
+        toast.current.show({
+          severity: "error",
+          summary: "Jugador con deuda",
+          detail: "Tiene pagos pendientes.",
+          life: 3000,
+        });
+        setError("dni", { type: "debt", message: "Jugador con deudas" });
+        setDniChecked(false);
+        return;
+      }
+
+      if (data.exists) {
+        // pre‑rellenamos y marcamos flag
+        setValue("firstName", data.player.first_name);
+        setValue("lastName", data.player.last_name);
+        setValue("playerId", data.player.playerId);
+        setValue("exists", true);
+        toast.current.show({
+          severity: "info",
+          summary: "Jugador encontrado",
+          detail: "Completa los datos restantes.",
+          life: 3000,
+        });
+      } else {
+        // jugador nuevo
+        setValue("exists", false);
+        toast.current.show({
+          severity: "success",
+          summary: "Nuevo jugador",
+          detail: "Jugador no encontrado. Puedes crearlo.",
+          life: 3000,
+        });
+      }
+      setDniChecked(true);
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo comprobar el jugador.",
+        life: 3000,
+      });
+      setDniChecked(false);
+    } finally {
+      setCheckingDni(false);
+    }
+  };
+
+  /* -------------------------------- submit ------------------------------- */
+  const onSubmit = async (data) => {
+    // Si aún no validamos el DNI, hazlo
+    if (!dniChecked) {
+      await handleCheckDni();
+      // Si la comprobación falló o generó error abortamos
+      if (!dniChecked) return;
+    }
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          first_name: data.firstName.trim(),
+          last_name: data.lastName.trim(),
+          dni: data.dni.toUpperCase().trim(),
+          birthDate: data.dateOfBirth
+            ? data.dateOfBirth.toISOString().split("T")[0]
+            : null,
+          lopdUrl: null,
+          imageUrl: null,
+          dniUrl: null,
+          totalFee: 400,
+          amount: 400,
+          participateLottery: false,
+          splitPayment: false,
+          isMinor: false,
+        }),
+      });
+
+      if (response.ok) {
+        toast.current.show({
+          severity: "success",
+          summary: "Jugador creado",
+          detail: "Jugador registrado exitosamente.",
+          life: 3000,
+        });
+        setNewDialogVisible(false);
+        fetchPlayers();
+        reset();
+        setDniChecked(false);
+      } else throw new Error();
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo registrar el jugador.",
+        life: 3000,
+      });
+    }
+  };
+
+  /* ----------------------------------------------------------------------- */
   return (
-    <div className="p-m-4">
+    <div className={styles.container}>
       <Toast ref={toast} />
-      <Toolbar className="p-mb-4" left={leftToolbarTemplate} />
 
-      <div className="p-input-icon-left p-mb-3">
+      {/* ------------------------- toolbar / acciones ------------------------ */}
+      <Toolbar
+        className="p-mb-4"
+        left={() => (
+          <div className="flex gap-2">
+            <Button
+              label="Refrescar"
+              icon="pi pi-refresh"
+              className="p-button-secondary"
+              onClick={fetchPlayers}
+            />
+            <Button
+              label="Exportar CSV"
+              icon="pi pi-file"
+              className="p-button-success"
+              onClick={() => dt.current.exportCSV()}
+            />
+          </div>
+        )}
+        right={() => (
+          <Button
+            label="Nuevo Jugador"
+            icon="pi pi-user-plus"
+            className="p-button-primary"
+            onClick={() => setNewDialogVisible(true)}
+          />
+        )}
+      />
+
+      {/* ------------------------------ filtro ------------------------------ */}
+      <div className="p-input-icon-left p-mb-4">
         <i className="pi pi-search" />
         <InputText
-          type="search"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Búsqueda global"
+          placeholder="Buscar jugador..."
         />
       </div>
 
+      {/* ----------------------------- datatable ---------------------------- */}
       <DataTable
         ref={dt}
         value={players}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 20]}
-        sortMode="multiple"
-        selectionMode="checkbox"
+        globalFilter={globalFilter}
         selection={selectedPlayers}
         onSelectionChange={(e) => setSelectedPlayers(e.value)}
-        globalFilter={globalFilter}
-        emptyMessage="No se encontraron jugadores"
+        emptyMessage="No se encontraron jugadores."
       >
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
-        <Column
-          field="firstName"
-          header="Nombre"
-          sortable
-          filter
-          filterElement={nameFilterTemplate}
-        />
-        <Column
-          field="lastName"
-          header="Apellido"
-          sortable
-          filter
-          filterElement={nameFilterTemplate}
-        />
-        <Column
-          field="dni"
-          header="DNI"
-          sortable
-          filter
-          filterPlaceholder="DNI"
-        />
-        <Column
-          field="category"
-          header="Categoría"
-          sortable
-          filter
-          filterPlaceholder="Categoría"
-        />
-        <Column
-          field="team"
-          header="Equipo"
-          sortable
-          filter
-          filterPlaceholder="Equipo"
-        />
-        <Column
-          field="paymentStatus"
-          header="Pagado"
-          sortable
-          filter
-          filterPlaceholder="Estado"
-        />
+        <Column field="firstName" header="Nombre" sortable />
+        <Column field="lastName" header="Apellido" sortable />
+        <Column field="dni" header="DNI" sortable />
+        <Column field="category" header="Categoría" sortable />
+        <Column field="team" header="Equipo" sortable />
+        <Column field="paymentStatus" header="Estado de Pago" sortable />
         <Column
           header="Acciones"
           body={(rowData) => (
-            <div className={styles.actionsIcons}>
+            <div className="flex gap-2">
               <Button
                 icon="pi pi-pencil"
-                className="p-button-text"
+                className="p-button-text p-button-warning"
                 onClick={() => openEditDialog(rowData)}
               />
               <Button
                 icon="pi pi-trash"
                 className="p-button-text p-button-danger"
                 onClick={() =>
-                  handleDelete(
-                    rowData.playerId,
-                    `${rowData.firstName} ${rowData.lastName}`
-                  )
+                  handleDelete(rowData.playerId, rowData.firstName)
                 }
               />
             </div>
@@ -258,18 +349,17 @@ export default function Players() {
         />
       </DataTable>
 
-      {/* Modal de edición */}
+      {/* ------------------------- Dialog Editar ------------------------- */}
       <Dialog
         header="Editar Jugador"
         visible={editDialogVisible}
         style={{ width: "450px" }}
         modal
         className="p-fluid"
-        footer={editDialogFooter}
         onHide={() => setEditDialogVisible(false)}
       >
         {playerToEdit && (
-          <div className={styles.formEdit}>
+          <>
             <div className="field">
               <label>Nombre</label>
               <InputText
@@ -282,7 +372,6 @@ export default function Players() {
                 }
               />
             </div>
-
             <div className="field">
               <label>Apellido</label>
               <InputText
@@ -292,7 +381,20 @@ export default function Players() {
                 }
               />
             </div>
-
+            <div className="field">
+              <label>Equipo</label>
+              <Dropdown
+                value={playerToEdit.teamId}
+                options={teams.map((team) => ({
+                  label: team.name,
+                  value: team.id,
+                }))}
+                onChange={(e) =>
+                  setPlayerToEdit({ ...playerToEdit, teamId: e.value })
+                }
+                placeholder="Seleccionar equipo"
+              />
+            </div>
             <div className="field">
               <label>Fecha de nacimiento</label>
               <Calendar
@@ -300,27 +402,146 @@ export default function Players() {
                 onChange={(e) =>
                   setPlayerToEdit({ ...playerToEdit, dateOfBirth: e.value })
                 }
-                dateFormat="yy-mm-dd"
                 showIcon
-                showButtonBar
+                dateFormat="yy-mm-dd"
               />
             </div>
 
-            <div className="field">
-              <label>Equipo</label>
-              <Dropdown
-                value={playerToEdit.teamId}
-                options={teams}
-                optionLabel="name"
-                optionValue="id"
-                placeholder="Selecciona un equipo"
-                onChange={(e) =>
-                  setPlayerToEdit({ ...playerToEdit, teamId: e.value })
-                }
+            <Button label="Guardar cambios" onClick={handleSaveEdit} />
+          </>
+        )}
+      </Dialog>
+
+      {/* ------------------------- Dialog Nuevo ------------------------- */}
+      <Dialog
+        header="Nuevo Jugador"
+        visible={newDialogVisible}
+        style={{ width: "450px" }}
+        modal
+        className="p-fluid"
+        onHide={() => {
+          setNewDialogVisible(false);
+          reset();
+          setDniChecked(false);
+        }}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* DNI */}
+          <div className="field">
+            <label>DNI</label>
+            <div className="flex gap-2">
+              <Controller
+                name="dni"
+                control={control}
+                defaultValue=""
+                rules={{ required: "El DNI es obligatorio" }}
+                render={({ field }) => (
+                  <InputText
+                    {...field}
+                    className={errors.dni && "p-invalid"}
+                    onBlur={(e) => {
+                      field.onBlur();
+                      handleCheckDni();
+                    }}
+                  />
+                )}
               />
+              <Button
+                icon="pi pi-search"
+                className="p-button-secondary"
+                type="button"
+                onClick={handleCheckDni}
+              />
+              {checkingDni && (
+                <ProgressSpinner style={{ width: "20px", height: "20px" }} />
+              )}
             </div>
           </div>
-        )}
+
+          {/* Nombre */}
+          <div className="field">
+            <label>Nombre</label>
+            <Controller
+              name="firstName"
+              control={control}
+              defaultValue=""
+              rules={{ required: "El nombre es obligatorio" }}
+              render={({ field }) => <InputText {...field} />}
+            />
+          </div>
+
+          {/* Apellido */}
+          <div className="field">
+            <label>Apellido</label>
+            <Controller
+              name="lastName"
+              control={control}
+              defaultValue=""
+              rules={{ required: "El apellido es obligatorio" }}
+              render={({ field }) => <InputText {...field} />}
+            />
+          </div>
+
+          {/* Email */}
+          <div className="field">
+            <label>Email</label>
+            <InputText {...register("email")} />
+          </div>
+
+          {/* Teléfono */}
+          <div className="field">
+            <label>Teléfono</label>
+            <InputText {...register("phone")} />
+          </div>
+
+          {/* Equipo */}
+          <div className="field">
+            <label>Equipo</label>
+            <Controller
+              name="teamId"
+              control={control}
+              defaultValue={null}
+              rules={{ required: "El equipo es obligatorio" }}
+              render={({ field }) => (
+                <Dropdown
+                  {...field} // value y onChange ya unidos a RHF
+                  options={teams.map((t) => ({
+                    label: t.name,
+                    value: t.id,
+                  }))}
+                  placeholder="Seleccionar equipo"
+                  className={errors.teamId && "p-invalid"}
+                />
+              )}
+            />
+          </div>
+
+          {/* Fecha nacimiento */}
+          <div className="field">
+            <label>Fecha de nacimiento</label>
+            <Controller
+              name="dateOfBirth"
+              control={control}
+              defaultValue={null}
+              render={({ field }) => (
+                <Calendar
+                  {...field}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  showIcon
+                  dateFormat="yy-mm-dd"
+                />
+              )}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            label={checkingDni ? "Comprobando..." : "Guardar"}
+            disabled={checkingDni || isSubmitting}
+            className="mt-2"
+          />
+        </form>
       </Dialog>
     </div>
   );

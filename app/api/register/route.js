@@ -10,7 +10,7 @@ export async function POST(request) {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
 
-  console.log("data", data);
+  console.log("data", data.first_name);
 
   try {
     // 1) Normalizar la fecha de nacimiento
