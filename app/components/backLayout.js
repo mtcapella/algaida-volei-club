@@ -3,19 +3,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 import styles from "./backLayout.module.css";
 
-import { auth } from "@/libs/firebase";
-import { signOut } from "firebase/auth";
-
 export default function BackLayout({ children, onLogout }) {
-  const path = usePathname(); // para saber la ruta actual y aplicar estilos
-  const router = useRouter(); // para redirigir al usuario después de cerrar sesión
+  const path = usePathname();
+  const router = useRouter();
+  const [teams, setTeams] = useState([]);
 
-  // helper para aplicar estilos a los enlaces
   const linkClass = (href) =>
     `${styles.link} ${path === href ? styles.active : ""}`;
+
+  useEffect(() => {
+    // Solo cargamos los equipos si estamos en /backvolei/equipos
+    if (path.startsWith("/backvolei/equipos")) {
+      fetch("/api/teams")
+        .then((res) => res.json())
+        .then((data) => setTeams(data))
+        .catch((error) => console.error("Error cargando equipos:", error));
+    }
+  }, [path]);
 
   return (
     <div className={styles.container}>
@@ -27,73 +35,97 @@ export default function BackLayout({ children, onLogout }) {
           <ul>
             <li>
               <Link href="/backvolei" className={linkClass("/backvolei")}>
-                <i className={`pi pi-chart-bar ${styles.menuIcon}`}></i>
                 Dashboard
               </Link>
             </li>
             <li>
               <Link
                 href="/backvolei/jugadores"
-                className={`${styles.link} ${
-                  path.startsWith("/backvolei/jugadores") ? styles.active : ""
-                }`}
+                className={
+                  path.startsWith("/backvolei/jugadores")
+                    ? styles.active
+                    : styles.link
+                }
               >
-                <i className={`pi pi-users ${styles.menuIcon}`}></i>
                 Jugadores
               </Link>
             </li>
             <li>
               <Link
                 href="/backvolei/equipos"
-                className={`${styles.link} ${
-                  path.startsWith("/backvolei/equipos") ? styles.active : ""
-                }`}
+                className={
+                  path.startsWith("/backvolei/equipos")
+                    ? styles.active
+                    : styles.link
+                }
               >
-                <i className={`pi pi-briefcase ${styles.menuIcon}`}></i>
                 Equipos
               </Link>
+
+              {/* Submenú dinámico de equipos */}
+              {path.startsWith("/backvolei/equipos") && teams.length > 0 && (
+                <ul className={styles.submenu}>
+                  {teams.map((team) => (
+                    <li key={team.id}>
+                      <Link
+                        href={`/backvolei/equipos/${team.id}`}
+                        className={
+                          path === `/backvolei/equipos/${team.id}`
+                            ? styles.activeSub
+                            : styles.sublink
+                        }
+                      >
+                        {team.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
             <li>
               <Link
                 href="/backvolei/categorias"
-                className={`${styles.link} ${
-                  path.startsWith("/backvolei/categorias") ? styles.active : ""
-                }`}
+                className={
+                  path.startsWith("/backvolei/categorias")
+                    ? styles.active
+                    : styles.link
+                }
               >
-                <i className={`pi pi-tags ${styles.menuIcon}`}></i>
                 Categorías
               </Link>
             </li>
             <li>
               <Link
                 href="/backvolei/temporadas"
-                className={`${styles.link} ${
-                  path.startsWith("/backvolei/temporadas") ? styles.active : ""
-                }`}
+                className={
+                  path.startsWith("/backvolei/temporadas")
+                    ? styles.active
+                    : styles.link
+                }
               >
-                <i className={`pi pi-calendar ${styles.menuIcon}`}></i>
                 Temporadas
               </Link>
             </li>
             <li>
               <Link
                 href="/backvolei/ajustes"
-                className={`${styles.link} ${
-                  path.startsWith("/backvolei/ajustes") ? styles.active : ""
-                }`}
+                className={
+                  path.startsWith("/backvolei/ajustes")
+                    ? styles.active
+                    : styles.link
+                }
               >
-                <i className={`pi pi-cog ${styles.menuIcon}`}></i>
                 Ajustes
               </Link>
             </li>
           </ul>
+
           <div className={styles.logout}>
             <button
               className={styles.logoutButton}
               onClick={onLogout}
               type="button"
             >
-              <i className={`pi pi-sign-out ${styles.menuIcon}`}></i>
               Cerrar sesión
             </button>
           </div>

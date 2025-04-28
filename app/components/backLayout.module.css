@@ -8,6 +8,11 @@
     text-decoration: underline;
   }
 
+  .activeSub {
+    background-color: #3b5165;
+    color: white;
+  }
+
 /* Contenedor principal */
 .container {
     display: flex;
@@ -116,3 +121,19 @@
     font-size: 1.2rem;
     vertical-align: middle;
   }
+
+  .sidebar nav ul li .submenu a {
+    display: block;
+    padding: 0.4rem 2rem;
+    font-size: 0.85rem;
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .sidebar nav ul li .submenu a:hover {
+    background-color: #3b5165;
+    color: white;
+    border-radius: 4px;
+  }
+  
