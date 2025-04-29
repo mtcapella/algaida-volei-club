@@ -1,0 +1,37 @@
+.wrapper {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    padding: 1rem;
+    }
+    .cardContent {
+    text-align: center;
+    }
+    .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    }
+    .statusDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    }
+    .active {
+        padding: 0.5rem 1rem;
+        background: #16a34a;
+        color: #ffffff;
+    }
+    
+    .inactive {
+        padding: 0.5rem 1rem;
+        color: #ffffff;
+        background: #dc2626;
+    }
+    
+    .percent {
+        font-size: 0.9rem;
+        opacity: 0.65;
+    }
