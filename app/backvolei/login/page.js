@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/libs/firebase";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
+import styles from "./login.module.css";
+
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -35,15 +37,15 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className={styles.formcontainer}>
+      <h2>Iniciar sesión</h2>
       {user ? (
         <>
           <p>Bienvenido, {user.email}</p>
           <button onClick={handleLogout}>Cerrar sesión</button>
         </>
       ) : (
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className={styles.form}>
           <input
             type="email"
             placeholder="Correo electrónico"
