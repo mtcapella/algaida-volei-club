@@ -12,6 +12,8 @@ export default function BackLayout({ children, onLogout }) {
   const router = useRouter();
   const [teams, setTeams] = useState([]);
 
+  const isClient = typeof window !== "undefined"; // ← Añadido para prevenir render SSR conflictivo
+
   const linkClass = (href) =>
     `${styles.link} ${path === href ? styles.active : ""}`;
 
@@ -63,24 +65,26 @@ export default function BackLayout({ children, onLogout }) {
               </Link>
 
               {/* Submenú dinámico de equipos */}
-              {path.startsWith("/backvolei/equipos") && teams.length > 0 && (
-                <ul className={styles.submenu}>
-                  {teams.map((team) => (
-                    <li key={team.id}>
-                      <Link
-                        href={`/backvolei/equipos/${team.id}`}
-                        className={
-                          path === `/backvolei/equipos/${team.id}`
-                            ? styles.activeSub
-                            : styles.sublink
-                        }
-                      >
-                        {team.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {isClient &&
+                path.startsWith("/backvolei/equipos") &&
+                teams.length > 0 && (
+                  <ul className={styles.submenu}>
+                    {teams.map((team) => (
+                      <li key={team.id}>
+                        <Link
+                          href={`/backvolei/equipos/${team.id}`}
+                          className={
+                            path === `/backvolei/equipos/${team.id}`
+                              ? styles.activeSub
+                              : styles.sublink
+                          }
+                        >
+                          {team.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </li>
             <li>
               <Link
