@@ -1,5 +1,3 @@
-// app/api/register/route.js
-
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 import { getActiveSeason } from "@/libs/seasons";
@@ -9,8 +7,6 @@ export async function POST(request) {
   const data = await request.json();
   const conn = await pool.getConnection();
   await conn.beginTransaction();
-
-  console.log("data", data.first_name);
 
   try {
     // 1) Normalizar la fecha de nacimiento
@@ -24,20 +20,16 @@ export async function POST(request) {
     // 2) INSERT / UPDATE en players
     let playerId;
     if (data.exists) {
-      // jugador ya existente: solo actualizamos email, phone y photo si lo tuvieras
       await conn.query(
-        `UPDATE players 
-           SET email = ?, phone = ?
-         WHERE id = ?`,
-        [data.email, data.phone, data.playerId]
+        `UPDATE players SET email = ?, phone = ?, photo_url = ? WHERE id = ?`,
+        [data.email, data.phone, data.photoUrl || null, data.playerId]
       );
       playerId = data.playerId;
     } else {
-      // jugador nuevo
       const [resPlayer] = await conn.query(
         `INSERT INTO players
-           (first_name, last_name, date_of_birth, dni, email, phone, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+         (first_name, last_name, date_of_birth, dni, email, phone, photo_url, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
         [
           data.first_name,
           data.last_name,
@@ -45,6 +37,7 @@ export async function POST(request) {
           data.dni,
           data.email,
           data.phone,
+          data.photoUrl || null,
         ]
       );
       playerId = resPlayer.insertId;
@@ -54,16 +47,15 @@ export async function POST(request) {
     const seasonId = await getActiveSeason();
     const categoryId = await getCategoryIdByBirthDate(data.birthDate);
 
-    // nuevos campos
-    const totalFee = data.totalFee; // decimal
+    const totalFee = data.totalFee;
     const splitPaymentFlag = data.splitPayment ? 1 : 0;
     const lotteryFlag = data.participateLottery ? 1 : 0;
-    const teamId = data.teamId ?? null; // puede venir null
+    const teamId = data.teamId ?? null;
 
-    const [resReg] = await conn.query(
+    await conn.query(
       `INSERT INTO registrations
-         (player_id, season_id, team_id, category_id, registered_at,
-          total_fee, split_payment, participate_lottery)
+       (player_id, season_id, team_id, category_id, registered_at,
+        total_fee, split_payment, participate_lottery)
        VALUES (?, ?, ?, ?, NOW(), ?, ?, ?)`,
       [
         playerId,
@@ -75,13 +67,12 @@ export async function POST(request) {
         lotteryFlag,
       ]
     );
-    const registrationId = resReg.insertId;
 
     // 4) TUTOR LEGAL
     if (data.isMinor) {
       await conn.query(
         `INSERT INTO legal_guardians
-           (player_id, season_id, first_name, last_name, dni, phone, email, relationship, created_at)
+         (player_id, season_id, first_name, last_name, dni, phone, email, relationship, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
         [
           playerId,
@@ -97,33 +88,33 @@ export async function POST(request) {
     }
 
     // 5) DOCUMENTOS
-    await conn.query(
-      `INSERT INTO documents (registration_id, doc_type, file_url, uploaded_at)
-       VALUES (?, 'lopd', ?, NOW())`,
-      [registrationId, data.lopdUrl]
-    );
-    await conn.query(
-      `INSERT INTO documents (registration_id, doc_type, file_url, uploaded_at)
-       VALUES (?, 'usoimagenes', ?, NOW())`,
-      [registrationId, data.imageUrl]
-    );
-    await conn.query(
-      `INSERT INTO documents (registration_id, doc_type, file_url, uploaded_at)
-       VALUES (?, 'dni', ?, NOW())`,
-      [registrationId, data.dniUrl]
-    );
+    const docs = [
+      { type: "lopd", url: data.lopdUrl },
+      { type: "usoimagenes", url: data.imageUrl },
+      { type: "dni", url: data.dniUrl },
+    ];
+
+    for (const doc of docs) {
+      if (doc.url) {
+        await conn.query(
+          `INSERT INTO documents (player_id, season_id, doc_type, file_url, uploaded_at)
+           VALUES (?, ?, ?, ?, NOW())`,
+          [playerId, seasonId, doc.type, doc.url]
+        );
+      }
+    }
 
     // 6) PAGO
     const stripeId = data.stripePaymentId || `demo_${Date.now()}`;
     await conn.query(
       `INSERT INTO payments
-         (registration_id, amount, paid_at, stripe_payment_id)
-       VALUES (?, ?, NOW(), ?)`,
-      [registrationId, data.amount, stripeId]
+         (player_id, season_id, amount, paid_at, stripe_payment_id)
+       VALUES (?, ?, ?, NOW(), ?)`,
+      [playerId, seasonId, data.amount, stripeId]
     );
 
     await conn.commit();
-    return NextResponse.json({ success: true, registrationId });
+    return NextResponse.json({ success: true });
   } catch (err) {
     await conn.rollback();
     console.error(err);

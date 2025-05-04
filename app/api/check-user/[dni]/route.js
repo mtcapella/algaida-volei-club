@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 export async function GET(request, context) {
-  const { dni } = context.params;
+  const { dni } = await context.params;
 
   if (!dni) {
     return NextResponse.json(
@@ -14,7 +14,7 @@ export async function GET(request, context) {
   const db = await pool.getConnection();
 
   try {
-    // 1. Buscar jugador por DNI
+    // Buscar jugador
     const [players] = await db.execute(
       `SELECT id AS playerId, first_name, last_name FROM players WHERE dni = ?`,
       [dni]
@@ -26,9 +26,9 @@ export async function GET(request, context) {
 
     const { playerId, first_name, last_name } = players[0];
 
-    // 2. Obtener temporada activa
+    // Temporada activa
     const [seasons] = await db.execute(
-      `SELECT id AS seasonId FROM seasons WHERE is_active = 1 LIMIT 1`
+      `SELECT id FROM seasons WHERE is_active = 1 LIMIT 1`
     );
 
     if (seasons.length === 0) {
@@ -38,64 +38,46 @@ export async function GET(request, context) {
       );
     }
 
-    const { seasonId } = seasons[0];
+    const seasonId = seasons[0].id;
 
-    // 3. Verificar si ya está registrado en la temporada actual
+    // Registro en la temporada actual
     const [registrations] = await db.execute(
-      `SELECT
-         r.id            AS registrationId,
-         r.team_id       AS teamId,
-         r.category_id   AS categoryId,
-         r.registered_at AS registeredAt,
-         IFNULL(SUM(p.amount), 0) AS totalPaid
+      `SELECT r.id, r.team_id, r.category_id, r.registered_at, r.split_payment
        FROM registrations r
-       LEFT JOIN payments p ON p.registration_id = r.id
-       WHERE r.player_id = ? AND r.season_id = ?
-       GROUP BY r.id
-       LIMIT 1`,
+       WHERE r.player_id = ? AND r.season_id = ?`,
       [playerId, seasonId]
     );
 
     const registered = registrations.length > 0;
 
-    // 4. Comprobar deuda global en todas las temporadas
+    // ¿Tiene deuda en alguna temporada?
     const [deudas] = await db.execute(
-      `SELECT r.id, IFNULL(SUM(p.amount), 0) AS totalPaid
-       FROM registrations r
-       LEFT JOIN payments p ON p.registration_id = r.id
-       WHERE r.player_id = ?
-       GROUP BY r.id`,
+      `SELECT COUNT(*) AS count FROM registrations WHERE player_id = ? AND split_payment = 1`,
       [playerId]
     );
+    const hasDebt = deudas[0].count > 0;
 
-    const cuotaBase = 200;
-    let totalPending = 0;
-    deudas.forEach((reg) => {
-      const pendiente = cuotaBase - parseFloat(reg.totalPaid);
-      if (pendiente > 0) totalPending += pendiente;
-    });
-    const hasDebt = totalPending > 0;
-
-    // 5. Respuesta final
+    // Respuesta base
     const response = {
       exists: true,
       registered,
       hasDebt,
-      player: { playerId, first_name, last_name, dni },
+      player: {
+        playerId,
+        first_name,
+        last_name,
+        dni,
+      },
     };
-
-    if (hasDebt) {
-      response.pendingAmount = totalPending;
-    }
 
     if (registered) {
       const reg = registrations[0];
       response.registration = {
-        registrationId: reg.registrationId,
-        teamId: reg.teamId,
-        categoryId: reg.categoryId,
-        registeredAt: reg.registeredAt,
-        totalPaid: reg.totalPaid,
+        registrationId: reg.id,
+        teamId: reg.team_id,
+        categoryId: reg.category_id,
+        registeredAt: reg.registered_at,
+        splitPayment: reg.split_payment,
       };
     }
 
