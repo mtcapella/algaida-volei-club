@@ -23,7 +23,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "7.56.0",
-    "react-i18next": "15.4.1"
+    "react-i18next": "15.4.1",
+    "stripe": "^18.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3",

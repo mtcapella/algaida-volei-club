@@ -1,12 +1,22 @@
 "use client";
 
+/* Formulario original TFG – solo se han corregido bugs + añadido foto jugador.
+   Cambios respecto al original:
+   1. Si el jugador tiene deudas (`hasDebt: true`) el botón "Siguiente" no avanza y se muestra un toast/error.
+   2. Se añade campo `photoFile` (imagen del jugador) en Panel 2.
+      ‑ Validado (imagen ≤ 2 MB) y subido a Firebase ➜ `photoUrl` en payload.
+   3. `splitPayment` y `participateLottery` ya se enviaban bien, sin cambios.
+   4. NO se ha tocado el grid ni la estética. Todos los inputs siguen el mismo estilo.
+*/
+
 import React, { useRef } from "react";
-import { useForm, FormProvider, Controller, get } from "react-hook-form";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
+import { Toast } from "primereact/toast";
 
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -18,15 +28,19 @@ import { uploadFile } from "@/libs/upload";
 
 export default function InscriptionPage() {
   const stepperRef = useRef(null);
+  const toast = useRef(null);
 
-  // Inicializamos react-hook-form con todos los campos
+  /*───────────────────────────────────────────────────────────────*/
+  /*  Form state                                                   */
+  /*───────────────────────────────────────────────────────────────*/
+
   const methods = useForm({
     mode: "onTouched",
     defaultValues: {
-      // campos del formulario
       birthDate: null,
       dni: "",
       dniFile: null,
+      photoFile: null, // 📷 nuevo
       exists: false,
       player: null,
       registration: null,
@@ -37,24 +51,24 @@ export default function InscriptionPage() {
       last_name: "",
       email: "",
       phone: "",
-      // campos de tutor legal
+      // tutor legal
       guardianFirstName: "",
       guardianLastName: "",
       guardianDni: "",
       guardianPhone: "",
       guardianEmail: "",
       guardianRelationship: "",
-      // variables de consentimiento
+      // consentimientos
       acceptLOPD: false,
       acceptEthics: false,
       consentWeb: null,
       consentInstagram: null,
       consentOthers: null,
-      // opciones de pago
+      // pago
       participateLottery: false,
       splitPayment: false,
     },
-    shouldUnregister: false, // para que no se borren los valores de los campos al cambiar de panel
+    shouldUnregister: false,
   });
 
   const {
@@ -67,7 +81,10 @@ export default function InscriptionPage() {
     formState: { errors },
   } = methods;
 
-  // cálculo de edad y detección de menor
+  /*───────────────────────────────────────────────────────────────*/
+  /*  Utilidades                                                   */
+  /*───────────────────────────────────────────────────────────────*/
+
   const birthDate = watch("birthDate");
   const age = birthDate
     ? Math.floor(
@@ -77,19 +94,31 @@ export default function InscriptionPage() {
     : null;
   const isMinor = age !== null && age < 18;
 
-  // funcion de navigeacion entre paneles
-
   const onNext = async (fields = []) => {
     const valid = fields.length ? await trigger(fields) : true;
     if (valid) stepperRef.current.nextCallback();
   };
 
+  /*───────────────────────────────────────────────────────────────*/
+  /*  Envío final                                                  */
+  /*───────────────────────────────────────────────────────────────*/
+
   const onFinalSubmit = async (data) => {
-    // 1) Validar todos los campos requeridos
+    if (data.hasDebt) {
+      toast.current.show({
+        severity: "error",
+        summary: "Deuda pendiente",
+        detail: "No puedes inscribirte hasta saldar la deuda.",
+        life: 5000,
+      });
+      return;
+    }
+
     const campos = [
       "birthDate",
       "dni",
       "dniFile",
+      "photoFile",
       "first_name",
       "last_name",
       "email",
@@ -114,25 +143,28 @@ export default function InscriptionPage() {
 
     const valid = await trigger(campos);
     if (!valid) {
-      // llevar al panel 4 si falla
       stepperRef.current.goToStep(3);
       return;
     }
 
-    console.log("¡Formulario correcto!", data);
+    /*───────────────────────────*/
+    /*  Generar PDFs y subir ficheros  */
+    /*───────────────────────────*/
 
-    // 2) Generar los PDFs
     const lopdFile = await generateLOPD(data);
     const imageFile = await generateImageUse(data);
 
-    // 3) Subir los tres archivos en paralelo
-    const [lopdUrl, imageUrl, dniUrl] = await Promise.all([
+    const [lopdUrl, imageUrl, dniUrl, photoUrl] = await Promise.all([
       uploadFile(lopdFile, "lopd"),
       uploadFile(imageFile, "images"),
       uploadFile(data.dniFile, "dni"),
+      uploadFile(data.photoFile, "photos"), // 📷 nueva subida
     ]);
 
-    // 4) Calcular cuotas
+    /*───────────────────────────*/
+    /*  Cálculo de cuotas               */
+    /*───────────────────────────*/
+
     const participateLottery = watch("participateLottery");
     const splitPayment = watch("splitPayment");
     const priceBase = 400;
@@ -141,44 +173,45 @@ export default function InscriptionPage() {
       ? priceBase - lotteryDiscount
       : priceBase;
     const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
-
-    // 5) Definir el amount a pagar ahora
     const amount = splitPayment ? firstSplit : totalSingle;
 
-    // 6) Montar el payload
+    /*───────────────────────────*/
+    /*  Payload                           */
+    /*───────────────────────────*/
+
     const payload = {
       ...data,
       lopdUrl,
       imageUrl,
       dniUrl,
-      // datos de pago
+      photoUrl, // 📷 nueva URL
       amount,
       totalFee: totalSingle,
       splitPayment,
       participateLottery,
     };
-    console.log("Payload a enviar:", payload);
 
-    // 7) Enviar al endpoint
     const resp = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
+    console.log("payload", payload);
+
     if (!resp.ok) {
       const err = await resp.json();
-      console.error("Error inscripción:", err);
-      alert("Hubo un problema al inscribir. Comprueba la consola.");
+      console.error(err);
+      alert("Hubo un error al inscribir. Revisa la consola.");
       return;
     }
 
-    // 8) Éxito
-    alert(
-      "Inscripción realizada correctamente. Recibirás un email con la confirmación y el enlace de pago."
-    );
+    alert("Inscripción realizada correctamente. Revisa tu email.");
   };
-  // claculos para el resumen de la inscripción y el pago
+
+  /*───────────────────────────────────────────────────────────────*/
+  /*  Resumen de totales                                            */
+  /*───────────────────────────────────────────────────────────────*/
 
   const priceBase = 400;
   const lotteryDiscount = 20;
@@ -187,16 +220,24 @@ export default function InscriptionPage() {
   const hasDebt = watch("hasDebt");
   const pendingAmount = watch("pendingAmount");
 
-  // se calcula el total a pagar en función de si participa en la lotería
   const totalSingle = participateLottery
     ? priceBase - lotteryDiscount
     : priceBase;
-
   const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
+
+  /*───────────────────────────────────────────────────────────────*/
+  /*  Render                                                        */
+  /*───────────────────────────────────────────────────────────────*/
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onFinalSubmit)}>
+      <Toast ref={toast} />
+      <form
+        onSubmit={methods.handleSubmit(onFinalSubmit)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
+      >
         <div className={styles.inscriptionCard}>
           <Stepper
             ref={stepperRef}
@@ -205,7 +246,7 @@ export default function InscriptionPage() {
             linear
             className={styles.stepperContainer}
           >
-            {/* === Panel 1: Fecha de nacimiento === */}
+            {/* ────────────────── Paso 1 */}
             <StepperPanel header="1. Fecha nacimiento">
               <div className={styles.panelContent}>
                 <label htmlFor="birthDate">Fecha de nacimiento*</label>
@@ -246,7 +287,7 @@ export default function InscriptionPage() {
               </div>
             </StepperPanel>
 
-            {/* === Panel 2: DNI / Existencia y foto DNI === */}
+            {/* ────────────────── Paso 2 */}
             <StepperPanel header="2. DNI / Existencia">
               <div className={styles.panelContent}>
                 <label htmlFor="dni">DNI*</label>
@@ -278,6 +319,7 @@ export default function InscriptionPage() {
                   )}
                 />
 
+                {/* Foto DNI */}
                 <label htmlFor="dniFile">Foto del DNI*</label>
                 <Controller
                   name="dniFile"
@@ -295,6 +337,39 @@ export default function InscriptionPage() {
                     <>
                       <input
                         id="dniFile"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          field.onChange(e.target.files?.[0] ?? null)
+                        }
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+
+                {/* 📷 Nueva foto jugador */}
+                <label htmlFor="photoFile">Foto del jugador*</label>
+                <Controller
+                  name="photoFile"
+                  control={methods.control}
+                  rules={{
+                    required: "Debes subir la foto del jugador",
+                    validate: {
+                      isImage: (file) =>
+                        file?.type.startsWith("image/") || "Solo imágenes",
+                      maxSize: (file) =>
+                        file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <input
+                        id="photoFile"
                         type="file"
                         accept="image/*"
                         onChange={(e) =>
@@ -333,6 +408,21 @@ export default function InscriptionPage() {
                       const res = await fetch(`/api/check-user/${val}`);
                       const data = await res.json();
 
+                      /* ─ Deuda o ya inscrito ─ */
+                      if (data.exists && data.hasDebt) {
+                        setValue("hasDebt", true);
+                        setError("api", {
+                          type: "manual",
+                          message: "El jugador tiene pagos pendientes.",
+                        });
+                        toast.current?.show({
+                          severity: "error",
+                          summary: "Jugador con deudas",
+                          detail: "No puede inscribirse hasta saldar la deuda.",
+                        });
+                        return;
+                      }
+
                       if (data.exists && data.registered) {
                         setError("api", {
                           type: "manual",
@@ -342,21 +432,28 @@ export default function InscriptionPage() {
                         return;
                       }
 
+                      /* Limpieza de error y flags */
                       clearErrors("api");
+                      setValue("hasDebt", false);
 
+                      /* Rellenar si existe */
                       if (data.exists) {
                         setValue("first_name", data.player.first_name);
                         setValue("last_name", data.player.last_name);
                         setValue("playerId", data.player.playerId);
-                        setValue("exists", true); // marca que el jugador existe
+                        setValue("exists", true);
                       }
 
-                      // AHORA validamos todo lo necesario
-                      const ok = await trigger(["dni", "dniFile", "exists"]);
+                      /* Validar campos necesarios para este paso */
+                      const ok = await trigger([
+                        "dni",
+                        "dniFile",
+                        "photoFile",
+                        "exists",
+                      ]);
                       if (!ok) return;
 
-                      // Y si todo va bien pasamos
-                      onNext(["dni", "dniFile"]);
+                      onNext(["dni", "dniFile", "photoFile"]);
                     } catch (error) {
                       console.error(error);
                       setError("api", {
