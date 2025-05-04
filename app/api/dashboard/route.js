@@ -5,7 +5,6 @@ export async function GET() {
   const db = await pool.getConnection();
 
   try {
-    // 1. Temporada activa
     const [seasonResult] = await db.execute(
       `SELECT id FROM seasons WHERE is_active = 1 LIMIT 1`
     );
@@ -17,75 +16,60 @@ export async function GET() {
     }
     const seasonId = seasonResult[0].id;
 
-    // 2. Total jugadores
+    // Total jugadores
     const [playersResult] = await db.execute(
-      `SELECT COUNT(*) AS totalPlayers FROM registrations WHERE season_id = ?`,
+      `SELECT COUNT(*) AS total FROM registrations WHERE season_id = ?`,
       [seasonId]
     );
-    const totalPlayers = playersResult[0].totalPlayers;
 
-    // 3. Total equipos
+    // Total equipos
     const [teamsResult] = await db.execute(
-      `SELECT COUNT(*) AS totalTeams FROM teams WHERE season_id = ?`,
+      `SELECT COUNT(*) AS total FROM teams WHERE season_id = ?`,
       [seasonId]
     );
-    const totalTeams = teamsResult[0].totalTeams;
 
-    // 4. Pagos: pagado vs pendiente
-    const cuotaBase = 200; // Asumimos 200€ por jugador
-    const [paymentsResult] = await db.execute(
-      `SELECT r.id AS registrationId, IFNULL(SUM(p.amount), 0) AS totalPaid
+    // Pagos por jugador con cuota personalizada
+    const [deudas] = await db.execute(
+      `SELECT r.id AS registrationId, r.participate_lottery, IFNULL(SUM(p.amount), 0) AS totalPaid
        FROM registrations r
-       LEFT JOIN payments p ON p.registration_id = r.id
+       LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id
        WHERE r.season_id = ?
-       GROUP BY r.id`,
+       GROUP BY r.id, r.participate_lottery`,
       [seasonId]
     );
 
-    let pagado = 0;
-    let pendiente = 0;
-    paymentsResult.forEach((reg) => {
-      if (parseFloat(reg.totalPaid) >= cuotaBase) {
-        pagado++;
-      } else {
-        pendiente++;
-      }
+    let totalPaid = 0;
+    let totalPending = 0;
+
+    deudas.forEach((r) => {
+      const cuotaBase = r.participate_lottery ? 380 : 400;
+      if (parseFloat(r.totalPaid) >= cuotaBase) totalPaid++;
+      else totalPending++;
     });
 
-    const totalRegistros = pagado + pendiente;
-    const porcentajePagado =
-      totalRegistros > 0 ? Math.round((pagado / totalRegistros) * 100) : 0;
-    const porcentajePendiente = 100 - porcentajePagado;
-
-    // 5. Jugadores por categoría
-    const [categoriesResult] = await db.execute(
-      `SELECT c.name AS categoryName, COUNT(r.id) AS totalPlayers
+    // Jugadores por categoría
+    const [categoriasResult] = await db.execute(
+      `SELECT c.name AS category, COUNT(*) AS totalPlayers
        FROM registrations r
        INNER JOIN categories c ON r.category_id = c.id
        WHERE r.season_id = ?
-       GROUP BY r.category_id`,
+       GROUP BY c.name`,
       [seasonId]
     );
 
-    const jugadoresPorCategoria = categoriesResult.map((cat) => ({
-      category: cat.categoryName,
-      totalPlayers: cat.totalPlayers,
-    }));
-
-    // 6. Respuesta final
-    const dashboardData = {
-      totalPlayers,
-      totalTeams,
-      porcentajePagado,
-      porcentajePendiente,
-      jugadoresPorCategoria,
-    };
-
-    return NextResponse.json(dashboardData);
+    return NextResponse.json({
+      totalPlayers: playersResult[0].total,
+      totalTeams: teamsResult[0].total,
+      pagos: {
+        pagado: totalPaid,
+        pendiente: totalPending,
+      },
+      jugadoresPorCategoria: categoriasResult,
+    });
   } catch (error) {
-    console.error("DB error:", error);
+    console.error("DB error en GET /dashboard:", error);
     return NextResponse.json(
-      { error: "Error al cargar el dashboard", detail: error.message },
+      { error: "Error al generar resumen dashboard", detail: error.message },
       { status: 500 }
     );
   } finally {

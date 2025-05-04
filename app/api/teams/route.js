@@ -1,3 +1,5 @@
+// /api/teams/route.js
+
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
@@ -58,6 +60,18 @@ export async function POST(request) {
     if (!name || !coachName || !categoryId) {
       return NextResponse.json(
         { error: "Faltan campos obligatorios" },
+        { status: 400 }
+      );
+    }
+
+    const [exists] = await db.execute(
+      `SELECT id FROM categories WHERE id = ?`,
+      [categoryId]
+    );
+
+    if (exists.length === 0) {
+      return NextResponse.json(
+        { error: "La categoría no existe" },
         { status: 400 }
       );
     }

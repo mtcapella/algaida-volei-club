@@ -7,13 +7,8 @@ export default async function Dashboard() {
   const res = await fetch("http://localhost:3000/api/dashboard", {
     cache: "no-store",
   });
-  const {
-    totalPlayers,
-    totalTeams,
-    porcentajePagado,
-    porcentajePendiente,
-    jugadoresPorCategoria,
-  } = await res.json();
+  const { totalPlayers, totalTeams, pagos, jugadoresPorCategoria } =
+    await res.json();
 
   return (
     <>
@@ -32,13 +27,13 @@ export default async function Dashboard() {
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-money-bill ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>% Pagado</div>
-          <div className={styles.statValue}>{porcentajePagado}%</div>
+          <div className={styles.statTitle}>Pagado</div>
+          <div className={styles.statValue}>{pagos.pagado}</div>
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-clock ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>% Pendiente</div>
-          <div className={styles.statValue}>{porcentajePendiente}%</div>
+          <div className={styles.statTitle}>Pendiente</div>
+          <div className={styles.statValue}>{pagos.pendiente}</div>
         </div>
       </div>
 

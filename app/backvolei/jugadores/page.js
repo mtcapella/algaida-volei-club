@@ -89,6 +89,15 @@ export default function Players() {
     }
   };
 
+  // Helper para determinar el icono de cada documento
+  const docIcon = {
+    dni: "pi pi-id-card", // DNI / pasaporte
+    usoimagenes: "pi pi-image", // Cesión de uso de imagen
+    lopd: "pi pi-shield", // LOPD
+  };
+
+  const getIconClass = (type) => docIcon[type] ?? "pi pi-file"; // fallback
+
   /* ------------------------------ editar --------------------------------- */
   const openEditDialog = (player) => {
     setPlayerToEdit({
@@ -328,6 +337,25 @@ export default function Players() {
         <Column field="category" header="Categoría" sortable />
         <Column field="team" header="Equipo" sortable />
         <Column field="paymentStatus" header="Estado de Pago" sortable />
+        <Column
+          field="documents"
+          header="Documentos"
+          body={(rowData) => (
+            <div className="flex gap-2">
+              {rowData.documents.map((doc) => (
+                <Button
+                  key={doc.type}
+                  icon={getIconClass(doc.type)}
+                  className="p-button-text"
+                  onClick={() => window.open(doc.url, "_blank")}
+                  tooltip={doc.type.toUpperCase()}
+                  tooltipOptions={{ position: "top" }}
+                />
+              ))}
+            </div>
+          )}
+        />
+
         <Column
           header="Acciones"
           body={(rowData) => (

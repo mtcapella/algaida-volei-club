@@ -32,11 +32,11 @@ export default function Teams() {
 
   /* ----------- constantes ------------- */
   const categories = [
-    { id: 3, name: "Alevín" },
-    { id: 4, name: "Infantil" },
-    { id: 5, name: "Cadete" },
-    { id: 6, name: "Juvenil" },
-    { id: 9, name: "Sénior" },
+    { id: 1, name: "Alevín" },
+    { id: 2, name: "Infantil" },
+    { id: 3, name: "Cadete" },
+    { id: 4, name: "Juvenil" },
+    { id: 5, name: "Sénior" },
   ];
 
   /* ----------- fetch list on mount ------------- */

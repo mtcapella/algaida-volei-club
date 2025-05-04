@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Algaida Volei Club – Proyecto TFG
 
-## Getting Started
+Este repositorio contiene el proyecto desarrollado como Trabajo Final de Grado (TFG) para la UOC.
 
-First, run the development server:
+## Requisitos
+
+- Docker instalado: https://www.docker.com/products/docker-desktop
+- Docker Compose instalado (normalmente ya viene con Docker Desktop)
+
+## Instrucciones
+
+1. Clonar o descomprimir el repositorio.
+2. Abrir una terminal en la raíz del proyecto.
+3. Ejecutar el siguiente comando para construir las imágenes:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Una vez construido, levantar los contenedores con:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+docker compose up
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. Acceder a la aplicación desde el navegador en: `http://localhost:3000`
 
-## Learn More
+> 🔒 Este entorno se ejecuta en modo desarrollo. Para funcionalidades completas (como conexión con Firebase), es necesario configurar las variables de entorno en un archivo `.env.local`.
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura del proyecto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/app`: Aplicación Next.js (frontend y backend)
+- `/db`: Base de datos MySQL
+- `/api`: Rutas API (servidor serverless)
+- `docker-compose.yml`: define los contenedores
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Sobre el Dockerfile
 
-## Deploy on Vercel
+El archivo `Dockerfile` está diseñado para crear una imagen de producción basada en Node.js. Se encarga de instalar las dependencias del proyecto y lanzar el entorno Next.js en el puerto 3000. 
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Junto con `docker-compose.yml`, se automatiza la configuración del contenedor, permitiendo levantar toda la aplicación con un solo comando.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Autor
+
+Miquel Antoni Capellà Arrom  
+TFG – UOC – Desarrollo web

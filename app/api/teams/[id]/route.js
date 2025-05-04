@@ -1,9 +1,11 @@
+// /api/teams/[id]/route.js
+
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 // GET para obtener un equipo por ID
 export async function GET(request, context) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json(
@@ -85,7 +87,7 @@ export async function GET(request, context) {
 
 // PUT para actualizar datos de un equipo
 export async function PUT(request, context) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json(
@@ -140,7 +142,7 @@ export async function PUT(request, context) {
 
 // 🗑️ DELETE para borrar equipo
 export async function DELETE(request, context) {
-  const { id } = context.params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json(
@@ -152,6 +154,22 @@ export async function DELETE(request, context) {
   const db = await pool.getConnection();
 
   try {
+    // 1. Comprobar si el equipo tiene jugadores registrados
+    const [uses] = await db.execute(
+      `SELECT COUNT(*) AS count FROM registrations WHERE team_id = ?`,
+      [id]
+    );
+
+    if (uses[0].count > 0) {
+      return NextResponse.json(
+        {
+          error:
+            "No se puede borrar el equipo porque tiene jugadores asociados",
+        },
+        { status: 400 }
+      );
+    }
+    // 2. Comprobar si el equipo tiene jugadores registrados
     const [deleteResult] = await db.execute(`DELETE FROM teams WHERE id = ?`, [
       id,
     ]);

@@ -7,18 +7,18 @@ export function getCategoryIdByBirthDate(birthDate) {
 
   if (ageByYear <= 12) {
     // Alevín (ID = 3)
-    return 3;
+    return 1;
   } else if (ageByYear <= 14) {
     // Infantil (ID = 4)
-    return 4;
+    return 2;
   } else if (ageByYear <= 16) {
     // Cadete (ID = 5)
-    return 5;
+    return 3;
   } else if (ageByYear <= 18) {
     // Juvenil (ID = 6)
-    return 6;
+    return 4;
   } else {
     // Sénior (ID = 9)
-    return 9;
+    return 5;
   }
 }
