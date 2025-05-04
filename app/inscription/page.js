@@ -197,8 +197,6 @@ export default function InscriptionPage() {
       body: JSON.stringify(payload),
     });
 
-    console.log("payload", payload);
-
     if (!resp.ok) {
       const err = await resp.json();
       console.error(err);
@@ -206,7 +204,37 @@ export default function InscriptionPage() {
       return;
     }
 
-    alert("Inscripción realizada correctamente. Revisa tu email.");
+    const { playerId } = await resp.json(); // ID del jugador para Stripe
+
+    // ➜ Ahora generamos la sesión de pago con Stripe
+    const fullName = `${data.first_name} ${data.last_name}`;
+
+    const stripeRes = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: fullName,
+        email: data.email,
+        dni: data.dni,
+        amount: amount * 100, // en céntimos
+        playerId,
+      }),
+    });
+
+    const stripeData = await stripeRes.json();
+
+    if (!stripeRes.ok || !stripeData.url) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo redirigir a Stripe",
+        life: 5000,
+      });
+      return;
+    }
+
+    // Redirigir a Stripe
+    window.location.href = stripeData.url;
   };
 
   /*───────────────────────────────────────────────────────────────*/

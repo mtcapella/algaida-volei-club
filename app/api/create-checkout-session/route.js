@@ -21,8 +21,8 @@ export async function POST(req) {
         },
       ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/cancel`,
+      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/success/?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/cancel/?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         dni: body.dni,
         email: body.email,

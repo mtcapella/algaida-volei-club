@@ -114,7 +114,8 @@ export async function POST(request) {
     );
 
     await conn.commit();
-    return NextResponse.json({ success: true });
+
+    return NextResponse.json({ success: true, playerId }); // Devolvemos el ID del jugador
   } catch (err) {
     await conn.rollback();
     console.error(err);
