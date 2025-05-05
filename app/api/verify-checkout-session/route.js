@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
-//import { marcarPagoComoRealizado } from '@/libs/db'; // <-- tu función para actualizar
+import { paymentUpdate } from "@/libs/paymentUpdate";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET);
 
@@ -11,43 +11,64 @@ export async function GET(req) {
 
     if (!session_id) {
       return NextResponse.json(
-        { message: "session_id no proporcionado" },
+        { success: false, message: "Falta session_id" },
         { status: 400 }
       );
     }
 
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
-    if (session.payment_status !== "paid") {
-      return NextResponse.json(
-        { message: "Pago no completado" },
-        { status: 402 }
-      );
+    // Extraer datos útiles
+    const {
+      id: stripe_session_id,
+      payment_intent,
+      customer,
+      customer_details,
+      amount_total,
+      currency,
+      payment_status,
+      created,
+      metadata,
+    } = session;
+
+    const dni = metadata?.dni;
+    const playerId = metadata?.playerId;
+    const name = customer_details?.name || metadata?.name;
+    const email = customer_details?.email || metadata?.email;
+
+    // Definir estado local según pago
+    let status;
+
+    if (payment_status === "paid") {
+      status = "completed";
+    } else if (payment_status === "unpaid" || payment_status === "canceled") {
+      status = "cancelled";
+    } else {
+      status = "pending";
     }
 
-    const metadata = session.metadata || {};
-    const dni = metadata.dni;
-
-    console.log("metadata", metadata);
-
-    if (!dni) {
-      return NextResponse.json(
-        { message: "DNI no encontrado en metadata" },
-        { status: 400 }
-      );
-    }
-
-    // 🔧 Aquí actualizas en tu base de datos
-    //const jugador = await marcarPagoComoRealizado(dni); // tú defines esta función
+    // Guardar el estado en la DB
+    await paymentUpdate(stripe_session_id, playerId, status);
 
     return NextResponse.json({
       success: true,
-      name: jugador?.nombre || "Jugador/a",
+      stripe_session_id,
+      payment_intent,
+      stripe_customer_id: customer,
+      amount_total,
+      currency,
+      status, // nuestro estado interno
+      stripe_status: payment_status, // estado de Stripe
+      created: new Date(created * 1000).toISOString(),
+      dni,
+      playerId,
+      name,
+      email,
     });
   } catch (err) {
-    console.error("Error verificando sesión de Stripe:", err);
+    console.error("Error al verificar sesión:", err);
     return NextResponse.json(
-      { message: "Error del servidor" },
+      { success: false, message: "Error del servidor" },
       { status: 500 }
     );
   }

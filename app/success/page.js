@@ -28,6 +28,7 @@ export default function SuccessPage() {
         if (!res.ok || !data.success) {
           throw new Error(data.message || "Error al verificar");
         }
+        console.log("data", data);
 
         setPlayerName(data.name || "Jugador/a");
         setLoading(false);

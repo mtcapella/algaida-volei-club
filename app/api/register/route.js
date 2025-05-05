@@ -105,12 +105,11 @@ export async function POST(request) {
     }
 
     // 6) PAGO
-    const stripeId = data.stripePaymentId || `demo_${Date.now()}`;
     await conn.query(
       `INSERT INTO payments
-         (player_id, season_id, amount, paid_at, stripe_payment_id)
-       VALUES (?, ?, ?, NOW(), ?)`,
-      [playerId, seasonId, data.amount, stripeId]
+         (player_id, season_id, amount, paid_at)
+       VALUES (?, ?, ?, NOW())`,
+      [playerId, seasonId, data.amount]
     );
 
     await conn.commit();

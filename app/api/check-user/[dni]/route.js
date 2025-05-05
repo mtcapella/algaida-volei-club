@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
+import { purgeIncomplete } from "@/libs/purgeIncomplete";
 
 export async function GET(request, context) {
   const { dni } = await context.params;
@@ -10,6 +11,8 @@ export async function GET(request, context) {
       { status: 400 }
     );
   }
+
+  await purgeIncomplete(dni);
 
   const db = await pool.getConnection();
 
