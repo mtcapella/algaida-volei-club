@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
+import { getActiveSeason } from "@/libs/seasons";
 
 export async function GET() {
   const db = await pool.getConnection();
 
   try {
-    const [seasonResult] = await db.execute(
-      `SELECT id FROM seasons WHERE is_active = 1 LIMIT 1`
-    );
-
-    if (seasonResult.length === 0) {
-      return NextResponse.json(
-        { error: "No hay temporada activa" },
-        { status: 500 }
-      );
-    }
-
-    const seasonId = seasonResult[0].id;
+    // Obtener el ID de la temporada activa
+    const seasonId = await getActiveSeason(); // usamos el helper que cree para obtener la temporada activa y simplificar el código
 
     // Total jugadores
     const [[{ totalPlayers }]] = await db.execute(
