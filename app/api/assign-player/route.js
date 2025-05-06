@@ -8,9 +8,9 @@ export async function PUT(request) {
   try {
     const { playerId, teamId } = await request.json();
 
-    if (!playerId || !teamId) {
+    if (!playerId) {
       return NextResponse.json(
-        { error: "Faltan datos obligatorios: playerId o teamId" },
+        { error: "Falta el playerId obligatorio" },
         { status: 400 }
       );
     }
@@ -21,7 +21,7 @@ export async function PUT(request) {
       `UPDATE registrations
        SET team_id = ?
        WHERE player_id = ? AND season_id = ?`,
-      [teamId, playerId, seasonId]
+      [teamId ?? null, playerId, seasonId]
     );
 
     if (result.affectedRows === 0) {

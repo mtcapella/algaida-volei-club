@@ -57,6 +57,7 @@ export async function GET(request, context) {
     // 3. Obtener jugadores del equipo
     const [playersResult] = await db.execute(
       `SELECT 
+          p.id AS playerId,
           p.dni,
           p.first_name,
           p.last_name
