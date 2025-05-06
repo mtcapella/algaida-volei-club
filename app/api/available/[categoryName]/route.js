@@ -6,6 +6,7 @@ export async function GET(request, context) {
   const db = await pool.getConnection();
 
   const { categoryName } = await context.params;
+  const decodedCategory = decodeURIComponent(categoryName);
 
   try {
     const seasonId = await getActiveSeason();
@@ -13,7 +14,7 @@ export async function GET(request, context) {
     // Obtener category_id
     const [catRows] = await db.query(
       `SELECT id FROM categories WHERE name = ? LIMIT 1`,
-      [categoryName]
+      [decodedCategory]
     );
 
     if (catRows.length === 0) {
