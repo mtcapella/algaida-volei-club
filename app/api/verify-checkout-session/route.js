@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { paymentUpdate } from "@/libs/paymentUpdate";
+import { sendMail } from "@/libs/sendMail";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET);
 
@@ -48,7 +49,14 @@ export async function GET(req) {
     }
 
     // Guardar el estado en la DB
-    await paymentUpdate(stripe_session_id, playerId, status);
+    if (status === "completed") {
+      // Aquí puedes agregar la lógica para enviar el correo al jugador
+      await paymentUpdate(stripe_session_id, playerId, status);
+      await sendMail({ playerId, dni, name, email, total_pago: amount_total });
+    } else {
+      // Si el pago no fue exitoso, solo actualiza el estado sin enviar correo
+      await paymentUpdate(stripe_session_id, playerId, status);
+    }
 
     return NextResponse.json({
       success: true,

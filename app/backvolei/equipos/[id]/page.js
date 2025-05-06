@@ -14,9 +14,9 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 export default function TeamsPage({ params }) {
-  const { id } = usePromise(params); // /backvolei/equipos/[id]
+  const { id } = usePromise(params); // obtenemos el id del equipo de los params
 
-  const [team, setTeam] = useState(null); // { teamId, teamName, coachName, categoryName, players: [] }
+  const [team, setTeam] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
 
