@@ -155,5 +155,22 @@
         }
       ]
     }
+  },
+  "buttons": {
+    "accept": "Aceptar",
+    "cancel": "Cancelar",
+    "next": "Siguiente",
+    "send": "Enviar",
+    "readMore": "Leer más",
+    "close": "Cerrar",
+    "back": "Volver",
+    "pay": "Pagar",
+    "register": "Inscribirse",
+    "update": "Actualizar",
+    "exportCSV": "Exportar CSV",
+    "newPlayer": "Nuevo jugador",
+    "editPlayer": "Editar jugador",
+    "deletePlayer": "Eliminar jugador",
+    "newTeam": "Nuevo equipo"
   }
 }

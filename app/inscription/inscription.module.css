@@ -18,7 +18,14 @@
     background: none;
     border: none;
   }
+
+  .checkbox {
+    margin-left: 1rem;
+  }
   
+  .radioGroup {
+    margin: 1rem 1rem 1rem 0rem;
+  }
   /* Por ejemplo, marcar paso activo en tu color */
   .p-steps-item.p-highlight .p-steps-number {
     background: var(--primary);
@@ -29,7 +36,18 @@
     margin-top: 2rem;
   }
 
+.panelNav{
+  display: flex;
+  gap: 1rem;
+}
 
+.spinnerWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+}
 
 
 .noClick .p-stepper-nav .p-step {
@@ -67,6 +85,12 @@
   @media (min-width: 768px) {
     .inscriptionPage {
       max-width: 800px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .inscriptionPage {
+      max-width: 1000px;
     }
   }
   

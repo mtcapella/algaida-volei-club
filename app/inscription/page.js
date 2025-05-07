@@ -1,22 +1,16 @@
 "use client";
 
-/* Formulario original TFG – solo se han corregido bugs + añadido foto jugador.
-   Cambios respecto al original:
-   1. Si el jugador tiene deudas (`hasDebt: true`) el botón "Siguiente" no avanza y se muestra un toast/error.
-   2. Se añade campo `photoFile` (imagen del jugador) en Panel 2.
-      ‑ Validado (imagen ≤ 2 MB) y subido a Firebase ➜ `photoUrl` en payload.
-   3. `splitPayment` y `participateLottery` ya se enviaban bien, sin cambios.
-   4. NO se ha tocado el grid ni la estética. Todos los inputs siguen el mismo estilo.
-*/
-
 import React, { useRef } from "react";
-import { useForm, FormProvider, Controller } from "react-hook-form";
+import { useForm, FormProvider, Controller, set } from "react-hook-form";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
 import { Toast } from "primereact/toast";
+import { Dropdown } from "primereact/dropdown";
+
+import { Checkbox } from "primereact/checkbox";
 
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -25,10 +19,19 @@ import styles from "./inscription.module.css";
 import generateLOPD from "@/libs/lopdPdf";
 import generateImageUse from "@/libs/imagePdf";
 import { uploadFile } from "@/libs/upload";
+import { InputText } from "primereact/inputtext";
+
+import i18n from "../i18nextInit.js";
+import { useTranslation } from "react-i18next";
 
 export default function InscriptionPage() {
+  const { t } = useTranslation();
   const stepperRef = useRef(null);
   const toast = useRef(null);
+
+  // Estados para los botones de carga
+  const [checking, setChecking] = React.useState(false);
+  const [paying, setPaying] = React.useState(false);
 
   /*───────────────────────────────────────────────────────────────*/
   /*  Form state                                                   */
@@ -40,7 +43,7 @@ export default function InscriptionPage() {
       birthDate: null,
       dni: "",
       dniFile: null,
-      photoFile: null, // 📷 nuevo
+      photoFile: null,
       exists: false,
       player: null,
       registration: null,
@@ -113,128 +116,130 @@ export default function InscriptionPage() {
       });
       return;
     }
+    try {
+      setPaying(true);
+      const campos = [
+        "birthDate",
+        "dni",
+        "dniFile",
+        "photoFile",
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "playerId",
+        ...(isMinor
+          ? [
+              "guardianFirstName",
+              "guardianLastName",
+              "guardianDni",
+              "guardianPhone",
+              "guardianEmail",
+              "guardianRelationship",
+            ]
+          : []),
+        "acceptLOPD",
+        "acceptEthics",
+        "consentWeb",
+        "consentInstagram",
+        "consentOthers",
+      ];
 
-    const campos = [
-      "birthDate",
-      "dni",
-      "dniFile",
-      "photoFile",
-      "first_name",
-      "last_name",
-      "email",
-      "phone",
-      "playerId",
-      ...(isMinor
-        ? [
-            "guardianFirstName",
-            "guardianLastName",
-            "guardianDni",
-            "guardianPhone",
-            "guardianEmail",
-            "guardianRelationship",
-          ]
-        : []),
-      "acceptLOPD",
-      "acceptEthics",
-      "consentWeb",
-      "consentInstagram",
-      "consentOthers",
-    ];
+      const valid = await trigger(campos);
+      if (!valid) {
+        stepperRef.current.goToStep(3);
+        return;
+      }
 
-    const valid = await trigger(campos);
-    if (!valid) {
-      stepperRef.current.goToStep(3);
-      return;
-    }
+      /*───────────────────────────*/
+      /*  Generar PDFs y subir ficheros  */
+      /*───────────────────────────*/
 
-    /*───────────────────────────*/
-    /*  Generar PDFs y subir ficheros  */
-    /*───────────────────────────*/
+      const lopdFile = await generateLOPD(data);
+      const imageFile = await generateImageUse(data);
 
-    const lopdFile = await generateLOPD(data);
-    const imageFile = await generateImageUse(data);
+      const [lopdUrl, imageUrl, dniUrl, photoUrl] = await Promise.all([
+        uploadFile(lopdFile, "lopd"),
+        uploadFile(imageFile, "images"),
+        uploadFile(data.dniFile, "dni"),
+        uploadFile(data.photoFile, "photos"), // 📷 nueva subida
+      ]);
 
-    const [lopdUrl, imageUrl, dniUrl, photoUrl] = await Promise.all([
-      uploadFile(lopdFile, "lopd"),
-      uploadFile(imageFile, "images"),
-      uploadFile(data.dniFile, "dni"),
-      uploadFile(data.photoFile, "photos"), // 📷 nueva subida
-    ]);
+      const participateLottery = watch("participateLottery");
+      const splitPayment = watch("splitPayment");
+      const priceBase = 400;
+      const lotteryDiscount = 20;
+      const totalSingle = participateLottery
+        ? priceBase - lotteryDiscount
+        : priceBase;
+      const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
+      const amount = splitPayment ? firstSplit : totalSingle;
 
-    /*───────────────────────────*/
-    /*  Cálculo de cuotas               */
-    /*───────────────────────────*/
+      // Payload para el registro del usuario
 
-    const participateLottery = watch("participateLottery");
-    const splitPayment = watch("splitPayment");
-    const priceBase = 400;
-    const lotteryDiscount = 20;
-    const totalSingle = participateLottery
-      ? priceBase - lotteryDiscount
-      : priceBase;
-    const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
-    const amount = splitPayment ? firstSplit : totalSingle;
+      const payload = {
+        ...data,
+        lopdUrl,
+        imageUrl,
+        dniUrl,
+        photoUrl, // 📷 nueva URL
+        amount,
+        totalFee: totalSingle,
+        splitPayment,
+        participateLottery,
+      };
 
-    /*───────────────────────────*/
-    /*  Payload                           */
-    /*───────────────────────────*/
-
-    const payload = {
-      ...data,
-      lopdUrl,
-      imageUrl,
-      dniUrl,
-      photoUrl, // 📷 nueva URL
-      amount,
-      totalFee: totalSingle,
-      splitPayment,
-      participateLottery,
-    };
-
-    const resp = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      console.error(err);
-      alert("Hubo un error al inscribir. Revisa la consola.");
-      return;
-    }
-
-    const { playerId } = await resp.json(); // ID del jugador para Stripe
-
-    // ➜ Ahora generamos la sesión de pago con Stripe
-    const fullName = `${data.first_name} ${data.last_name}`;
-
-    const stripeRes = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: fullName,
-        email: data.email,
-        dni: data.dni,
-        amount: amount * 100, // en céntimos
-        playerId,
-      }),
-    });
-
-    const stripeData = await stripeRes.json();
-
-    if (!stripeRes.ok || !stripeData.url) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo redirigir a Stripe",
-        life: 5000,
+      const resp = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      return;
-    }
 
-    // Redirigir a Stripe
-    window.location.href = stripeData.url;
+      if (!resp.ok) {
+        const err = await resp.json();
+        console.error(err);
+        alert("Hubo un error al inscribir. Revisa la consola.");
+        return;
+      }
+
+      const { playerId } = await resp.json(); // ID del jugador para Stripe
+
+      // ➜ Ahora generamos la sesión de pago con Stripe
+      const fullName = `${data.first_name} ${data.last_name}`;
+
+      const stripeRes = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName,
+          email: data.email,
+          dni: data.dni,
+          amount: amount * 100, // en céntimos
+          playerId,
+        }),
+      });
+
+      const stripeData = await stripeRes.json();
+
+      if (!stripeRes.ok || !stripeData.url) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "No se pudo redirigir a Stripe",
+          life: 5000,
+        });
+        setPaying(false); // detenemos el spinner
+        return;
+      }
+
+      // Redirigir a Stripe
+
+      window.location.href = stripeData.url; // redirección: no hace falta reset
+    } catch (err) {
+      console.error(err);
+      toast.current.show({ severity: "error", summary: "Error en el pago" });
+      setPaying(false);
+    }
   };
 
   /*───────────────────────────────────────────────────────────────*/
@@ -308,7 +313,7 @@ export default function InscriptionPage() {
               <div className={styles.panelNav}>
                 <Button
                   type="button"
-                  label="Siguiente"
+                  label={t("buttons.next")}
                   icon="pi pi-arrow-right"
                   onClick={() => onNext(["birthDate"])}
                 />
@@ -331,7 +336,7 @@ export default function InscriptionPage() {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <input
+                      <InputText
                         id="dni"
                         type="text"
                         {...field}
@@ -421,50 +426,52 @@ export default function InscriptionPage() {
               <div className={styles.panelNav}>
                 <Button
                   type="button"
-                  label="Atrás"
+                  label={t("buttons.back")}
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
+
                 <Button
                   type="button"
-                  label="Siguiente"
+                  label={t("buttons.next")}
                   icon="pi pi-arrow-right"
+                  loading={checking} /* ← muestra spinner dentro del botón */
+                  disabled={checking}
                   onClick={async () => {
-                    const val = getValues("dni").toUpperCase();
+                    const dniVal = getValues("dni").toUpperCase();
+                    setChecking(true);
                     try {
-                      const res = await fetch(`/api/check-user/${val}`);
+                      const res = await fetch(`/api/check-user/${dniVal}`);
                       const data = await res.json();
 
-                      /* ─ Deuda o ya inscrito ─ */
+                      /* ① Deudas ──────────────────────────── */
                       if (data.exists && data.hasDebt) {
                         setValue("hasDebt", true);
                         setError("api", {
                           type: "manual",
-                          message: "El jugador tiene pagos pendientes.",
+                          message: "Tiene pagos pendientes",
                         });
-                        toast.current?.show({
+                        toast.current.show({
                           severity: "error",
                           summary: "Jugador con deudas",
                           detail: "No puede inscribirse hasta saldar la deuda.",
                         });
-                        return;
+                        return; // ⚠️ no avanza
                       }
 
+                      /* ② Ya inscrito ─────────────────────── */
                       if (data.exists && data.registered) {
                         setError("api", {
                           type: "manual",
-                          message:
-                            "Ya estás inscrito/a en la temporada activa.",
+                          message: "Ya inscrito en la temporada actual",
                         });
                         return;
                       }
 
-                      /* Limpieza de error y flags */
+                      /* ③ Sin problemas, pre‑rellenar si existe */
                       clearErrors("api");
                       setValue("hasDebt", false);
-
-                      /* Rellenar si existe */
                       if (data.exists) {
                         setValue("first_name", data.player.first_name);
                         setValue("last_name", data.player.last_name);
@@ -472,22 +479,17 @@ export default function InscriptionPage() {
                         setValue("exists", true);
                       }
 
-                      /* Validar campos necesarios para este paso */
-                      const ok = await trigger([
-                        "dni",
-                        "dniFile",
-                        "photoFile",
-                        "exists",
-                      ]);
-                      if (!ok) return;
-
-                      onNext(["dni", "dniFile", "photoFile"]);
-                    } catch (error) {
-                      console.error(error);
+                      /* valida campos del paso y avanza */
+                      const ok = await trigger(["dni", "dniFile", "photoFile"]);
+                      if (ok) onNext(["dni", "dniFile", "photoFile"]);
+                    } catch (err) {
+                      console.error(err);
                       setError("api", {
                         type: "manual",
-                        message: "Error al comprobar el DNI. Intenta de nuevo.",
+                        message: "Error al comprobar el DNI",
                       });
+                    } finally {
+                      setChecking(false); // ✔️ restablece el estado
                     }
                   }}
                 />
@@ -501,25 +503,41 @@ export default function InscriptionPage() {
                 <Controller
                   name="first_name"
                   control={methods.control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      placeholder="Nombre"
-                      className={styles.input}
-                      readOnly={getValues("exists")}
-                    />
+                  rules={{ required: "El nombre es obligatorio" }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputText
+                        {...field}
+                        placeholder="Nombre"
+                        className={styles.input}
+                        readOnly={getValues("exists")}
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
                   )}
                 />
                 <Controller
                   name="last_name"
                   control={methods.control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      placeholder="Apellidos"
-                      className={styles.input}
-                      readOnly={getValues("exists")}
-                    />
+                  rules={{ required: "Los apellidos son obligatorios" }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <InputText
+                        {...field}
+                        placeholder="Apellidos"
+                        className={styles.input}
+                        readOnly={getValues("exists")}
+                      />
+                      {fieldState.error && (
+                        <small className={styles.error}>
+                          {fieldState.error.message}
+                        </small>
+                      )}
+                    </>
                   )}
                 />
 
@@ -536,7 +554,7 @@ export default function InscriptionPage() {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <input
+                      <InputText
                         {...field}
                         placeholder="ejemplo@dominio.com"
                         className={styles.input}
@@ -563,7 +581,7 @@ export default function InscriptionPage() {
                   }}
                   render={({ field, fieldState }) => (
                     <>
-                      <input
+                      <InputText
                         {...field}
                         placeholder="Teléfono"
                         className={styles.input}
@@ -587,7 +605,7 @@ export default function InscriptionPage() {
                       rules={{ required: "Nombre tutor obligatorio" }}
                       render={({ field, fieldState }) => (
                         <>
-                          <input
+                          <InputText
                             {...field}
                             placeholder="Nombre tutor"
                             className={styles.input}
@@ -606,7 +624,7 @@ export default function InscriptionPage() {
                       rules={{ required: "Apellidos tutor obligatorios" }}
                       render={({ field, fieldState }) => (
                         <>
-                          <input
+                          <InputText
                             {...field}
                             placeholder="Apellidos tutor"
                             className={styles.input}
@@ -631,7 +649,7 @@ export default function InscriptionPage() {
                       }}
                       render={({ field, fieldState }) => (
                         <>
-                          <input
+                          <InputText
                             {...field}
                             placeholder="DNI tutor"
                             className={styles.input}
@@ -650,7 +668,7 @@ export default function InscriptionPage() {
                       rules={{ required: "Teléfono tutor obligatorio" }}
                       render={({ field, fieldState }) => (
                         <>
-                          <input
+                          <InputText
                             {...field}
                             placeholder="Teléfono tutor"
                             className={styles.input}
@@ -680,7 +698,7 @@ export default function InscriptionPage() {
                       }
                       render={({ field, fieldState }) => (
                         <>
-                          <input
+                          <InputText
                             {...field}
                             placeholder="ejemplo@dominio.com"
                             className={styles.input}
@@ -704,12 +722,20 @@ export default function InscriptionPage() {
                       }
                       render={({ field, fieldState }) => (
                         <>
-                          <select {...field} className={styles.input}>
-                            <option value="">Selecciona parentesco</option>
-                            <option value="padre">Padre</option>
-                            <option value="madre">Madre</option>
-                            <option value="tutor">Tutor</option>
-                          </select>
+                          <Dropdown
+                            {...field}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.value)}
+                            options={[
+                              { label: "Padre", value: "padre" },
+                              { label: "Madre", value: "madre" },
+                              { label: "Tutor", value: "tutor" },
+                            ]}
+                            placeholder="Selecciona parentesco"
+                            className={`${styles.input} ${
+                              fieldState.error ? "p-invalid" : ""
+                            }`}
+                          />
                           {fieldState.error && (
                             <small className={styles.error}>
                               {fieldState.error.message}
@@ -724,14 +750,14 @@ export default function InscriptionPage() {
               <div className={styles.panelNav}>
                 <Button
                   type="button"
-                  label="Atrás"
+                  label={t("buttons.back")}
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
                 <Button
                   type="button"
-                  label="Siguiente"
+                  label={t("buttons.next")}
                   icon="pi pi-arrow-right"
                   onClick={() =>
                     onNext(
@@ -766,13 +792,12 @@ export default function InscriptionPage() {
                   rules={{ required: "Debes aceptar la LOPD" }}
                   render={({ field, fieldState }) => (
                     <div className={styles.checkbox}>
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="acceptLOPD"
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
-                      <label htmlFor="acceptLOPD">
+                      <label className={styles.checkbox} htmlFor="acceptLOPD">
                         He leído y acepto la&nbsp;
                         <a
                           href="/lopd"
@@ -799,13 +824,12 @@ export default function InscriptionPage() {
                   rules={{ required: "Debes aceptar el Código Ético" }}
                   render={({ field, fieldState }) => (
                     <div className={styles.checkbox}>
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="acceptEthics"
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
-                      <label htmlFor="acceptEthics">
+                      <label className={styles.checkbox} htmlFor="acceptEthics">
                         He leído y acepto el&nbsp;
                         <a
                           href="/codigo-etico"
@@ -860,9 +884,9 @@ export default function InscriptionPage() {
                       control={methods.control}
                       rules={{ required: `Debes responder sobre "${label}"` }}
                       render={({ field, fieldState }) => (
-                        <div className={styles.radioGroup}>
+                        <div>
                           <label>{label}</label>
-                          <div>
+                          <div className={styles.radioGroup}>
                             <RadioButton
                               inputId={`${name}Yes`}
                               name={field.name}
@@ -896,14 +920,14 @@ export default function InscriptionPage() {
               <div className={styles.panelNav}>
                 <Button
                   type="button"
-                  label="Atrás"
+                  label={t("buttons.back")}
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
                 <Button
                   type="button"
-                  label="Siguiente"
+                  label={t("buttons.next")}
                   icon="pi pi-arrow-right"
                   onClick={() =>
                     onNext([
@@ -935,39 +959,40 @@ export default function InscriptionPage() {
                 </p>
 
                 {/* Lotería */}
-                <div className={styles.checkbox}>
+                <div>
                   <Controller
                     name="participateLottery"
                     control={methods.control}
                     render={({ field }) => (
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="participateLottery"
                         {...field}
                         checked={field.value}
                       />
                     )}
                   />
-                  <label htmlFor="participateLottery">
+                  <label
+                    className={styles.checkbox}
+                    htmlFor="participateLottery"
+                  >
                     Participar en la lotería (– {lotteryDiscount} €)
                   </label>
                 </div>
 
                 {/* Fraccionar */}
-                <div className={styles.checkbox}>
+                <div>
                   <Controller
                     name="splitPayment"
                     control={methods.control}
                     render={({ field }) => (
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="splitPayment"
                         {...field}
                         checked={field.value}
                       />
                     )}
                   />
-                  <label htmlFor="splitPayment">
+                  <label className={styles.checkbox} htmlFor="splitPayment">
                     Fraccionar pago (250 € ahora)
                   </label>
                 </div>
@@ -984,17 +1009,18 @@ export default function InscriptionPage() {
               <div className={styles.panelNav}>
                 <Button
                   type="button"
-                  label="Atrás"
+                  label={t("buttons.back")}
                   severity="secondary"
                   icon="pi pi-arrow-left"
                   onClick={() => stepperRef.current.prevCallback()}
                 />
 
                 <Button
-                  label="Pagar"
+                  label={t("buttons.pay")}
                   icon="pi pi-credit-card"
                   type="submit"
                   disabled={hasDebt}
+                  loading={paying}
                 />
               </div>
             </StepperPanel>

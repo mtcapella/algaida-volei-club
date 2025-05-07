@@ -10,17 +10,22 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 
+import i18n from "../../i18nextInit.js";
+import { useTranslation } from "react-i18next";
+
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 export default function Teams() {
-  /* ---------------- state ---------------- */
+  // i18n para la traduccion de los textos
+  const { t } = useTranslation();
+  // estados y refs de la pagina equipos
   const [teams, setTeams] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedTeams, setSelectedTeams] = useState(null);
 
-  // dialogs & form
+  // modales y formularios dentro de los modales
   const emptyTeam = { id: null, name: "", coachName: "", categoryId: null };
   const [teamForm, setTeamForm] = useState(emptyTeam);
   const [newDialogVisible, setNewDialogVisible] = useState(false);
@@ -30,7 +35,8 @@ export default function Teams() {
   const dt = useRef(null);
   const toast = useRef(null);
 
-  /* ----------- constantes ------------- */
+  // contantes de las categorias hardcodeadas para el dropdown
+  // en un futuro se podrian obtener de la base de datos o de un endpoint
   const categories = [
     { id: 1, name: "Alevín" },
     { id: 2, name: "Infantil" },
@@ -39,7 +45,7 @@ export default function Teams() {
     { id: 5, name: "Sénior" },
   ];
 
-  /* ----------- fetch list on mount ------------- */
+  // use effect para cargar los equipos al iniciar la pagina
   useEffect(() => {
     fetchTeams();
   }, []);
@@ -203,13 +209,13 @@ export default function Teams() {
         left={() => (
           <div className="flex gap-2">
             <Button
-              label="Refrescar"
+              label={t("buttons.update")}
               icon="pi pi-refresh"
               className="p-button-secondary"
               onClick={fetchTeams}
             />
             <Button
-              label="Exportar CSV"
+              label={t("buttons.exportCSV")}
               icon="pi pi-file"
               className="p-button-success"
               onClick={() => dt.current.exportCSV()}
@@ -218,7 +224,7 @@ export default function Teams() {
         )}
         right={() => (
           <Button
-            label="Nuevo Equipo"
+            label={t("buttons.newTeam")}
             icon="pi pi-plus"
             className="p-button-primary"
             onClick={openNewDialog}
