@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 import { purgeIncomplete } from "@/libs/purgeIncomplete";
+import { getActiveSeason } from "@/libs/seasons";
 
 export async function GET(request, context) {
   const { dni } = await context.params;
@@ -30,18 +31,8 @@ export async function GET(request, context) {
     const { playerId, first_name, last_name } = players[0];
 
     // Temporada activa
-    const [seasons] = await db.execute(
-      `SELECT id FROM seasons WHERE is_active = 1 LIMIT 1`
-    );
 
-    if (seasons.length === 0) {
-      return NextResponse.json(
-        { error: "No hay temporada activa" },
-        { status: 500 }
-      );
-    }
-
-    const seasonId = seasons[0].id;
+    const seasonId = await getActiveSeason();
 
     // Registro en la temporada actual
     const [registrations] = await db.execute(
@@ -53,18 +44,31 @@ export async function GET(request, context) {
 
     const registered = registrations.length > 0;
 
-    // ¿Tiene deuda en alguna temporada?
-    const [deudas] = await db.execute(
-      `SELECT COUNT(*) AS count FROM registrations WHERE player_id = ? AND split_payment = 1`,
+    // ¿Tiene deuda activa en la temporada actual?
+    const [deudaActual] = await db.execute(
+      `SELECT COUNT(*) AS count 
+       FROM registrations 
+       WHERE player_id = ? AND season_id = ? AND split_payment = 1`,
+      [playerId, seasonId]
+    );
+
+    const hasActiveDebt = deudaActual[0].count > 0;
+
+    // ¿Tiene deuda histórica?
+    const [deudaHistorica] = await db.execute(
+      `SELECT COUNT(*) AS count 
+       FROM debt_history 
+       WHERE player_id = ? AND status IN ('pending', 'partially_paid')`,
       [playerId]
     );
-    const hasDebt = deudas[0].count > 0;
+
+    const hasHistoricalDebt = deudaHistorica[0].count > 0;
 
     // Respuesta base
     const response = {
       exists: true,
       registered,
-      hasDebt,
+      hasDebt: hasActiveDebt || hasHistoricalDebt,
       player: {
         playerId,
         first_name,
