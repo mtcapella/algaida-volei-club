@@ -280,16 +280,18 @@ export default function InscriptionPage() {
             className={styles.stepperContainer}
           >
             {/* ────────────────── Paso 1 */}
-            <StepperPanel header="1. Fecha nacimiento">
+            <StepperPanel header={`1. ${t("inscription.form.birthDate")}`}>
               <div className={styles.panelContent}>
-                <label htmlFor="birthDate">Fecha de nacimiento*</label>
+                <label htmlFor="birthDate">
+                  {t("inscription.form.birthDate")}*
+                </label>
                 <Controller
                   name="birthDate"
                   control={methods.control}
                   rules={{
-                    required: "La fecha es obligatoria",
+                    required: t("inscription.form.birthDateError"),
                     validate: (v) =>
-                      v <= new Date() || "No puede ser una fecha futura",
+                      v <= new Date() || t("inscription.form.futureDateError"),
                   }}
                   render={({ field, fieldState }) => (
                     <>
@@ -321,17 +323,17 @@ export default function InscriptionPage() {
             </StepperPanel>
 
             {/* ────────────────── Paso 2 */}
-            <StepperPanel header="2. DNI / Existencia">
+            <StepperPanel header={`2. ${t("inscription.form.dni")}`}>
               <div className={styles.panelContent}>
-                <label htmlFor="dni">DNI*</label>
+                <label htmlFor="dni">{t("inscription.form.dni")}*</label>
                 <Controller
                   name="dni"
                   control={methods.control}
                   rules={{
-                    required: "El DNI es obligatorio",
+                    required: t("inscription.form.dniError"),
                     pattern: {
-                      value: /^[0-9A-Z]{8,9}$/,
-                      message: "Formato de DNI inválido",
+                      value: /^[XYZ]?\d{7,8}[A-Z]$/,
+                      message: t("inscription.form.dniInvalid"),
                     },
                   }}
                   render={({ field, fieldState }) => (
@@ -341,7 +343,7 @@ export default function InscriptionPage() {
                         type="text"
                         {...field}
                         className={styles.input}
-                        placeholder="12345678A"
+                        placeholder={t("inscription.form.dniPlaceholder")}
                       />
                       {fieldState.error && (
                         <small className={styles.error}>
@@ -353,15 +355,18 @@ export default function InscriptionPage() {
                 />
 
                 {/* Foto DNI */}
-                <label htmlFor="dniFile">Foto del DNI*</label>
+                <label htmlFor="dniFile">
+                  {t("inscription.form.dniImage")}*
+                </label>
                 <Controller
                   name="dniFile"
                   control={methods.control}
                   rules={{
-                    required: "Debes subir la foto del DNI",
+                    required: t("inscription.form.dniImageError"),
                     validate: {
                       isImage: (file) =>
-                        file?.type.startsWith("image/") || "Solo imágenes",
+                        file?.type.startsWith("image/") ||
+                        t("inscription.form.dniImageInvalid"),
                       maxSize: (file) =>
                         file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
                     },
@@ -385,18 +390,23 @@ export default function InscriptionPage() {
                   )}
                 />
 
-                {/* 📷 Nueva foto jugador */}
-                <label htmlFor="photoFile">Foto del jugador*</label>
+                {/* Subir foto del jugador */}
+
+                <label htmlFor="photoFile">
+                  {t("inscription.form.playerImage")}*
+                </label>
                 <Controller
                   name="photoFile"
                   control={methods.control}
                   rules={{
-                    required: "Debes subir la foto del jugador",
+                    required: t("inscription.form.playerImageError"),
                     validate: {
                       isImage: (file) =>
-                        file?.type.startsWith("image/") || "Solo imágenes",
+                        file?.type.startsWith("image/") ||
+                        t("inscription.form.playerImageInvalid"),
                       maxSize: (file) =>
-                        file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
+                        file?.size <= 2 * 1024 * 1024 ||
+                        t("inscription.form.playerImageSize"),
                     },
                   }}
                   render={({ field, fieldState }) => (
@@ -445,31 +455,31 @@ export default function InscriptionPage() {
                       const res = await fetch(`/api/check-user/${dniVal}`);
                       const data = await res.json();
 
-                      /* ① Deudas ──────────────────────────── */
+                      // comporbamos si el jugador tiene deudas pendientes
                       if (data.exists && data.hasDebt) {
                         setValue("hasDebt", true);
                         setError("api", {
                           type: "manual",
-                          message: "Tiene pagos pendientes",
+                          message: t("inscription.form.playerHasDebt"),
                         });
                         toast.current.show({
                           severity: "error",
-                          summary: "Jugador con deudas",
-                          detail: "No puede inscribirse hasta saldar la deuda.",
+                          summary: t("inscription.form.playerHasDebt"),
+                          detail: t("inscription.form.playerNeedSolveDebt"),
                         });
-                        return; // ⚠️ no avanza
+                        return; // para aquí si hay deuda y no se puede continuar
                       }
 
-                      /* ② Ya inscrito ─────────────────────── */
+                      // comprobamos si el jugador ya está inscrito en la temporada
                       if (data.exists && data.registered) {
                         setError("api", {
                           type: "manual",
-                          message: "Ya inscrito en la temporada actual",
+                          message: t("inscription.form.playerExistSeason"),
                         });
                         return;
                       }
 
-                      /* ③ Sin problemas, pre‑rellenar si existe */
+                      // si no hay errores se pre setean los valores recuperados de la API
                       clearErrors("api");
                       setValue("hasDebt", false);
                       if (data.exists) {
@@ -479,17 +489,17 @@ export default function InscriptionPage() {
                         setValue("exists", true);
                       }
 
-                      /* valida campos del paso y avanza */
+                      // valida campos del paso y avanza
                       const ok = await trigger(["dni", "dniFile", "photoFile"]);
                       if (ok) onNext(["dni", "dniFile", "photoFile"]);
                     } catch (err) {
                       console.error(err);
                       setError("api", {
                         type: "manual",
-                        message: "Error al comprobar el DNI",
+                        message: t("inscription.form.dniCheckError"),
                       });
                     } finally {
-                      setChecking(false); // ✔️ restablece el estado
+                      setChecking(false); // se restablece el estado
                     }
                   }}
                 />
@@ -497,18 +507,18 @@ export default function InscriptionPage() {
             </StepperPanel>
 
             {/* === Panel 3: Datos personales === */}
-            <StepperPanel header="3. Datos personales">
+            <StepperPanel header={`3. ${t("inscription.form.personalData")}`}>
               <div className={styles.panelContent}>
-                {/* Nombre/apellidos (readonly si existe) */}
+                {/* Nombre/apellidos (readonly si ya vienen seteados) */}
                 <Controller
                   name="first_name"
                   control={methods.control}
-                  rules={{ required: "El nombre es obligatorio" }}
+                  rules={{ required: t("inscription.form.nameError") }}
                   render={({ field, fieldState }) => (
                     <>
                       <InputText
                         {...field}
-                        placeholder="Nombre"
+                        placeholder={t("inscription.form.name")}
                         className={styles.input}
                         readOnly={getValues("exists")}
                       />
@@ -523,7 +533,7 @@ export default function InscriptionPage() {
                 <Controller
                   name="last_name"
                   control={methods.control}
-                  rules={{ required: "Los apellidos son obligatorios" }}
+                  rules={{ required: t("inscription.form.surnameError") }}
                   render={({ field, fieldState }) => (
                     <>
                       <InputText
@@ -546,10 +556,10 @@ export default function InscriptionPage() {
                   name="email"
                   control={methods.control}
                   rules={{
-                    required: "El email es obligatorio",
+                    required: t("inscription.form.emailError"),
                     pattern: {
                       value: /^\S+@\S+\.\S+$/,
-                      message: "Email inválido",
+                      message: t("inscription.form.emailInvalid"),
                     },
                   }}
                   render={({ field, fieldState }) => (
@@ -573,17 +583,17 @@ export default function InscriptionPage() {
                   name="phone"
                   control={methods.control}
                   rules={{
-                    required: "El teléfono es obligatorio",
+                    required: t("inscription.form.phoneError"),
                     pattern: {
-                      value: /^[0-9()+\s-]{7,20}$/,
-                      message: "Teléfono inválido",
+                      value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
+                      message: t("inscription.form.phoneInvalid"),
                     },
                   }}
                   render={({ field, fieldState }) => (
                     <>
                       <InputText
                         {...field}
-                        placeholder="Teléfono"
+                        placeholder={t("inscription.form.phone")}
                         className={styles.input}
                       />
                       {fieldState.error && (
@@ -598,16 +608,20 @@ export default function InscriptionPage() {
                 {/* Campos de tutor si es menor */}
                 {isMinor && (
                   <>
-                    <h4>Datos del tutor legal</h4>
+                    <h4>{t("inscription.form.legalGuardianData")}</h4>
                     <Controller
                       name="guardianFirstName"
                       control={methods.control}
-                      rules={{ required: "Nombre tutor obligatorio" }}
+                      rules={{
+                        required: t("inscription.form.legalGuardianNameError"),
+                      }}
                       render={({ field, fieldState }) => (
                         <>
                           <InputText
                             {...field}
-                            placeholder="Nombre tutor"
+                            placeholder={t(
+                              "inscription.form.legalGuardianName"
+                            )}
                             className={styles.input}
                           />
                           {fieldState.error && (
@@ -621,12 +635,18 @@ export default function InscriptionPage() {
                     <Controller
                       name="guardianLastName"
                       control={methods.control}
-                      rules={{ required: "Apellidos tutor obligatorios" }}
+                      rules={{
+                        required: t(
+                          "inscription.form.legalGuardianSurnameError"
+                        ),
+                      }}
                       render={({ field, fieldState }) => (
                         <>
                           <InputText
                             {...field}
-                            placeholder="Apellidos tutor"
+                            placeholder={t(
+                              "inscription.form.legalGuardianSurname"
+                            )}
                             className={styles.input}
                           />
                           {fieldState.error && (
@@ -641,17 +661,19 @@ export default function InscriptionPage() {
                       name="guardianDni"
                       control={methods.control}
                       rules={{
-                        required: "DNI tutor obligatorio",
+                        required: t("inscription.form.legalGuardianDniError"),
                         pattern: {
-                          value: /^[0-9A-Z]{8,9}$/,
-                          message: "DNI inválido",
+                          value: /^[XYZ]?\d{7,8}[A-Z]$/,
+                          message: t(
+                            "inscription.form.legalGuardianDniInvalid"
+                          ),
                         },
                       }}
                       render={({ field, fieldState }) => (
                         <>
                           <InputText
                             {...field}
-                            placeholder="DNI tutor"
+                            placeholder={t("inscription.form.legalGuardianDni")}
                             className={styles.input}
                           />
                           {fieldState.error && (
@@ -665,12 +687,22 @@ export default function InscriptionPage() {
                     <Controller
                       name="guardianPhone"
                       control={methods.control}
-                      rules={{ required: "Teléfono tutor obligatorio" }}
+                      rules={{
+                        required: t("inscription.form.legalGuardianPhoneError"),
+                        pattern: {
+                          value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
+                          message: t(
+                            "inscription.form.legalGuardianPhoneInvalid"
+                          ),
+                        },
+                      }}
                       render={({ field, fieldState }) => (
                         <>
                           <InputText
                             {...field}
-                            placeholder="Teléfono tutor"
+                            placeholder={t(
+                              "inscription.form.legalGuardianPhonePlaceholder"
+                            )}
                             className={styles.input}
                           />
                           {fieldState.error && (
@@ -688,10 +720,14 @@ export default function InscriptionPage() {
                       rules={
                         isMinor
                           ? {
-                              required: "El email del tutor es obligatorio",
+                              required: t(
+                                "inscription.form.legalGuardianEmailError"
+                              ),
                               pattern: {
                                 value: /^\S+@\S+\.\S+$/,
-                                message: "Email inválido",
+                                message: t(
+                                  "inscription.form.legalGuardianEmailInvalid"
+                                ),
                               },
                             }
                           : {}
@@ -717,7 +753,11 @@ export default function InscriptionPage() {
                       control={methods.control}
                       rules={
                         isMinor
-                          ? { required: "Debes indicar el parentesco" }
+                          ? {
+                              required: t(
+                                "inscription.form.legalGurdianRelationshipError"
+                              ),
+                            }
                           : {}
                       }
                       render={({ field, fieldState }) => (
@@ -727,12 +767,23 @@ export default function InscriptionPage() {
                             value={field.value}
                             onChange={(e) => field.onChange(e.value)}
                             options={[
-                              { label: "Padre", value: "padre" },
-                              { label: "Madre", value: "madre" },
-                              { label: "Tutor", value: "tutor" },
+                              {
+                                label: t("inscription.form.father"),
+                                value: "padre",
+                              },
+                              {
+                                label: t("inscription.form.mother"),
+                                value: "madre",
+                              },
+                              {
+                                label: t("inscription.form.guardian"),
+                                value: "tutor",
+                              },
                             ]}
-                            placeholder="Selecciona parentesco"
-                            className={`${styles.input} ${
+                            placeholder={t(
+                              "inscription.form.legalGurdianRelationship"
+                            )}
+                            className={`${styles.dropdown} ${styles.input} ${
                               fieldState.error ? "p-invalid" : ""
                             }`}
                           />
@@ -783,7 +834,9 @@ export default function InscriptionPage() {
 
             {/* === Panel 4: Confirmaciones legales === */}
 
-            <StepperPanel header="4. Confirmaciones legales">
+            <StepperPanel
+              header={`3. ${t("inscription.form.legalConfirmation")}`}
+            >
               <div className={styles.panelContent}>
                 {/* LOPD */}
                 <Controller

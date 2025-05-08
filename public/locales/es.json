@@ -156,6 +156,87 @@
       ]
     }
   },
+  "inscription": {
+    "title": "INSCRIPCIÓN",
+    "subtitle": "Formulario de Inscripción",
+    "form": {
+      "personalData": "Datos Personales",
+      "name": "Nombre",
+      "namePlaceholder": "Introduce tu nombre",
+      "nameError": "El nombre es obligatorio",
+      "surname": "Apellidos",
+      "surnamePlaceholder": "Introduce tus apellidos",
+      "surnameError": "Los apellidos son obligatorios",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "Introduce tu correo electrónico",
+      "emailError": "El correo electrónico es obligatorio",
+      "emailInvalid": "El correo electrónico no es válido",
+
+      "legalGuardianData": "Datos del Tutor Legal",
+      "legalGuardianName": "Nombre del Tutor Legal",
+      "legalGuardianNamePlaceholder": "Introduce el nombre del Tutor Legal",
+      "legalGuardianNameError": "El nombre del Tutor Legal es obligatorio",
+      "legalGuardianSurname": "Apellidos del Tutor Legal",
+      "legalGuardianSurnamePlaceholder": "Introduce los apellidos del Tutor Legal",
+      "legalGuardianSurnameError": "Los apellidos del Tutor Legal son obligatorios",
+      "legalGuardianDni": "DNI/NIE del Tutor Legal",
+      "legalGuardianDniPlaceholder": "Introduce el DNI/NIE del Tutor Legal",
+      "legalGuardianDniError": "El DNI/NIE del Tutor Legal es obligatorio",
+      "legalGuardianDniInvalid": "El DNI/NIE del Tutor Legal no es válido",
+      "legalGuardianPhone": "Teléfono del Tutor Legal",
+      "legalGuardianPhonePlaceholder": "Introduce el teléfono del Tutor Legal",
+      "legalGuardianPhoneError": "El teléfono del Tutor Legal es obligatorio",
+      "legalGuardianPhoneInvalid": "El teléfono del Tutor Legal no es válido",
+
+      "legalGuardianEmail": "Correo electrónico del Tutor Legal",
+      "legalGuardianEmailPlaceholder": "Introduce el correo electrónico del Tutor Legal",
+      "legalGuardianEmailError": "El correo electrónico del Tutor Legal es obligatorio",
+      "legalGuardianEmailInvalid": "El correo electrónico del Tutor Legal no es válido",
+
+      "legalGurardianPhone": "Teléfono del Tutor Legal",
+
+      "legalGurdianRelationship": "Relación con el jugador",
+      "legalGurdianRelationshipPlaceholder": "Selecciona la relación con el jugador",
+      "legalGurdianRelationshipError": "La relación con el jugador es obligatoria",
+
+      "father": "Padre",
+      "mother": "Madre",
+      "guardian": "Tutor",
+
+      "phone": "Teléfono",
+      "phonePlaceholder": "Introduce tu número de teléfono",
+      "phoneError": "El número de teléfono es obligatorio",
+      "phoneInvalid": "El número de teléfono no es válido",
+
+      "birthDate": "Fecha de nacimiento",
+      "birthDatePlaceholder": "Selecciona tu fecha de nacimiento",
+      "birthDateError": "La fecha de nacimiento es obligatoria",
+      "futureDateError": "La fecha de nacimiento no puede ser futura",
+      "dni": "DNI/NIE",
+      "dniPlaceholder": "Introduce tu DNI/NIE",
+      "dniError": "El DNI/NIE es obligatorio",
+      "dniInvalid": "El DNI/NIE no es válido",
+      "dniImage": "Imagen del DNI/NIE",
+      "dniImagePlaceholder": "Sube una imagen de tu DNI/NIE",
+      "dniImageError": "La imagen del DNI/NIE es obligatoria",
+      "dniImageInvalid": "El archivo subido no es una imagen válida",
+      "dniImageSize": "El tamaño de la imagen no puede superar los 2MB",
+      "dniCheckError": "Error al çomprobar el DNI/NIE. Por favor, inténtalo de nuevo más tarde.",
+      "playerImage": "Imagen del jugador",
+      "playerImagePlaceholder": "Sube una imagen del jugador",
+      "playerImageError": "La imagen del jugador es obligatoria",
+      "playerImageInvalid": "El archivo subido no es una imagen válida",
+      "playerImageSize": "El tamaño de la imagen no puede superar los 2MB",
+      "playerExistSeason": "El jugador ya está inscrito en la temporada actual",
+      "playerHasDebt": "El jugador tiene deudas pendientes",
+      "playerNeedSolveDebt": "El jugador necesita resolver las deudas pendientes antes de continuar con la inscripción",
+
+      "legalConfirmation": "Confirmaciones legales",
+      "readAndAccept": "He leído y acepto",
+      "readAndAcceptLOPD": "la política de protección de datos (LOPD)",
+      "readAndAcceptError": "Debes aceptar la política de privacidad y el aviso legal"
+    }
+  },
   "buttons": {
     "accept": "Aceptar",
     "cancel": "Cancelar",
@@ -171,6 +252,8 @@
     "newPlayer": "Nuevo jugador",
     "editPlayer": "Editar jugador",
     "deletePlayer": "Eliminar jugador",
-    "newTeam": "Nuevo equipo"
+    "newTeam": "Nuevo equipo",
+    "yes": "Sí",
+    "no": "No"
   }
 }

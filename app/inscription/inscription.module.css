@@ -1,96 +1,109 @@
 /* inscripción: centrado y espaciado */
 .inscriptionPage {
-    width: 90%;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
+width: 90%;
+max-width: 500px;
+margin: 0 auto;
+padding: 1rem;
+}
 
-  .stepperContainer {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 2rem 0 2rem 0;
-  }
-  
-  /* Override ligero de Steps */
-  .steps {
-    /* elimina fondos o bordes predeterminados */
-    background: none;
-    border: none;
-  }
+.stepperContainer {
+max-width: 600px;
+margin: 0 auto;
+padding: 2rem 0 2rem 0;
+}
 
-  .checkbox {
-    margin-left: 1rem;
-  }
-  
-  .radioGroup {
-    margin: 1rem 1rem 1rem 0rem;
-  }
-  /* Por ejemplo, marcar paso activo en tu color */
-  .p-steps-item.p-highlight .p-steps-number {
-    background: var(--primary);
-    color: #fff;
-  }
-  
-  .stepContent {
-    margin-top: 2rem;
-  }
+/* Override ligero de Steps */
+.steps {
+background: none;
+border: none;
+}
 
-.panelNav{
-  display: flex;
-  gap: 1rem;
+.checkbox {
+margin-left: 1rem;
+}
+
+.radioGroup {
+margin: 1rem 1rem 1rem 0rem;
+}
+
+.p-steps-item.p-highlight .p-steps-number {
+background: var(--primary);
+color: #fff;
+}
+
+.stepContent {
+margin-top: 2rem;
+}
+
+.panelNav {
+display: flex;
+gap: 1rem;
 }
 
 .spinnerWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 40px;
+height: 40px;
 }
-
 
 .noClick .p-stepper-nav .p-step {
-  pointer-events: none !important;
+pointer-events: none !important;
 }
 
-  .panelContent {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 1rem;
-  }
+/* === NUEVO: panelContent grid y inputs full‑width responsivos === */
+.panelContent {
+display: grid;
+grid-template-columns: 1fr;
+gap: 1rem;
+padding: 1rem;
+}
 
-  .p-fileupload-upload,
+/* todos los inputs y dropdowns ocupan el 100 % de su columna */
+.panelContent input,
+.dropdown {
+width: 100%;
+box-sizing: border-box;
+}
+
+/* en pantallas estrechas, limitamos un poco para que no sobresalga */
+@media (max-width: 380px) {
+.panelContent input,
+.dropdown {
+max-width: 260px;
+}
+}
+
+/* ampliar el contenedor principal en pantallas medianas y grandes */
+@media (min-width: 768px) {
+.inscriptionPage {
+max-width: 800px;
+}
+}
+
+@media (min-width: 1024px) {
+.inscriptionPage {
+max-width: 1000px;
+}
+}
+
+.p-fileupload-upload,
 .p-fileupload-cancel {
-  display: none;
+display: none;
 }
- /* Damos un poco de estilo para dar distinguibilidad a los links */
-  .link {
-    
-    text-decoration: underline;
-  }
-  
-  .link:hover {
-    text-decoration: none;
-    color: #0055aa;
-  }
-  .navButtons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.5rem;
-  }
-  
-  /* Opcional: mejorar responsive */
-  @media (min-width: 768px) {
-    .inscriptionPage {
-      max-width: 800px;
-    }
-  }
 
-  @media (min-width: 1024px) {
-    .inscriptionPage {
-      max-width: 1000px;
-    }
-  }
-  
+.link {
+text-decoration: underline;
+}
+
+.link\:hover {
+text-decoration: none;
+color: #0055aa;
+}
+
+.navButtons {
+display: flex;
+justify-content: space-between;
+margin-top: 1.5rem;
+}
