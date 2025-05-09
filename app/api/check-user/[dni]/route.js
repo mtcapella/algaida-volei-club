@@ -44,17 +44,8 @@ export async function GET(request, context) {
 
     const registered = registrations.length > 0;
 
-    // ¿Tiene deuda activa en la temporada actual?
-    const [deudaActual] = await db.execute(
-      `SELECT COUNT(*) AS count 
-       FROM registrations 
-       WHERE player_id = ? AND season_id = ? AND split_payment = 1`,
-      [playerId, seasonId]
-    );
-
-    const hasActiveDebt = deudaActual[0].count > 0;
-
     // ¿Tiene deuda histórica?
+
     const [deudaHistorica] = await db.execute(
       `SELECT COUNT(*) AS count 
        FROM debt_history 
@@ -68,7 +59,7 @@ export async function GET(request, context) {
     const response = {
       exists: true,
       registered,
-      hasDebt: hasActiveDebt || hasHistoricalDebt,
+      hasDebt: hasHistoricalDebt,
       player: {
         playerId,
         first_name,
