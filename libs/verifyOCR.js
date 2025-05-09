@@ -1,27 +1,30 @@
-async function verifyOCR(dni, imageFile) {
-  const formData = new FormData();
-  formData.append("dni", dni); // El DNI que el usuario ha escrito.
-  formData.append("image", imageFile); // El archivo de imagen.
+// utils/ocrHelper.js
+import Tesseract from "tesseract.js";
 
+// Expresión regular para DNI/NIE
+const dniRegex = /([XYZ]?)(\d{7,8})([A-Z])/;
+
+export const verifyOCR = async (imageFile) => {
   try {
-    const response = await fetch("https://tudominio.com/ocr.php", {
-      method: "POST",
-      body: formData,
+    const { data } = await Tesseract.recognize(imageFile, "spa", {
+      logger: (m) => console.log(m), // Ver el progreso en consola
     });
 
-    const data = await response.json();
-    console.log("Resultado OCR:", data);
+    const textDetected = data.text.trim().toUpperCase();
+    console.log("Texto detectado:", textDetected);
 
-    if (data.valid) {
-      alert("El DNI/NIE es válido y coincide con la imagen.");
-      return true;
+    // Buscar el DNI/NIE en el texto detectado
+    const match = textDetected.match(dniRegex);
+    if (match) {
+      const detectedDNI = match[0];
+      console.log("DNI/NIE detectado por OCR:", detectedDNI);
+      return detectedDNI;
     } else {
-      alert("El DNI/NIE no coincide con la imagen. Verifica que esté claro.");
-      return false;
+      console.log("No se detectó ningún DNI/NIE válido.");
+      return null;
     }
   } catch (error) {
-    alert("Error al verificar el OCR. Inténtalo de nuevo.");
-    console.error("Error OCR:", error);
-    return false;
+    console.error("Error en OCR:", error);
+    return null;
   }
-}
+};

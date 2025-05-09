@@ -24,6 +24,9 @@ import { InputText } from "primereact/inputtext";
 import i18n from "../i18nextInit.js";
 import { useTranslation } from "react-i18next";
 
+import Tesseract from "tesseract.js";
+import { verifyOCR } from "@/libs/verifyOCR";
+
 export default function InscriptionPage() {
   const { t } = useTranslation();
   const stepperRef = useRef(null);
@@ -450,12 +453,15 @@ export default function InscriptionPage() {
                   disabled={checking}
                   onClick={async () => {
                     const dniVal = getValues("dni").toUpperCase();
+                    const file = getValues("dniFile");
                     setChecking(true);
+
                     try {
+                      // Verificamos primero si hay deudas o el jugador ya está registrado
                       const res = await fetch(`/api/check-user/${dniVal}`);
                       const data = await res.json();
 
-                      // comporbamos si el jugador tiene deudas pendientes
+                      // Comprobamos si el jugador tiene deudas pendientes
                       if (data.exists && data.hasDebt) {
                         setValue("hasDebt", true);
                         setError("api", {
@@ -467,10 +473,10 @@ export default function InscriptionPage() {
                           summary: t("inscription.form.playerHasDebt"),
                           detail: t("inscription.form.playerNeedSolveDebt"),
                         });
-                        return; // para aquí si hay deuda y no se puede continuar
+                        return;
                       }
 
-                      // comprobamos si el jugador ya está inscrito en la temporada
+                      // Comprobamos si el jugador ya está inscrito en la temporada
                       if (data.exists && data.registered) {
                         setError("api", {
                           type: "manual",
@@ -479,7 +485,38 @@ export default function InscriptionPage() {
                         return;
                       }
 
-                      // si no hay errores se pre setean los valores recuperados de la API
+                      // Verificamos el OCR solo si hay una imagen
+                      if (file) {
+                        toast.current.show({
+                          severity: "info",
+                          summary: "Verificando DNI...",
+                          detail: t("inscription.form.OCRwaiting"),
+                        });
+
+                        // Llamamos al helper de OCR
+                        const detectedDNI = await verifyOCR(file);
+                        console.log("DNI detectado por OCR:", detectedDNI);
+
+                        if (!detectedDNI) {
+                          toast.current.show({
+                            severity: "error",
+                            summary: "Error OCR",
+                            detail: t("inscription.form.OCRwaiting"),
+                          });
+                          return;
+                        }
+
+                        if (!detectedDNI.includes(dniVal)) {
+                          toast.current.show({
+                            severity: "error",
+                            summary: "Error OCR",
+                            detail: t("inscription.form.OCRNoMatch"),
+                          });
+                          return;
+                        }
+                      }
+
+                      // Si todo está bien, pasamos al siguiente paso
                       clearErrors("api");
                       setValue("hasDebt", false);
                       if (data.exists) {
@@ -489,14 +526,15 @@ export default function InscriptionPage() {
                         setValue("exists", true);
                       }
 
-                      // valida campos del paso y avanza
+                      // Valida campos del paso y avanza
                       const ok = await trigger(["dni", "dniFile", "photoFile"]);
                       if (ok) onNext(["dni", "dniFile", "photoFile"]);
                     } catch (err) {
                       console.error(err);
-                      setError("api", {
-                        type: "manual",
-                        message: t("inscription.form.dniCheckError"),
+                      toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Hubo un problema al verificar el DNI.",
                       });
                     } finally {
                       setChecking(false); // se restablece el estado

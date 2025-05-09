@@ -234,7 +234,10 @@
       "legalConfirmation": "Confirmaciones legales",
       "readAndAccept": "He leído y acepto",
       "readAndAcceptLOPD": "la política de protección de datos (LOPD)",
-      "readAndAcceptError": "Debes aceptar la política de privacidad y el aviso legal"
+      "readAndAcceptError": "Debes aceptar la política de privacidad y el aviso legal",
+      "OCRwaiting": "Por favor, espera mientras verificamos el DNI/NIE. Este proceso puede tardar unos minutos.",
+      "OCRInvalid": "La imagen del DNI/NIE no es válida. Por favor, asegúrate de que la imagen esté clara y legible.",
+      "OCRNoMatch": "El DNI/NIE no coincide con el DNI/NIE introducido. Por favor, verifica que los datos sean correctos."
     }
   },
   "buttons": {
