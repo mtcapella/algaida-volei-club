@@ -1,4 +1,3 @@
-// utils/ocrHelper.js
 import Tesseract from "tesseract.js";
 
 // Expresión regular para DNI/NIE

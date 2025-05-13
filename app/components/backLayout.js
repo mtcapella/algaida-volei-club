@@ -112,6 +112,18 @@ export default function BackLayout({ children, onLogout }) {
             </li>
             <li>
               <Link
+                href="/backvolei/pagos"
+                className={
+                  path.startsWith("/backvolei/pagos")
+                    ? styles.active
+                    : styles.link
+                }
+              >
+                Pagos
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/backvolei/ajustes"
                 className={
                   path.startsWith("/backvolei/ajustes")

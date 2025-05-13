@@ -7,11 +7,14 @@ export async function GET() {
 
   try {
     // Obtener el ID de la temporada activa
-    const seasonId = await getActiveSeason(); // usamos el helper que cree para obtener la temporada activa y simplificar el código
+    const seasonId = await getActiveSeason();
 
-    // Total jugadores
+    // Total jugadores (con pagos completados)
     const [[{ totalPlayers }]] = await db.execute(
-      `SELECT COUNT(*) AS totalPlayers FROM registrations WHERE season_id = ?`,
+      `SELECT COUNT(DISTINCT r.player_id) AS totalPlayers 
+       FROM registrations r 
+       INNER JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id 
+       WHERE r.season_id = ? AND p.status = 'completed'`,
       [seasonId]
     );
 
@@ -21,23 +24,30 @@ export async function GET() {
       [seasonId]
     );
 
-    // Pagos por split_payment
+    // Pagos completados y pendientes
     const [[{ pagado }]] = await db.execute(
-      `SELECT COUNT(*) AS pagado FROM registrations WHERE season_id = ? AND split_payment = 0`,
+      `SELECT COUNT(DISTINCT r.player_id) AS pagado 
+       FROM registrations r 
+       INNER JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id 
+       WHERE r.season_id = ? AND p.status = 'completed'`,
       [seasonId]
     );
 
     const [[{ pendiente }]] = await db.execute(
-      `SELECT COUNT(*) AS pendiente FROM registrations WHERE season_id = ? AND split_payment = 1`,
+      `SELECT COUNT(DISTINCT r.player_id) AS pendiente 
+       FROM registrations r 
+       LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id 
+       WHERE r.season_id = ? AND (p.status IS NULL OR p.status != 'completed')`,
       [seasonId]
     );
 
     // Jugadores por categoría
     const [categoriasResult] = await db.execute(
-      `SELECT c.name AS category, COUNT(*) AS totalPlayers
+      `SELECT c.name AS category, COUNT(DISTINCT r.player_id) AS totalPlayers
        FROM registrations r
        INNER JOIN categories c ON r.category_id = c.id
-       WHERE r.season_id = ?
+       INNER JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id 
+       WHERE r.season_id = ? AND p.status = 'completed'
        GROUP BY c.name`,
       [seasonId]
     );
