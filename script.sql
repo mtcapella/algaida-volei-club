@@ -19,6 +19,9 @@
 -- Table structure for table `categories`
 --
 
+CREATE DATABASE IF NOT EXISTS algaida_volei_club;
+USE algaida_volei_club;
+
 DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -350,38 +353,70 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `archive_debts`()
-BEGIN
-    -- Obtener la temporada activa
-    DECLARE active_season_id INT;
-    SELECT id INTO active_season_id FROM seasons WHERE is_active = 1 LIMIT 1;
-
-    -- Verificar si existe temporada activa
-    IF active_season_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay temporada activa';
-    END IF;
-
-    -- Insertar las deudas en el histórico sin violar ONLY_FULL_GROUP_BY
-    INSERT INTO debt_history (player_id, season_id, total_due, total_paid, status)
-    SELECT 
-        r.player_id, 
-        r.season_id, 
-        MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) AS total_due,
-        IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) AS total_paid,
-        (CASE 
-            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) = MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) THEN 'completed'
-            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) > 0 THEN 'partially_paid'
-            ELSE 'pending' 
-        END) AS status
-    FROM registrations r
-    LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id
-    WHERE r.season_id = active_season_id AND r.split_payment = 1
-    GROUP BY r.player_id, r.season_id;
-
-    -- Actualizar las deudas como saldadas para la temporada activa
-    UPDATE registrations 
-    SET split_payment = 0 
-    WHERE season_id = active_season_id AND split_payment = 1;
-
+BEGIN
+
+    -- Obtener la temporada activa
+
+    DECLARE active_season_id INT;
+
+    SELECT id INTO active_season_id FROM seasons WHERE is_active = 1 LIMIT 1;
+
+
+
+    -- Verificar si existe temporada activa
+
+    IF active_season_id IS NULL THEN
+
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay temporada activa';
+
+    END IF;
+
+
+
+    -- Insertar las deudas en el histórico sin violar ONLY_FULL_GROUP_BY
+
+    INSERT INTO debt_history (player_id, season_id, total_due, total_paid, status)
+
+    SELECT 
+
+        r.player_id, 
+
+        r.season_id, 
+
+        MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) AS total_due,
+
+        IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) AS total_paid,
+
+        (CASE 
+
+            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) = MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) THEN 'completed'
+
+            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) > 0 THEN 'partially_paid'
+
+            ELSE 'pending' 
+
+        END) AS status
+
+    FROM registrations r
+
+    LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id
+
+    WHERE r.season_id = active_season_id AND r.split_payment = 1
+
+    GROUP BY r.player_id, r.season_id;
+
+
+
+    -- Actualizar las deudas como saldadas para la temporada activa
+
+    UPDATE registrations 
+
+    SET split_payment = 0 
+
+    WHERE season_id = active_season_id AND split_payment = 1;
+
+
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
