@@ -12,7 +12,7 @@ export default function BackLayout({ children, onLogout }) {
   const router = useRouter();
   const [teams, setTeams] = useState([]);
 
-  const isClient = typeof window !== "undefined"; // ← Añadido para prevenir render SSR conflictivo
+  const isClient = typeof window !== "undefined"; //  Añadido para prevenir render SSR conflictivo
 
   const linkClass = (href) =>
     `${styles.link} ${path === href ? styles.active : ""}`;
@@ -24,6 +24,12 @@ export default function BackLayout({ children, onLogout }) {
         .then((res) => res.json())
         .then((data) => setTeams(data))
         .catch((error) => console.error("Error cargando equipos:", error));
+      // solo cargamos las temporadas si estamos en /backvolei/temporadas
+    } else if (path.startsWith("/backvolei/temporadas")) {
+      fetch("/api/seasons")
+        .then((res) => res.json())
+        .then((data) => setTeams(data))
+        .catch((error) => console.error("Error cargando temporadas:", error));
     }
   }, [path]);
 
@@ -109,6 +115,32 @@ export default function BackLayout({ children, onLogout }) {
               >
                 Temporadas
               </Link>
+
+              {/* Submenú dinámico de temporadas */}
+              {isClient &&
+                path.startsWith("/backvolei/temporadas") &&
+                teams.length > 0 && (
+                  <ul className={styles.submenu}>
+                    {teams.map(
+                      (season) =>
+                        // si is_active es 1, no lo mostramos ya que es una temporada activa
+                        season.is_active == !1 && (
+                          <li key={season.id}>
+                            <Link
+                              href={`/backvolei/temporadas/${season.id}`}
+                              className={
+                                path === `/backvolei/temporadas/${season.id}`
+                                  ? styles.activeSub
+                                  : styles.sublink
+                              }
+                            >
+                              {season.name}
+                            </Link>
+                          </li>
+                        )
+                    )}
+                  </ul>
+                )}
             </li>
             <li>
               <Link

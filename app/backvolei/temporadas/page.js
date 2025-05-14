@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
+import Link from "next/link";
 
 import styles from "./temporadas.module.css";
 
@@ -112,7 +113,18 @@ export default function SeasonsPage() {
           {seasons.map((s) => (
             <Card key={s.id} className={styles.card}>
               <div className={styles.cardContent}>
-                <h3>{s.name}</h3>
+                {/* Si is_active = 1 se muestra el texto si is_active = 0 se pone un link  */}
+                {s.is_active ? (
+                  <h3>{s.name}</h3>
+                ) : (
+                  <Link
+                    href={`/backvolei/temporadas/${s.id}`}
+                    className={styles.link}
+                  >
+                    <h3>{s.name}</h3>
+                  </Link>
+                )}
+
                 <div className={styles.status}>
                   <span
                     className={s.is_active ? styles.active : styles.inactive}
