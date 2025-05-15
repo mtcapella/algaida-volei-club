@@ -235,9 +235,25 @@
       "readAndAccept": "He leído y acepto",
       "readAndAcceptLOPD": "la política de protección de datos (LOPD)",
       "readAndAcceptError": "Debes aceptar la política de privacidad y el aviso legal",
+      "raadAndAcceosEthicCode": "el código ético y normas de convivencia",
+      "readAndAcceptEthicCodeError": "Debes aceptar el código ético y normas de convivencia",
+      "authorizationImage": "Autorizo para",
+      "imageUse": "el uso de la imagen del jugador/a",
+      "oficialChannel": "en los canales oficiales del club",
+      "authorizationPublication": "Autorizo la publicación de imágenes del jugador/a en la página web.",
+      "authorizationInstagram": "Autorizo la publicación de imágenes del jugador/a en Instagram e Facebook.",
+      "authorizationOtherSocial": "Autorizo la publicación de imágenes del jugador/a en otras redes sociales oficiales del club.",
+      "sumaryAndPayment": "Resumen y pago",
+      "youMostResponse": "Debes responder sobre",
+
       "OCRwaiting": "Por favor, espera mientras verificamos el DNI/NIE. Este proceso puede tardar unos minutos.",
       "OCRInvalid": "La imagen del DNI/NIE no es válida. Por favor, asegúrate de que la imagen esté clara y legible.",
-      "OCRNoMatch": "El DNI/NIE no coincide con el DNI/NIE introducido. Por favor, verifica que los datos sean correctos."
+      "OCRNoMatch": "El DNI/NIE no coincide con el DNI/NIE introducido. Por favor, verifica que los datos sean correctos.",
+
+      "sumary": "Resumen de inscripción",
+      "totalMount": "Importe total",
+      "onlyOnePay": "En un único pago",
+      "loteryParticipation": "Participación en la lotería"
     }
   },
   "buttons": {

@@ -880,7 +880,7 @@ export default function InscriptionPage() {
                 <Controller
                   name="acceptLOPD"
                   control={methods.control}
-                  rules={{ required: "Debes aceptar la LOPD" }}
+                  rules={{ required: t("inscription.form.readAndAcceptError") }}
                   render={({ field, fieldState }) => (
                     <div className={styles.checkbox}>
                       <Checkbox
@@ -889,15 +889,16 @@ export default function InscriptionPage() {
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
                       <label className={styles.checkbox} htmlFor="acceptLOPD">
-                        He leído y acepto la&nbsp;
+                        {t("inscription.form.readAndAccept")}&nbsp;
                         <a
                           href="/lopd"
                           className={styles.link}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          política de protección de datos (LOPD)
+                          {t("inscription.form.readAndAcceptLOPD")}
                         </a>
+                        &nbsp;
                       </label>
                       {fieldState.error && (
                         <small className={styles.error}>
@@ -912,7 +913,9 @@ export default function InscriptionPage() {
                 <Controller
                   name="acceptEthics"
                   control={methods.control}
-                  rules={{ required: "Debes aceptar el Código Ético" }}
+                  rules={{
+                    required: t("inscription.form.readAndAcceptEthicCodeError"),
+                  }}
                   render={({ field, fieldState }) => (
                     <div className={styles.checkbox}>
                       <Checkbox
@@ -921,15 +924,16 @@ export default function InscriptionPage() {
                         onChange={(e) => field.onChange(e.target.checked)}
                       />
                       <label className={styles.checkbox} htmlFor="acceptEthics">
-                        He leído y acepto el&nbsp;
+                        {t("inscription.form.readAndAccept")}&nbsp;
                         <a
                           href="/codigo-etico"
                           className={styles.link}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Código Ético
-                        </a>
+                          {t("inscription.form.raadAndAcceosEthicCode")}
+                        </a>{" "}
+                        &nbsp;
                       </label>
                       {fieldState.error && (
                         <small className={styles.error}>
@@ -943,37 +947,41 @@ export default function InscriptionPage() {
                 {/* Consentimientos de imagen */}
                 <fieldset className={styles.fieldset}>
                   <legend>
-                    Autorización para&nbsp;
+                    {t("inscription.form.authorizationImage")}&nbsp;
                     <a
                       href="/uso-imagenes"
                       className={styles.link}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      uso de imagen&nbsp;
+                      {t("inscription.form.imageUse")}&nbsp;
                     </a>
-                    del/de la jugador/a en canales oficiales del club
+                    {t("inscription.form.oficialChannel")}
                   </legend>
 
                   {[
                     {
                       name: "consentWeb",
-                      label: "¿Autoriza publicación en la página web?",
+                      label: t("inscription.form.authorizationPublication"),
                     },
                     {
                       name: "consentInstagram",
-                      label: "¿Autoriza publicación en Facebook e Instagram?",
+                      label: t("inscription.form.authorizationInstagram"),
                     },
                     {
                       name: "consentOthers",
-                      label: "¿Autoriza uso en otras redes sociales oficiales?",
+                      label: t("inscription.form.authorizationOtherSocial"),
                     },
                   ].map(({ name, label }) => (
                     <Controller
                       key={name}
                       name={name}
                       control={methods.control}
-                      rules={{ required: `Debes responder sobre "${label}"` }}
+                      rules={{
+                        required: `${t(
+                          "inscription.form.youMostResponse"
+                        )} ${label}`,
+                      }}
                       render={({ field, fieldState }) => (
                         <div>
                           <label>{label}</label>
@@ -985,7 +993,9 @@ export default function InscriptionPage() {
                               checked={field.value === "yes"}
                               onChange={(e) => field.onChange(e.value)}
                             />
-                            <label htmlFor={`${name}Yes`}>Sí</label>
+                            <label htmlFor={`${name}Yes`}>
+                              {t("buttons.yes")}
+                            </label>
 
                             <RadioButton
                               inputId={`${name}No`}
@@ -994,7 +1004,9 @@ export default function InscriptionPage() {
                               checked={field.value === "no"}
                               onChange={(e) => field.onChange(e.value)}
                             />
-                            <label htmlFor={`${name}No`}>No</label>
+                            <label htmlFor={`${name}No`}>
+                              {t("buttons.no")}
+                            </label>
                           </div>
                           {fieldState.error && (
                             <small className={styles.error}>
@@ -1032,21 +1044,25 @@ export default function InscriptionPage() {
                 />
               </div>
             </StepperPanel>
-            {/* === Panel 5: Resumen y pago === */}
-            <StepperPanel header="5. Resumen y pago">
+            {/*  Panel 5: Resumen y pago */}
+            <StepperPanel
+              header={`5. ${t("inscription.form.sumaryAndPayment")}`}
+            >
               <div className={styles.panelContent}>
-                <h4>Resumen de tu inscripción</h4>
+                <h4>{t("inscription.form.sumary")}</h4>
                 <p>
-                  <strong>Nombre:</strong> {getValues("first_name")}{" "}
-                  {getValues("last_name")}
+                  <strong>{t("inscription.form.name")} :</strong>
+                  {getValues("first_name")} {getValues("last_name")}
                 </p>
                 <p>
-                  <strong>Importe total:</strong>{" "}
+                  <strong>{t("inscription.form.totalMount")}:</strong>{" "}
                   {!splitPayment
-                    ? `${totalSingle} € en un único pago`
-                    : `Primer pago: ${firstSplit} €, resto ${
-                        priceBase - 250
-                      } € fuera de esta plataforma`}
+                    ? `${totalSingle} € ${t("inscription.form.onlyOnePay")}`
+                    : `${t("inscription.form.firstPay")}: ${firstSplit} €, ${t(
+                        "inscription.form.rest"
+                      )} ${priceBase - 250} € ${t(
+                        "inscription.form.outsidePlatform"
+                      )}`}
                 </p>
 
                 {/* Lotería */}
