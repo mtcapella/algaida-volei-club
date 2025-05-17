@@ -36,11 +36,12 @@ export default function SettingsPage() {
   const [newEnd, setNewEnd] = useState(null);
   const [savingSeason, setSavingSeason] = useState(false);
 
-  /* ---------- fetch form status ---------- */
+  // fetcheamos el estado del formulario
   const getFormStatus = async () => {
     setLoadingStatus(true);
     try {
-      const res = await fetch("/api/form/status");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/form/status`);
       const data = await res.json();
       setFormEnabled(data.enabled === 1);
       setOpensAt(new Date(data.opens_at));
@@ -76,7 +77,8 @@ export default function SettingsPage() {
         closes_at: closesAt.toISOString(),
         enabled: enabled ? 1 : 0,
       };
-      const res = await fetch("/api/form/status", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/form/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -124,7 +126,8 @@ export default function SettingsPage() {
         start_date: newStart.toISOString().split("T")[0],
         end_date: newEnd.toISOString().split("T")[0],
       };
-      const res = await fetch("/api/seasons/close-and-create", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/seasons/close-and-create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

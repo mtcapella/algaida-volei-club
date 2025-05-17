@@ -22,7 +22,8 @@ export default function CategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("/api/categories");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/categories`);
       const data = await res.json();
       setCategories(data);
     } catch (err) {

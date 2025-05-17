@@ -38,7 +38,8 @@ export default function TeamPage({ params }) {
   const fetchTeam = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/teams/${id}`);
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/teams/${id}`);
       if (!res.ok) throw new Error("Error al cargar el equipo");
       const data = await res.json();
       setTeam(data);
@@ -66,8 +67,9 @@ export default function TeamPage({ params }) {
     setAssignDialogVisible(true);
     setLoadingAvailable(true);
     try {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
       const res = await fetch(
-        `/api/available/${encodeURIComponent(team.categoryName)}`
+        `${base}/api/available/${encodeURIComponent(team.categoryName)}`
       );
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -90,7 +92,8 @@ export default function TeamPage({ params }) {
     if (!selectedPlayer) return;
     setAssigning(true);
     try {
-      const res = await fetch(`/api/assign-player`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/assign-player`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -130,7 +133,8 @@ export default function TeamPage({ params }) {
     console.log("eliminar", rowData);
     setRemovingId(rowData.playerId);
     try {
-      const res = await fetch(`/api/assign-player`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/assign-player`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

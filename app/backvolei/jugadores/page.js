@@ -53,13 +53,15 @@ export default function Players() {
   }, []);
 
   const fetchPlayers = async () => {
-    const res = await fetch("/api/players");
+    const base = process.env.NEXT_PUBLIC_DOMAIN;
+    const res = await fetch(`${base}/api/players`);
     const data = await res.json();
     setPlayers(data);
   };
 
   const fetchTeams = async () => {
-    const res = await fetch("/api/teams");
+    const base = process.env.NEXT_PUBLIC_DOMAIN;
+    const res = await fetch(`${base}/api/teams`);
     const data = await res.json();
     setTeams(data);
   };
@@ -67,7 +69,8 @@ export default function Players() {
   /* --------------------- helpers / acciones en tabla --------------------- */
   const handleDelete = async (playerId, playerName) => {
     try {
-      const response = await fetch(`/api/players/${playerId}`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const response = await fetch(`${base}/api/players/${playerId}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -114,7 +117,8 @@ export default function Players() {
     try {
       const { playerId, firstName, lastName, teamId, dateOfBirth } =
         playerToEdit;
-      const response = await fetch(`/api/players/${playerId}`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const response = await fetch(`${base}/api/players/${playerId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -154,7 +158,8 @@ export default function Players() {
 
     setCheckingDni(true);
     try {
-      const res = await fetch(`/api/check-user/${dni}`);
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/check-user/${dni}`);
       const data = await res.json();
 
       // reset de errores previos
@@ -230,7 +235,8 @@ export default function Players() {
     }
 
     try {
-      const response = await fetch("/api/register", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const response = await fetch(`${base}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -249,6 +255,7 @@ export default function Players() {
           participateLottery: false,
           splitPayment: false,
           isMinor: false,
+          status: "completed",
         }),
       });
 

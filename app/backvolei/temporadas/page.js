@@ -32,7 +32,8 @@ export default function SeasonsPage() {
   const fetchSeasons = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/seasons");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/seasons`);
       const data = await res.json();
       setSeasons(data);
     } catch (err) {
@@ -57,7 +58,8 @@ export default function SeasonsPage() {
       return;
     }
     try {
-      const response = await fetch("/api/seasons", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const response = await fetch(`${base}/api/seasons`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

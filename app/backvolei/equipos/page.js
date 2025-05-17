@@ -52,7 +52,8 @@ export default function Teams() {
 
   const fetchTeams = async () => {
     try {
-      const res = await fetch("/api/teams");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/teams`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setTeams(data);
@@ -86,7 +87,8 @@ export default function Teams() {
     if (!teamForm.name || !teamForm.categoryId) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/teams", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/teams`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -120,7 +122,8 @@ export default function Teams() {
     if (!teamForm.name || !teamForm.categoryId) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/teams/${teamForm.id}`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/teams/${teamForm.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -156,7 +159,10 @@ export default function Teams() {
     );
     if (!confirmDelete) return;
     try {
-      const res = await fetch(`/api/teams/${team.id}`, { method: "DELETE" });
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/teams/${team.id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error();
       toast.current.show({
         severity: "success",

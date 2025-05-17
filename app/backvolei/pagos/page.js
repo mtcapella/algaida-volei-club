@@ -24,7 +24,8 @@ export default function PaymentsPage() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/payments/current");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/payments/current`);
       if (!res.ok) throw new Error("Error al cargar pagos");
       const data = await res.json();
       // añade campo deuda precalculado (number)
@@ -59,7 +60,8 @@ export default function PaymentsPage() {
 
     try {
       setLoading(true);
-      const res = await fetch("/api/payments/update", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/payments/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerId: row.playerId }),

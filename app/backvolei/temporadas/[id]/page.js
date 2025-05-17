@@ -38,7 +38,8 @@ export default function SeasonDetail({ params }) {
   const fetchSeason = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/seasons/${id}`);
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/seasons/${id}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setSeason(data);
@@ -104,7 +105,8 @@ export default function SeasonDetail({ params }) {
       return;
 
     try {
-      const res = await fetch(`/api/seasons/${id}`, {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/seasons/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerId: row.playerId }),
