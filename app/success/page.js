@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import styles from "./success.module.css";
 
-export default function SuccessPage() {
+export default function SuccessPageWrapper() {
+  return (
+    <div className={styles.successPage}>
+      <Suspense fallback={<p>⏳ Verificando cancelación...</p>}>
+        <SuccessPage />
+      </Suspense>
+    </div>
+  );
+  // El Suspense es para que no se vea el loading de la página entera
+}
+
+function SuccessPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -46,7 +57,7 @@ export default function SuccessPage() {
 
   if (loading) {
     return (
-      <div className={styles.successPage}>
+      <div>
         <h2>⏳ Verificando tu pago...</h2>
       </div>
     );

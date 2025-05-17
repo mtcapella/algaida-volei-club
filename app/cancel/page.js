@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import styles from "./cancel.module.css";
 
-export default function CancelPage() {
+export default function CancelPageWrapper() {
+  return (
+    <div className={styles.cancelPage}>
+      <Suspense fallback={<p>⏳ Verificando cancelación...</p>}>
+        <CancelPage />
+      </Suspense>
+    </div>
+  );
+  // El Suspense es para que no se vea el loading de la página entera
+}
+
+function CancelPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -44,7 +55,7 @@ export default function CancelPage() {
 
   if (status === "error") {
     return (
-      <div className={styles.cancelPage}>
+      <div>
         <h2>❌ Algo salió mal al procesar la cancelación.</h2>
         <p>Por favor, contacta con el club o vuelve a intentarlo más tarde.</p>
       </div>
