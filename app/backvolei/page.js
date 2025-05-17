@@ -4,7 +4,7 @@ export default async function Dashboard() {
   // obtenemos los datos del dashboard desde la API
   // usando la cache no-store para que siempre se obtengan los datos actualizados
 
-  const res = await fetch("http://localhost:3000/api/dashboard", {
+  const res = await fetch("/api/dashboard", {
     cache: "no-store",
   });
   const { totalPlayers, totalTeams, pagos, jugadoresPorCategoria } =
