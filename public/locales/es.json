@@ -245,6 +245,9 @@
       "authorizationOtherSocial": "Autorizo la publicación de imágenes del jugador/a en otras redes sociales oficiales del club.",
       "sumaryAndPayment": "Resumen y pago",
       "youMostResponse": "Debes responder sobre",
+      "firstPay": "Primer pago de",
+      "rest" : "Resto de",
+      "outsidePlatform": "Fuera de la plataforma",
 
       "OCRwaiting": "Por favor, espera mientras verificamos el DNI/NIE. Este proceso puede tardar unos minutos.",
       "OCRInvalid": "La imagen del DNI/NIE no es válida. Por favor, asegúrate de que la imagen esté clara y legible.",
@@ -253,7 +256,13 @@
       "sumary": "Resumen de inscripción",
       "totalMount": "Importe total",
       "onlyOnePay": "En un único pago",
-      "loteryParticipation": "Participación en la lotería"
+      "loteryParticipation": "Participación en la lotería",
+      "splitPayment": "Pago fraccionado",
+      "now": "Ahora",
+      "youHaveaDebt": "Tienes una deuda pendiente de",
+      "contactWithUs": "Contacta con nosotros para resolverla",
+      "notActive": "La inscripción no está activa",
+      "notActiveText": "La inscripción no está activa en este momento."
     }
   },
   "buttons": {

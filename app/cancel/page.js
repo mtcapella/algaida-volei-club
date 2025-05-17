@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import styles from "./cancel.module.css";
+
 export default function CancelPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -42,7 +44,7 @@ export default function CancelPage() {
 
   if (status === "error") {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.cancelPage}>
         <h2>❌ Algo salió mal al procesar la cancelación.</h2>
         <p>Por favor, contacta con el club o vuelve a intentarlo más tarde.</p>
       </div>

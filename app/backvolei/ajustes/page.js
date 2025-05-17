@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dropdown } from "primereact/dropdown";
-import { RadioButton } from "primereact/radiobutton";
+import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { useTranslation } from "react-i18next";
 
 import styles from "./ajustes.module.css";
 
@@ -13,35 +16,163 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 export default function SettingsPage() {
+  /* ---------- i18n ---------- */
+  const { i18n } = useTranslation();
+  const changeLang = (lng) => i18n.changeLanguage(lng);
+
+  /* ---------- refs ---------- */
   const toast = useRef(null);
 
-  /** ------- estado local (solo para demo) ------- */
-  const [language, setLanguage] = useState(null);
-  const [closeSeasonChoice, setCloseSeasonChoice] = useState(null); // "yes" | "no"
-  const [inscriptionsOpen, setInscriptionsOpen] = useState(null); // true | false
+  /* ---------- state ---------- */
+  const [loadingStatus, setLoadingStatus] = useState(true);
+  const [formEnabled, setFormEnabled] = useState(false);
+  const [opensAt, setOpensAt] = useState(null);
+  const [closesAt, setClosesAt] = useState(null);
+  const [language, setLanguage] = useState(i18n.resolvedLanguage);
 
-  /** ------- helpers ------- */
-  const confirmAction = (question, actionLabel, cb) => {
-    const ok = window.confirm(question);
-    if (!ok) return;
-    console.log(`[DEMO] ${actionLabel}`);
-    toast.current.show({
-      severity: "success",
-      summary: "Acción simulada",
-      detail: actionLabel,
-      life: 2500,
-    });
-    cb?.();
+  /* nueva temporada modal */
+  const [newSeasonVisible, setNewSeasonVisible] = useState(false);
+  const [newStart, setNewStart] = useState(null);
+  const [newEnd, setNewEnd] = useState(null);
+  const [savingSeason, setSavingSeason] = useState(false);
+
+  /* ---------- fetch form status ---------- */
+  const getFormStatus = async () => {
+    setLoadingStatus(true);
+    try {
+      const res = await fetch("/api/form/status");
+      const data = await res.json();
+      setFormEnabled(data.enabled === 1);
+      setOpensAt(new Date(data.opens_at));
+      setClosesAt(new Date(data.closes_at));
+    } catch (err) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo obtener el estado del formulario.",
+        life: 3000,
+      });
+    } finally {
+      setLoadingStatus(false);
+    }
   };
 
-  /* --------------------------- UI --------------------------- */
+  useEffect(() => {
+    getFormStatus();
+  }, []);
+
+  /* ---------- update endpoint ---------- */
+  const updateFormStatus = async (enabled) => {
+    if (
+      !window.confirm(
+        `¿Seguro que deseas ${enabled ? "abrir" : "cerrar"} las inscripciones?`
+      )
+    )
+      return;
+
+    try {
+      const body = {
+        opens_at: opensAt.toISOString(),
+        closes_at: closesAt.toISOString(),
+        enabled: enabled ? 1 : 0,
+      };
+      const res = await fetch("/api/form/status", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      toast.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: `Inscripciones ${enabled ? "abiertas" : "cerradas"}`,
+        life: 2500,
+      });
+      setFormEnabled(enabled);
+    } catch (err) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo actualizar el estado.",
+        life: 3000,
+      });
+    }
+  };
+
+  /* ---------- create new season ---------- */
+  const handleCreateSeason = async () => {
+    if (!newStart || !newEnd) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Fechas requeridas",
+        detail: "Debes indicar inicio y fin.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Al crear una nueva temporada la actual se cerrará y las deudas se trasladarán. Esta acción es irreversible. ¿Continuar?"
+      )
+    )
+      return;
+
+    setSavingSeason(true);
+    try {
+      const body = {
+        start_date: newStart.toISOString().split("T")[0],
+        end_date: newEnd.toISOString().split("T")[0],
+      };
+      const res = await fetch("/api/seasons/close-and-create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      toast.current?.show({
+        severity: "success",
+        summary: "Temporada creada",
+        detail: "La nueva temporada se creó correctamente.",
+        life: 3000,
+      });
+      setNewSeasonVisible(false);
+      setNewStart(null);
+      setNewEnd(null);
+      // podríamos refrescar estado si fuera necesario
+    } catch (err) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo crear la temporada.",
+        life: 3000,
+      });
+    } finally {
+      setSavingSeason(false);
+    }
+  };
+
+  /* ---------- render ---------- */
+  if (loadingStatus) {
+    return (
+      <div className="flex justify-content-center" style={{ height: "60vh" }}>
+        <ProgressSpinner />
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/** Idioma */}
+      <Toast ref={toast} />
+
+      {/* Idioma */}
       <div className={styles.block}>
         <Dropdown
           value={language}
-          onChange={(e) => setLanguage(e.value)}
+          onChange={(e) => {
+            setLanguage(e.value);
+            changeLang(e.value);
+          }}
           options={[
             { label: "Español", value: "es" },
             { label: "Català", value: "ca" },
@@ -52,92 +183,104 @@ export default function SettingsPage() {
         />
       </div>
 
-      {/** Cerrar temporada */}
-      <div className={styles.block}>
-        <p style={{ marginBottom: "0.5rem" }}>Cerrar temporada actual</p>
-        <div className={styles.inlineCenter} style={{ gap: "1.5rem" }}>
-          <div>
-            <RadioButton
-              inputId="closeYes"
-              value="yes"
-              name="close"
-              onChange={(e) => setCloseSeasonChoice(e.value)}
-              checked={closeSeasonChoice === "yes"}
-            />
-            <label htmlFor="closeYes" style={{ marginLeft: ".3rem" }}>
-              Sí
-            </label>
-          </div>
-          <div>
-            <RadioButton
-              inputId="closeNo"
-              value="no"
-              name="close"
-              onChange={(e) => setCloseSeasonChoice(e.value)}
-              checked={closeSeasonChoice === "no"}
-            />
-            <label htmlFor="closeNo" style={{ marginLeft: ".3rem" }}>
-              No
-            </label>
-          </div>
-        </div>
-        <Button
-          label="Bloquear la edición de datos de la temporada en curso"
-          className="p-button-sm p-button-danger mt-3"
-          onClick={() =>
-            confirmAction(
-              "¿Seguro que deseas cerrar la temporada?",
-              "Cerrar temporada",
-              () => {}
-            )
-          }
-        />
-      </div>
-
-      {/** Inscripciones */}
+      {/* Inscripciones */}
       <div className={styles.block}>
         <p style={{ marginBottom: "0.5rem" }}>Inscripciones</p>
+        <div className="grid" style={{ gap: "1rem" }}>
+          <div className="col-12 md:col-6">
+            <label>Abren el</label>
+            <Calendar
+              value={opensAt}
+              onChange={(e) => setOpensAt(e.value)}
+              showIcon
+              dateFormat="yy-mm-dd"
+            />
+          </div>
+          <div className="col-12 md:col-6">
+            <label>Cierran el</label>
+            <Calendar
+              value={closesAt}
+              onChange={(e) => setClosesAt(e.value)}
+              showIcon
+              dateFormat="yy-mm-dd"
+            />
+          </div>
+        </div>
         <div className={styles.inlineCenter} style={{ gap: "1rem" }}>
           <Button
             label="Abrir"
             className="p-button-sm p-button-success"
-            onClick={() =>
-              confirmAction(
-                "¿Abrir inscripciones?",
-                "Abrir inscripciones",
-                () => {
-                  setInscriptionsOpen(true);
-                }
-              )
-            }
+            disabled={formEnabled}
+            onClick={() => updateFormStatus(true)}
           />
           <Button
             label="Cerrar"
             className="p-button-sm p-button-danger"
-            onClick={() =>
-              confirmAction(
-                "¿Cerrar inscripciones?",
-                "Cerrar inscripciones",
-                () => {
-                  setInscriptionsOpen(false);
-                }
-              )
-            }
+            disabled={!formEnabled}
+            onClick={() => updateFormStatus(false)}
           />
         </div>
         <small style={{ display: "block", marginTop: ".5rem" }}>
-          Estado actual:{" "}
-          {inscriptionsOpen === null
-            ? "—"
-            : inscriptionsOpen
-            ? "Abierto"
-            : "Cerrado"}
+          Estado actual: {formEnabled ? "Abierto" : "Cerrado"}
         </small>
       </div>
 
-      <div className={styles.blockFuture}>
-        Opciones futuras (logs, gestión de usuarios, etc.)
+      {/* Crear nueva temporada */}
+      <div className={styles.block}>
+        <p style={{ marginBottom: "0.5rem" }}>Nueva temporada</p>
+        <Button
+          label="Crear nueva temporada"
+          icon="pi pi-plus-circle"
+          className="p-button-sm"
+          onClick={() => setNewSeasonVisible(true)}
+        />
       </div>
+
+      {/* Dialog nueva temporada */}
+      <Dialog
+        header="Crear nueva temporada"
+        visible={newSeasonVisible}
+        style={{ width: "420px" }}
+        modal
+        onHide={() => setNewSeasonVisible(false)}
+      >
+        <div className="p-fluid" style={{ gap: "1rem" }}>
+          <label>Inicio</label>
+          <Calendar
+            value={newStart}
+            onChange={(e) => setNewStart(e.value)}
+            showIcon
+            dateFormat="yy-mm-dd"
+          />
+
+          <label style={{ marginTop: "1rem" }}>Fin</label>
+          <Calendar
+            value={newEnd}
+            onChange={(e) => setNewEnd(e.value)}
+            showIcon
+            dateFormat="yy-mm-dd"
+          />
+
+          <div
+            className="flex justify-content-end mt-4"
+            style={{ gap: "1rem" }}
+          >
+            <Button
+              label="Cancelar"
+              className="p-button-text p-button-sm"
+              onClick={() => setNewSeasonVisible(false)}
+              disabled={savingSeason}
+            />
+            <Button
+              label="Guardar"
+              icon="pi pi-check"
+              className="p-button-sm"
+              loading={savingSeason}
+              onClick={handleCreateSeason}
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

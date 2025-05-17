@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm, FormProvider, Controller, set } from "react-hook-form";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
@@ -28,6 +28,27 @@ import Tesseract from "tesseract.js";
 import { verifyOCR } from "@/libs/verifyOCR";
 
 export default function InscriptionPage() {
+  // hacemos un use state para http://localhost:3000/api/form/status para saber si el formulario está activo o no
+  // y si no lo está, mostramos un mensaje de el formulario no está activo en estos momentos
+
+  const [formActive, setFormActive] = React.useState(false);
+
+  useEffect(() => {
+    const checkFormStatus = async () => {
+      const res = await fetch("/api/form/status");
+      const data = await res.json();
+      console.log("Estado del formulario:", data);
+      if (data.enabled === 1 && data.isActive) {
+        setFormActive(true);
+      } else {
+        setFormActive(false);
+      }
+    };
+    checkFormStatus();
+  }, []);
+
+  console.log("Estado del formulario:", formActive);
+
   const { t } = useTranslation();
   const stepperRef = useRef(null);
   const toast = useRef(null);
@@ -36,9 +57,7 @@ export default function InscriptionPage() {
   const [checking, setChecking] = React.useState(false);
   const [paying, setPaying] = React.useState(false);
 
-  /*───────────────────────────────────────────────────────────────*/
-  /*  Form state                                                   */
-  /*───────────────────────────────────────────────────────────────*/
+  // Inicializamos el formulario
 
   const methods = useForm({
     mode: "onTouched",
@@ -87,9 +106,7 @@ export default function InscriptionPage() {
     formState: { errors },
   } = methods;
 
-  /*───────────────────────────────────────────────────────────────*/
-  /*  Utilidades                                                   */
-  /*───────────────────────────────────────────────────────────────*/
+  // Se obtiene la fecha de nacimiento para calcular la edad
 
   const birthDate = watch("birthDate");
   const age = birthDate
@@ -105,9 +122,11 @@ export default function InscriptionPage() {
     if (valid) stepperRef.current.nextCallback();
   };
 
-  /*───────────────────────────────────────────────────────────────*/
-  /*  Envío final                                                  */
-  /*───────────────────────────────────────────────────────────────*/
+  // Envío definitivo del formulario
+  // Se generan los PDFs y se suben a Firebase
+  // Se envía el payload a la API de inscripción
+  // Se genera la sesión de pago con Stripe
+  // Se redirige a Stripe para el pago
 
   const onFinalSubmit = async (data) => {
     if (data.hasDebt) {
@@ -154,9 +173,7 @@ export default function InscriptionPage() {
         return;
       }
 
-      /*───────────────────────────*/
-      /*  Generar PDFs y subir ficheros  */
-      /*───────────────────────────*/
+      // Generar PDFs y subir ficheros a firebase
 
       const lopdFile = await generateLOPD(data);
       const imageFile = await generateImageUse(data);
@@ -207,7 +224,7 @@ export default function InscriptionPage() {
 
       const { playerId } = await resp.json(); // ID del jugador para Stripe
 
-      // ➜ Ahora generamos la sesión de pago con Stripe
+      // Ahora generamos la sesión de pago con Stripe
       const fullName = `${data.first_name} ${data.last_name}`;
 
       const stripeRes = await fetch("/api/create-checkout-session", {
@@ -245,9 +262,7 @@ export default function InscriptionPage() {
     }
   };
 
-  /*───────────────────────────────────────────────────────────────*/
-  /*  Resumen de totales                                            */
-  /*───────────────────────────────────────────────────────────────*/
+  // Resumen de la inscripción
 
   const priceBase = 400;
   const lotteryDiscount = 20;
@@ -261,879 +276,907 @@ export default function InscriptionPage() {
     : priceBase;
   const firstSplit = participateLottery ? 250 - lotteryDiscount : 250;
 
-  /*───────────────────────────────────────────────────────────────*/
-  /*  Render                                                        */
-  /*───────────────────────────────────────────────────────────────*/
+  //  Funciones de  Render
+  if (!formActive) {
+    // Si el formulario no está activo, mostramos un mensaje
+    return (
+      <div className={styles.inscriptionPage}>
+        <h1>{t("inscription.form.notActive")}</h1>
+        <p>{t("inscription.form.notActiveText")}</p>
+      </div>
+    );
+  } else if (formActive) {
+    return (
+      <FormProvider {...methods}>
+        <Toast ref={toast} />
+        <form
+          onSubmit={methods.handleSubmit(onFinalSubmit)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
+        >
+          <div className={styles.inscriptionCard}>
+            <Stepper
+              ref={stepperRef}
+              orientation="vertical"
+              readOnly
+              linear
+              className={styles.stepperContainer}
+            >
+              {/* ────────────────── Paso 1 */}
+              <StepperPanel header={`1. ${t("inscription.form.birthDate")}`}>
+                <div className={styles.panelContent}>
+                  <label htmlFor="birthDate">
+                    {t("inscription.form.birthDate")}*
+                  </label>
+                  <Controller
+                    name="birthDate"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.birthDateError"),
+                      validate: (v) =>
+                        v <= new Date() ||
+                        t("inscription.form.futureDateError"),
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Calendar
+                          id="birthDate"
+                          value={field.value}
+                          onChange={(e) => field.onChange(e.value)}
+                          showIcon
+                          dateFormat="dd/mm/yy"
+                          placeholder="dd/mm/aaaa"
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+                <div className={styles.panelNav}>
+                  <Button
+                    type="button"
+                    label={t("buttons.next")}
+                    icon="pi pi-arrow-right"
+                    onClick={() => onNext(["birthDate"])}
+                  />
+                </div>
+              </StepperPanel>
 
-  return (
-    <FormProvider {...methods}>
-      <Toast ref={toast} />
-      <form
-        onSubmit={methods.handleSubmit(onFinalSubmit)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.preventDefault();
-        }}
-      >
-        <div className={styles.inscriptionCard}>
-          <Stepper
-            ref={stepperRef}
-            orientation="vertical"
-            readOnly
-            linear
-            className={styles.stepperContainer}
-          >
-            {/* ────────────────── Paso 1 */}
-            <StepperPanel header={`1. ${t("inscription.form.birthDate")}`}>
-              <div className={styles.panelContent}>
-                <label htmlFor="birthDate">
-                  {t("inscription.form.birthDate")}*
-                </label>
-                <Controller
-                  name="birthDate"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.birthDateError"),
-                    validate: (v) =>
-                      v <= new Date() || t("inscription.form.futureDateError"),
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <Calendar
-                        id="birthDate"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.value)}
-                        showIcon
-                        dateFormat="dd/mm/yy"
-                        placeholder="dd/mm/aaaa"
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
+              {/* ────────────────── Paso 2 */}
+              <StepperPanel header={`2. ${t("inscription.form.dni")}`}>
+                <div className={styles.panelContent}>
+                  <label htmlFor="dni">{t("inscription.form.dni")}*</label>
+                  <Controller
+                    name="dni"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.dniError"),
+                      pattern: {
+                        value: /^[XYZ]?\d{7,8}[A-Z]$/,
+                        message: t("inscription.form.dniInvalid"),
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          id="dni"
+                          type="text"
+                          {...field}
+                          className={styles.input}
+                          placeholder={t("inscription.form.dniPlaceholder")}
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+
+                  {/* Foto DNI */}
+                  <label htmlFor="dniFile">
+                    {t("inscription.form.dniImage")}*
+                  </label>
+                  <Controller
+                    name="dniFile"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.dniImageError"),
+                      validate: {
+                        isImage: (file) =>
+                          file?.type.startsWith("image/") ||
+                          t("inscription.form.dniImageInvalid"),
+                        maxSize: (file) =>
+                          file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <input
+                          id="dniFile"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            field.onChange(e.target.files?.[0] ?? null)
+                          }
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+
+                  {/* Subir foto del jugador */}
+
+                  <label htmlFor="photoFile">
+                    {t("inscription.form.playerImage")}*
+                  </label>
+                  <Controller
+                    name="photoFile"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.playerImageError"),
+                      validate: {
+                        isImage: (file) =>
+                          file?.type.startsWith("image/") ||
+                          t("inscription.form.playerImageInvalid"),
+                        maxSize: (file) =>
+                          file?.size <= 2 * 1024 * 1024 ||
+                          t("inscription.form.playerImageSize"),
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <input
+                          id="photoFile"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            field.onChange(e.target.files?.[0] ?? null)
+                          }
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+
+                  {errors.api && (
+                    <small className={styles.error}>{errors.api.message}</small>
                   )}
-                />
-              </div>
-              <div className={styles.panelNav}>
-                <Button
-                  type="button"
-                  label={t("buttons.next")}
-                  icon="pi pi-arrow-right"
-                  onClick={() => onNext(["birthDate"])}
-                />
-              </div>
-            </StepperPanel>
+                </div>
 
-            {/* ────────────────── Paso 2 */}
-            <StepperPanel header={`2. ${t("inscription.form.dni")}`}>
-              <div className={styles.panelContent}>
-                <label htmlFor="dni">{t("inscription.form.dni")}*</label>
-                <Controller
-                  name="dni"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.dniError"),
-                    pattern: {
-                      value: /^[XYZ]?\d{7,8}[A-Z]$/,
-                      message: t("inscription.form.dniInvalid"),
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <InputText
-                        id="dni"
-                        type="text"
-                        {...field}
-                        className={styles.input}
-                        placeholder={t("inscription.form.dniPlaceholder")}
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
+                <div className={styles.panelNav}>
+                  <Button
+                    type="button"
+                    label={t("buttons.back")}
+                    severity="secondary"
+                    icon="pi pi-arrow-left"
+                    onClick={() => stepperRef.current.prevCallback()}
+                  />
 
-                {/* Foto DNI */}
-                <label htmlFor="dniFile">
-                  {t("inscription.form.dniImage")}*
-                </label>
-                <Controller
-                  name="dniFile"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.dniImageError"),
-                    validate: {
-                      isImage: (file) =>
-                        file?.type.startsWith("image/") ||
-                        t("inscription.form.dniImageInvalid"),
-                      maxSize: (file) =>
-                        file?.size <= 2 * 1024 * 1024 || "Máx. 2 MB",
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <input
-                        id="dniFile"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          field.onChange(e.target.files?.[0] ?? null)
-                        }
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
+                  <Button
+                    type="button"
+                    label={t("buttons.next")}
+                    icon="pi pi-arrow-right"
+                    loading={checking} /* ← muestra spinner dentro del botón */
+                    disabled={checking}
+                    onClick={async () => {
+                      const dniVal = getValues("dni").toUpperCase();
+                      const file = getValues("dniFile");
+                      setChecking(true);
 
-                {/* Subir foto del jugador */}
+                      try {
+                        // Verificamos primero si hay deudas o el jugador ya está registrado
+                        const res = await fetch(`/api/check-user/${dniVal}`);
+                        const data = await res.json();
 
-                <label htmlFor="photoFile">
-                  {t("inscription.form.playerImage")}*
-                </label>
-                <Controller
-                  name="photoFile"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.playerImageError"),
-                    validate: {
-                      isImage: (file) =>
-                        file?.type.startsWith("image/") ||
-                        t("inscription.form.playerImageInvalid"),
-                      maxSize: (file) =>
-                        file?.size <= 2 * 1024 * 1024 ||
-                        t("inscription.form.playerImageSize"),
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <input
-                        id="photoFile"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          field.onChange(e.target.files?.[0] ?? null)
-                        }
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
-
-                {errors.api && (
-                  <small className={styles.error}>{errors.api.message}</small>
-                )}
-              </div>
-
-              <div className={styles.panelNav}>
-                <Button
-                  type="button"
-                  label={t("buttons.back")}
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  onClick={() => stepperRef.current.prevCallback()}
-                />
-
-                <Button
-                  type="button"
-                  label={t("buttons.next")}
-                  icon="pi pi-arrow-right"
-                  loading={checking} /* ← muestra spinner dentro del botón */
-                  disabled={checking}
-                  onClick={async () => {
-                    const dniVal = getValues("dni").toUpperCase();
-                    const file = getValues("dniFile");
-                    setChecking(true);
-
-                    try {
-                      // Verificamos primero si hay deudas o el jugador ya está registrado
-                      const res = await fetch(`/api/check-user/${dniVal}`);
-                      const data = await res.json();
-
-                      // Comprobamos si el jugador tiene deudas pendientes
-                      if (data.exists && data.hasDebt) {
-                        setValue("hasDebt", true);
-                        setError("api", {
-                          type: "manual",
-                          message: t("inscription.form.playerHasDebt"),
-                        });
-                        toast.current.show({
-                          severity: "error",
-                          summary: t("inscription.form.playerHasDebt"),
-                          detail: t("inscription.form.playerNeedSolveDebt"),
-                        });
-                        return;
-                      }
-
-                      // Comprobamos si el jugador ya está inscrito en la temporada
-                      if (data.exists && data.registered) {
-                        setError("api", {
-                          type: "manual",
-                          message: t("inscription.form.playerExistSeason"),
-                        });
-                        return;
-                      }
-
-                      // Verificamos el OCR solo si hay una imagen
-                      if (file) {
-                        toast.current.show({
-                          severity: "info",
-                          summary: "Verificando DNI...",
-                          detail: t("inscription.form.OCRwaiting"),
-                        });
-
-                        // Llamamos al helper de OCR
-                        const detectedDNI = await verifyOCR(file);
-                        console.log("DNI detectado por OCR:", detectedDNI);
-
-                        if (!detectedDNI) {
+                        // Comprobamos si el jugador tiene deudas pendientes
+                        if (data.exists && data.hasDebt) {
+                          setValue("hasDebt", true);
+                          setError("api", {
+                            type: "manual",
+                            message: t("inscription.form.playerHasDebt"),
+                          });
                           toast.current.show({
                             severity: "error",
-                            summary: "Error OCR",
+                            summary: t("inscription.form.playerHasDebt"),
+                            detail: t("inscription.form.playerNeedSolveDebt"),
+                          });
+                          return;
+                        }
+
+                        // Comprobamos si el jugador ya está inscrito en la temporada
+                        if (data.exists && data.registered) {
+                          setError("api", {
+                            type: "manual",
+                            message: t("inscription.form.playerExistSeason"),
+                          });
+                          return;
+                        }
+
+                        // Verificamos el OCR solo si hay una imagen
+                        if (file) {
+                          toast.current.show({
+                            severity: "info",
+                            summary: "Verificando DNI...",
                             detail: t("inscription.form.OCRwaiting"),
                           });
-                          return;
+
+                          // Llamamos al helper de OCR
+                          const detectedDNI = await verifyOCR(file);
+                          console.log("DNI detectado por OCR:", detectedDNI);
+
+                          if (!detectedDNI) {
+                            toast.current.show({
+                              severity: "error",
+                              summary: "Error OCR",
+                              detail: t("inscription.form.OCRwaiting"),
+                            });
+                            return;
+                          }
+
+                          if (!detectedDNI.includes(dniVal)) {
+                            toast.current.show({
+                              severity: "error",
+                              summary: "Error OCR",
+                              detail: t("inscription.form.OCRNoMatch"),
+                            });
+                            return;
+                          }
                         }
 
-                        if (!detectedDNI.includes(dniVal)) {
-                          toast.current.show({
-                            severity: "error",
-                            summary: "Error OCR",
-                            detail: t("inscription.form.OCRNoMatch"),
-                          });
-                          return;
+                        // Si todo está bien, pasamos al siguiente paso
+                        clearErrors("api");
+                        setValue("hasDebt", false);
+                        if (data.exists) {
+                          setValue("first_name", data.player.first_name);
+                          setValue("last_name", data.player.last_name);
+                          setValue("playerId", data.player.playerId);
+                          setValue("exists", true);
                         }
+
+                        // Valida campos del paso y avanza
+                        const ok = await trigger([
+                          "dni",
+                          "dniFile",
+                          "photoFile",
+                        ]);
+                        if (ok) onNext(["dni", "dniFile", "photoFile"]);
+                      } catch (err) {
+                        console.error(err);
+                        toast.current.show({
+                          severity: "error",
+                          summary: "Error",
+                          detail: "Hubo un problema al verificar el DNI.",
+                        });
+                      } finally {
+                        setChecking(false); // se restablece el estado
                       }
+                    }}
+                  />
+                </div>
+              </StepperPanel>
 
-                      // Si todo está bien, pasamos al siguiente paso
-                      clearErrors("api");
-                      setValue("hasDebt", false);
-                      if (data.exists) {
-                        setValue("first_name", data.player.first_name);
-                        setValue("last_name", data.player.last_name);
-                        setValue("playerId", data.player.playerId);
-                        setValue("exists", true);
-                      }
+              {/* === Panel 3: Datos personales === */}
+              <StepperPanel header={`3. ${t("inscription.form.personalData")}`}>
+                <div className={styles.panelContent}>
+                  {/* Nombre/apellidos (readonly si ya vienen seteados) */}
+                  <Controller
+                    name="first_name"
+                    control={methods.control}
+                    rules={{ required: t("inscription.form.nameError") }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          {...field}
+                          placeholder={t("inscription.form.name")}
+                          className={styles.input}
+                          readOnly={getValues("exists")}
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+                  <Controller
+                    name="last_name"
+                    control={methods.control}
+                    rules={{ required: t("inscription.form.surnameError") }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          {...field}
+                          placeholder="Apellidos"
+                          className={styles.input}
+                          readOnly={getValues("exists")}
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
 
-                      // Valida campos del paso y avanza
-                      const ok = await trigger(["dni", "dniFile", "photoFile"]);
-                      if (ok) onNext(["dni", "dniFile", "photoFile"]);
-                    } catch (err) {
-                      console.error(err);
-                      toast.current.show({
-                        severity: "error",
-                        summary: "Error",
-                        detail: "Hubo un problema al verificar el DNI.",
-                      });
-                    } finally {
-                      setChecking(false); // se restablece el estado
-                    }
-                  }}
-                />
-              </div>
-            </StepperPanel>
+                  {/* Email */}
+                  <Controller
+                    name="email"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.emailError"),
+                      pattern: {
+                        value: /^\S+@\S+\.\S+$/,
+                        message: t("inscription.form.emailInvalid"),
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          {...field}
+                          placeholder="ejemplo@dominio.com"
+                          className={styles.input}
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
 
-            {/* === Panel 3: Datos personales === */}
-            <StepperPanel header={`3. ${t("inscription.form.personalData")}`}>
-              <div className={styles.panelContent}>
-                {/* Nombre/apellidos (readonly si ya vienen seteados) */}
-                <Controller
-                  name="first_name"
-                  control={methods.control}
-                  rules={{ required: t("inscription.form.nameError") }}
-                  render={({ field, fieldState }) => (
+                  {/* Teléfono jugador */}
+                  <Controller
+                    name="phone"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.phoneError"),
+                      pattern: {
+                        value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
+                        message: t("inscription.form.phoneInvalid"),
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <InputText
+                          {...field}
+                          placeholder={t("inscription.form.phone")}
+                          className={styles.input}
+                        />
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  />
+
+                  {/* Campos de tutor si es menor */}
+                  {isMinor && (
                     <>
-                      <InputText
-                        {...field}
-                        placeholder={t("inscription.form.name")}
-                        className={styles.input}
-                        readOnly={getValues("exists")}
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
-                <Controller
-                  name="last_name"
-                  control={methods.control}
-                  rules={{ required: t("inscription.form.surnameError") }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <InputText
-                        {...field}
-                        placeholder="Apellidos"
-                        className={styles.input}
-                        readOnly={getValues("exists")}
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
-
-                {/* Email */}
-                <Controller
-                  name="email"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.emailError"),
-                    pattern: {
-                      value: /^\S+@\S+\.\S+$/,
-                      message: t("inscription.form.emailInvalid"),
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <InputText
-                        {...field}
-                        placeholder="ejemplo@dominio.com"
-                        className={styles.input}
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
-
-                {/* Teléfono jugador */}
-                <Controller
-                  name="phone"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.phoneError"),
-                    pattern: {
-                      value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
-                      message: t("inscription.form.phoneInvalid"),
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <InputText
-                        {...field}
-                        placeholder={t("inscription.form.phone")}
-                        className={styles.input}
-                      />
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </>
-                  )}
-                />
-
-                {/* Campos de tutor si es menor */}
-                {isMinor && (
-                  <>
-                    <h4>{t("inscription.form.legalGuardianData")}</h4>
-                    <Controller
-                      name="guardianFirstName"
-                      control={methods.control}
-                      rules={{
-                        required: t("inscription.form.legalGuardianNameError"),
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            {...field}
-                            placeholder={t(
-                              "inscription.form.legalGuardianName"
-                            )}
-                            className={styles.input}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                    <Controller
-                      name="guardianLastName"
-                      control={methods.control}
-                      rules={{
-                        required: t(
-                          "inscription.form.legalGuardianSurnameError"
-                        ),
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            {...field}
-                            placeholder={t(
-                              "inscription.form.legalGuardianSurname"
-                            )}
-                            className={styles.input}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                    <Controller
-                      name="guardianDni"
-                      control={methods.control}
-                      rules={{
-                        required: t("inscription.form.legalGuardianDniError"),
-                        pattern: {
-                          value: /^[XYZ]?\d{7,8}[A-Z]$/,
-                          message: t(
-                            "inscription.form.legalGuardianDniInvalid"
+                      <h4>{t("inscription.form.legalGuardianData")}</h4>
+                      <Controller
+                        name="guardianFirstName"
+                        control={methods.control}
+                        rules={{
+                          required: t(
+                            "inscription.form.legalGuardianNameError"
                           ),
-                        },
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            {...field}
-                            placeholder={t("inscription.form.legalGuardianDni")}
-                            className={styles.input}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                    <Controller
-                      name="guardianPhone"
-                      control={methods.control}
-                      rules={{
-                        required: t("inscription.form.legalGuardianPhoneError"),
-                        pattern: {
-                          value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
-                          message: t(
-                            "inscription.form.legalGuardianPhoneInvalid"
-                          ),
-                        },
-                      }}
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            {...field}
-                            placeholder={t(
-                              "inscription.form.legalGuardianPhonePlaceholder"
+                        }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <InputText
+                              {...field}
+                              placeholder={t(
+                                "inscription.form.legalGuardianName"
+                              )}
+                              className={styles.input}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
                             )}
-                            className={styles.input}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                    {/* Email */}
-                    <Controller
-                      name="guardianEmail"
-                      control={methods.control}
-                      rules={
-                        isMinor
-                          ? {
-                              required: t(
-                                "inscription.form.legalGuardianEmailError"
-                              ),
-                              pattern: {
-                                value: /^\S+@\S+\.\S+$/,
-                                message: t(
-                                  "inscription.form.legalGuardianEmailInvalid"
+                          </>
+                        )}
+                      />
+                      <Controller
+                        name="guardianLastName"
+                        control={methods.control}
+                        rules={{
+                          required: t(
+                            "inscription.form.legalGuardianSurnameError"
+                          ),
+                        }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <InputText
+                              {...field}
+                              placeholder={t(
+                                "inscription.form.legalGuardianSurname"
+                              )}
+                              className={styles.input}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
+                            )}
+                          </>
+                        )}
+                      />
+                      <Controller
+                        name="guardianDni"
+                        control={methods.control}
+                        rules={{
+                          required: t("inscription.form.legalGuardianDniError"),
+                          pattern: {
+                            value: /^[XYZ]?\d{7,8}[A-Z]$/,
+                            message: t(
+                              "inscription.form.legalGuardianDniInvalid"
+                            ),
+                          },
+                        }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <InputText
+                              {...field}
+                              placeholder={t(
+                                "inscription.form.legalGuardianDni"
+                              )}
+                              className={styles.input}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
+                            )}
+                          </>
+                        )}
+                      />
+                      <Controller
+                        name="guardianPhone"
+                        control={methods.control}
+                        rules={{
+                          required: t(
+                            "inscription.form.legalGuardianPhoneError"
+                          ),
+                          pattern: {
+                            value: /^(?:(?:\+|00)34)?[6789]\d{8}$/,
+                            message: t(
+                              "inscription.form.legalGuardianPhoneInvalid"
+                            ),
+                          },
+                        }}
+                        render={({ field, fieldState }) => (
+                          <>
+                            <InputText
+                              {...field}
+                              placeholder={t(
+                                "inscription.form.legalGuardianPhonePlaceholder"
+                              )}
+                              className={styles.input}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
+                            )}
+                          </>
+                        )}
+                      />
+                      {/* Email */}
+                      <Controller
+                        name="guardianEmail"
+                        control={methods.control}
+                        rules={
+                          isMinor
+                            ? {
+                                required: t(
+                                  "inscription.form.legalGuardianEmailError"
                                 ),
-                              },
-                            }
-                          : {}
-                      }
-                      render={({ field, fieldState }) => (
-                        <>
-                          <InputText
-                            {...field}
-                            placeholder="ejemplo@dominio.com"
-                            className={styles.input}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-
-                    <Controller
-                      name="guardianRelationship"
-                      control={methods.control}
-                      rules={
-                        isMinor
-                          ? {
-                              required: t(
-                                "inscription.form.legalGurdianRelationshipError"
-                              ),
-                            }
-                          : {}
-                      }
-                      render={({ field, fieldState }) => (
-                        <>
-                          <Dropdown
-                            {...field}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.value)}
-                            options={[
-                              {
-                                label: t("inscription.form.father"),
-                                value: "padre",
-                              },
-                              {
-                                label: t("inscription.form.mother"),
-                                value: "madre",
-                              },
-                              {
-                                label: t("inscription.form.guardian"),
-                                value: "tutor",
-                              },
-                            ]}
-                            placeholder={t(
-                              "inscription.form.legalGurdianRelationship"
+                                pattern: {
+                                  value: /^\S+@\S+\.\S+$/,
+                                  message: t(
+                                    "inscription.form.legalGuardianEmailInvalid"
+                                  ),
+                                },
+                              }
+                            : {}
+                        }
+                        render={({ field, fieldState }) => (
+                          <>
+                            <InputText
+                              {...field}
+                              placeholder="ejemplo@dominio.com"
+                              className={styles.input}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
                             )}
-                            className={`${styles.dropdown} ${styles.input} ${
-                              fieldState.error ? "p-invalid" : ""
-                            }`}
-                          />
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                  </>
-                )}
-              </div>
-              <div className={styles.panelNav}>
-                <Button
-                  type="button"
-                  label={t("buttons.back")}
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  onClick={() => stepperRef.current.prevCallback()}
-                />
-                <Button
-                  type="button"
-                  label={t("buttons.next")}
-                  icon="pi pi-arrow-right"
-                  onClick={() =>
-                    onNext(
-                      isMinor
-                        ? [
-                            "first_name",
-                            "last_name",
-                            "email",
-                            "phone",
-                            "guardianFirstName",
-                            "guardianLastName",
-                            "guardianDni",
-                            "guardianPhone",
-                            "guardianEmail",
-                            "guardianRelationship",
-                          ]
-                        : ["first_name", "last_name", "email", "phone"]
-                    )
-                  }
-                />
-              </div>
-            </StepperPanel>
-
-            {/* === Panel 4: Confirmaciones legales === */}
-
-            <StepperPanel
-              header={`3. ${t("inscription.form.legalConfirmation")}`}
-            >
-              <div className={styles.panelContent}>
-                {/* LOPD */}
-                <Controller
-                  name="acceptLOPD"
-                  control={methods.control}
-                  rules={{ required: t("inscription.form.readAndAcceptError") }}
-                  render={({ field, fieldState }) => (
-                    <div className={styles.checkbox}>
-                      <Checkbox
-                        id="acceptLOPD"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
+                          </>
+                        )}
                       />
-                      <label className={styles.checkbox} htmlFor="acceptLOPD">
-                        {t("inscription.form.readAndAccept")}&nbsp;
-                        <a
-                          href="/lopd"
-                          className={styles.link}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {t("inscription.form.readAndAcceptLOPD")}
-                        </a>
-                        &nbsp;
-                      </label>
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </div>
-                  )}
-                />
 
-                {/* Código ético */}
-                <Controller
-                  name="acceptEthics"
-                  control={methods.control}
-                  rules={{
-                    required: t("inscription.form.readAndAcceptEthicCodeError"),
-                  }}
-                  render={({ field, fieldState }) => (
-                    <div className={styles.checkbox}>
-                      <Checkbox
-                        id="acceptEthics"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
+                      <Controller
+                        name="guardianRelationship"
+                        control={methods.control}
+                        rules={
+                          isMinor
+                            ? {
+                                required: t(
+                                  "inscription.form.legalGurdianRelationshipError"
+                                ),
+                              }
+                            : {}
+                        }
+                        render={({ field, fieldState }) => (
+                          <>
+                            <Dropdown
+                              {...field}
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.value)}
+                              options={[
+                                {
+                                  label: t("inscription.form.father"),
+                                  value: "padre",
+                                },
+                                {
+                                  label: t("inscription.form.mother"),
+                                  value: "madre",
+                                },
+                                {
+                                  label: t("inscription.form.guardian"),
+                                  value: "tutor",
+                                },
+                              ]}
+                              placeholder={t(
+                                "inscription.form.legalGurdianRelationship"
+                              )}
+                              className={`${styles.dropdown} ${styles.input} ${
+                                fieldState.error ? "p-invalid" : ""
+                              }`}
+                            />
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
+                            )}
+                          </>
+                        )}
                       />
-                      <label className={styles.checkbox} htmlFor="acceptEthics">
-                        {t("inscription.form.readAndAccept")}&nbsp;
-                        <a
-                          href="/codigo-etico"
-                          className={styles.link}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {t("inscription.form.raadAndAcceosEthicCode")}
-                        </a>{" "}
-                        &nbsp;
-                      </label>
-                      {fieldState.error && (
-                        <small className={styles.error}>
-                          {fieldState.error.message}
-                        </small>
-                      )}
-                    </div>
+                    </>
                   )}
-                />
+                </div>
+                <div className={styles.panelNav}>
+                  <Button
+                    type="button"
+                    label={t("buttons.back")}
+                    severity="secondary"
+                    icon="pi pi-arrow-left"
+                    onClick={() => stepperRef.current.prevCallback()}
+                  />
+                  <Button
+                    type="button"
+                    label={t("buttons.next")}
+                    icon="pi pi-arrow-right"
+                    onClick={() =>
+                      onNext(
+                        isMinor
+                          ? [
+                              "first_name",
+                              "last_name",
+                              "email",
+                              "phone",
+                              "guardianFirstName",
+                              "guardianLastName",
+                              "guardianDni",
+                              "guardianPhone",
+                              "guardianEmail",
+                              "guardianRelationship",
+                            ]
+                          : ["first_name", "last_name", "email", "phone"]
+                      )
+                    }
+                  />
+                </div>
+              </StepperPanel>
 
-                {/* Consentimientos de imagen */}
-                <fieldset className={styles.fieldset}>
-                  <legend>
-                    {t("inscription.form.authorizationImage")}&nbsp;
-                    <a
-                      href="/uso-imagenes"
-                      className={styles.link}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {t("inscription.form.imageUse")}&nbsp;
-                    </a>
-                    {t("inscription.form.oficialChannel")}
-                  </legend>
+              {/* Panel 4: Confirmaciones legales */}
 
-                  {[
-                    {
-                      name: "consentWeb",
-                      label: t("inscription.form.authorizationPublication"),
-                    },
-                    {
-                      name: "consentInstagram",
-                      label: t("inscription.form.authorizationInstagram"),
-                    },
-                    {
-                      name: "consentOthers",
-                      label: t("inscription.form.authorizationOtherSocial"),
-                    },
-                  ].map(({ name, label }) => (
-                    <Controller
-                      key={name}
-                      name={name}
-                      control={methods.control}
-                      rules={{
-                        required: `${t(
-                          "inscription.form.youMostResponse"
-                        )} ${label}`,
-                      }}
-                      render={({ field, fieldState }) => (
-                        <div>
-                          <label>{label}</label>
-                          <div className={styles.radioGroup}>
-                            <RadioButton
-                              inputId={`${name}Yes`}
-                              name={field.name}
-                              value="yes"
-                              checked={field.value === "yes"}
-                              onChange={(e) => field.onChange(e.value)}
-                            />
-                            <label htmlFor={`${name}Yes`}>
-                              {t("buttons.yes")}
-                            </label>
+              <StepperPanel
+                header={`3. ${t("inscription.form.legalConfirmation")}`}
+              >
+                <div className={styles.panelContent}>
+                  {/* LOPD */}
+                  <Controller
+                    name="acceptLOPD"
+                    control={methods.control}
+                    rules={{
+                      required: t("inscription.form.readAndAcceptError"),
+                    }}
+                    render={({ field, fieldState }) => (
+                      <div className={styles.checkbox}>
+                        <Checkbox
+                          id="acceptLOPD"
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                        <label className={styles.checkbox} htmlFor="acceptLOPD">
+                          {t("inscription.form.readAndAccept")}&nbsp;
+                          <a
+                            href="/lopd"
+                            className={styles.link}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {t("inscription.form.readAndAcceptLOPD")}
+                          </a>
+                          &nbsp;
+                        </label>
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </div>
+                    )}
+                  />
 
-                            <RadioButton
-                              inputId={`${name}No`}
-                              name={field.name}
-                              value="no"
-                              checked={field.value === "no"}
-                              onChange={(e) => field.onChange(e.value)}
-                            />
-                            <label htmlFor={`${name}No`}>
-                              {t("buttons.no")}
-                            </label>
+                  {/* Código ético */}
+                  <Controller
+                    name="acceptEthics"
+                    control={methods.control}
+                    rules={{
+                      required: t(
+                        "inscription.form.readAndAcceptEthicCodeError"
+                      ),
+                    }}
+                    render={({ field, fieldState }) => (
+                      <div className={styles.checkbox}>
+                        <Checkbox
+                          id="acceptEthics"
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                        <label
+                          className={styles.checkbox}
+                          htmlFor="acceptEthics"
+                        >
+                          {t("inscription.form.readAndAccept")}&nbsp;
+                          <a
+                            href="/codigo-etico"
+                            className={styles.link}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {t("inscription.form.raadAndAcceosEthicCode")}
+                          </a>{" "}
+                          &nbsp;
+                        </label>
+                        {fieldState.error && (
+                          <small className={styles.error}>
+                            {fieldState.error.message}
+                          </small>
+                        )}
+                      </div>
+                    )}
+                  />
+
+                  {/* Consentimientos de imagen */}
+                  <fieldset className={styles.fieldset}>
+                    <legend>
+                      {t("inscription.form.authorizationImage")}&nbsp;
+                      <a
+                        href="/uso-imagenes"
+                        className={styles.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {t("inscription.form.imageUse")}&nbsp;
+                      </a>
+                      {t("inscription.form.oficialChannel")}
+                    </legend>
+
+                    {[
+                      {
+                        name: "consentWeb",
+                        label: t("inscription.form.authorizationPublication"),
+                      },
+                      {
+                        name: "consentInstagram",
+                        label: t("inscription.form.authorizationInstagram"),
+                      },
+                      {
+                        name: "consentOthers",
+                        label: t("inscription.form.authorizationOtherSocial"),
+                      },
+                    ].map(({ name, label }) => (
+                      <Controller
+                        key={name}
+                        name={name}
+                        control={methods.control}
+                        rules={{
+                          required: `${t(
+                            "inscription.form.youMostResponse"
+                          )} ${label}`,
+                        }}
+                        render={({ field, fieldState }) => (
+                          <div>
+                            <label>{label}</label>
+                            <div className={styles.radioGroup}>
+                              <RadioButton
+                                inputId={`${name}Yes`}
+                                name={field.name}
+                                value="yes"
+                                checked={field.value === "yes"}
+                                onChange={(e) => field.onChange(e.value)}
+                              />
+                              <label htmlFor={`${name}Yes`}>
+                                {t("buttons.yes")}
+                              </label>
+
+                              <RadioButton
+                                inputId={`${name}No`}
+                                name={field.name}
+                                value="no"
+                                checked={field.value === "no"}
+                                onChange={(e) => field.onChange(e.value)}
+                              />
+                              <label htmlFor={`${name}No`}>
+                                {t("buttons.no")}
+                              </label>
+                            </div>
+                            {fieldState.error && (
+                              <small className={styles.error}>
+                                {fieldState.error.message}
+                              </small>
+                            )}
                           </div>
-                          {fieldState.error && (
-                            <small className={styles.error}>
-                              {fieldState.error.message}
-                            </small>
-                          )}
-                        </div>
+                        )}
+                      />
+                    ))}
+                  </fieldset>
+                </div>
+
+                <div className={styles.panelNav}>
+                  <Button
+                    type="button"
+                    label={t("buttons.back")}
+                    severity="secondary"
+                    icon="pi pi-arrow-left"
+                    onClick={() => stepperRef.current.prevCallback()}
+                  />
+                  <Button
+                    type="button"
+                    label={t("buttons.next")}
+                    icon="pi pi-arrow-right"
+                    onClick={() =>
+                      onNext([
+                        "acceptLOPD",
+                        "acceptEthics",
+                        "consentWeb",
+                        "consentInstagram",
+                        "consentOthers",
+                      ])
+                    }
+                  />
+                </div>
+              </StepperPanel>
+              {/*  Panel 5: Resumen y pago */}
+              <StepperPanel
+                header={`5. ${t("inscription.form.sumaryAndPayment")}`}
+              >
+                <div className={styles.panelContent}>
+                  <h4>{t("inscription.form.sumary")}</h4>
+                  <p>
+                    <strong>{t("inscription.form.name")} :</strong>
+                    {getValues("first_name")} {getValues("last_name")}
+                  </p>
+                  <p>
+                    <strong>{t("inscription.form.totalMount")}:</strong>{" "}
+                    {!splitPayment
+                      ? `${totalSingle} € ${t("inscription.form.onlyOnePay")}`
+                      : `${t(
+                          "inscription.form.firstPay"
+                        )}: ${firstSplit} €, ${t("inscription.form.rest")} ${
+                          priceBase - 250
+                        } € ${t("inscription.form.outsidePlatform")}`}
+                  </p>
+
+                  {/* Lotería */}
+                  <div>
+                    <Controller
+                      name="participateLottery"
+                      control={methods.control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="participateLottery"
+                          {...field}
+                          checked={field.value}
+                        />
                       )}
                     />
-                  ))}
-                </fieldset>
-              </div>
-
-              <div className={styles.panelNav}>
-                <Button
-                  type="button"
-                  label={t("buttons.back")}
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  onClick={() => stepperRef.current.prevCallback()}
-                />
-                <Button
-                  type="button"
-                  label={t("buttons.next")}
-                  icon="pi pi-arrow-right"
-                  onClick={() =>
-                    onNext([
-                      "acceptLOPD",
-                      "acceptEthics",
-                      "consentWeb",
-                      "consentInstagram",
-                      "consentOthers",
-                    ])
-                  }
-                />
-              </div>
-            </StepperPanel>
-            {/*  Panel 5: Resumen y pago */}
-            <StepperPanel
-              header={`5. ${t("inscription.form.sumaryAndPayment")}`}
-            >
-              <div className={styles.panelContent}>
-                <h4>{t("inscription.form.sumary")}</h4>
-                <p>
-                  <strong>{t("inscription.form.name")} :</strong>
-                  {getValues("first_name")} {getValues("last_name")}
-                </p>
-                <p>
-                  <strong>{t("inscription.form.totalMount")}:</strong>{" "}
-                  {!splitPayment
-                    ? `${totalSingle} € ${t("inscription.form.onlyOnePay")}`
-                    : `${t("inscription.form.firstPay")}: ${firstSplit} €, ${t(
-                        "inscription.form.rest"
-                      )} ${priceBase - 250} € ${t(
-                        "inscription.form.outsidePlatform"
-                      )}`}
-                </p>
-
-                {/* Lotería */}
-                <div>
-                  <Controller
-                    name="participateLottery"
-                    control={methods.control}
-                    render={({ field }) => (
-                      <Checkbox
-                        id="participateLottery"
-                        {...field}
-                        checked={field.value}
-                      />
-                    )}
-                  />
-                  <label
-                    className={styles.checkbox}
-                    htmlFor="participateLottery"
-                  >
-                    Participar en la lotería (– {lotteryDiscount} €)
-                  </label>
-                </div>
-
-                {/* Fraccionar */}
-                <div>
-                  <Controller
-                    name="splitPayment"
-                    control={methods.control}
-                    render={({ field }) => (
-                      <Checkbox
-                        id="splitPayment"
-                        {...field}
-                        checked={field.value}
-                      />
-                    )}
-                  />
-                  <label className={styles.checkbox} htmlFor="splitPayment">
-                    Fraccionar pago (250 € ahora)
-                  </label>
-                </div>
-
-                {/* Bloqueo por deuda */}
-                {hasDebt && (
-                  <div className={styles.error}>
-                    Tienes una deuda pendiente de {pendingAmount} €. <br />
-                    Ponte en contacto con el club.
+                    <label
+                      className={styles.checkbox}
+                      htmlFor="participateLottery"
+                    >
+                      {t("inscription.form.loteryParticipation")} (–{" "}
+                      {lotteryDiscount} €)
+                    </label>
                   </div>
-                )}
-              </div>
 
-              <div className={styles.panelNav}>
-                <Button
-                  type="button"
-                  label={t("buttons.back")}
-                  severity="secondary"
-                  icon="pi pi-arrow-left"
-                  onClick={() => stepperRef.current.prevCallback()}
-                />
+                  {/* Fraccionar el pago*/}
+                  <div>
+                    <Controller
+                      name="splitPayment"
+                      control={methods.control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="splitPayment"
+                          {...field}
+                          checked={field.value}
+                        />
+                      )}
+                    />
+                    <label className={styles.checkbox} htmlFor="splitPayment">
+                      {t("inscription.form.splitPayment")} (250 €{" "}
+                      {t("inscription.form.now")})
+                    </label>
+                  </div>
 
-                <Button
-                  label={t("buttons.pay")}
-                  icon="pi pi-credit-card"
-                  type="submit"
-                  disabled={hasDebt}
-                  loading={paying}
-                />
-              </div>
-            </StepperPanel>
-          </Stepper>
-        </div>
-      </form>
-    </FormProvider>
-  );
+                  {/* Bloqueo por deuda */}
+                  {hasDebt && (
+                    <div className={styles.error}>
+                      {t("inscription.form.youHaveaDebt")}) {pendingAmount} €.
+                      <br />
+                      {t("inscription.form.contactWithUs")})
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.panelNav}>
+                  <Button
+                    type="button"
+                    label={t("buttons.back")}
+                    severity="secondary"
+                    icon="pi pi-arrow-left"
+                    onClick={() => stepperRef.current.prevCallback()}
+                  />
+
+                  <Button
+                    label={t("buttons.pay")}
+                    icon="pi pi-credit-card"
+                    type="submit"
+                    disabled={hasDebt}
+                    loading={paying}
+                  />
+                </div>
+              </StepperPanel>
+            </Stepper>
+          </div>
+        </form>
+      </FormProvider>
+    );
+  }
 }

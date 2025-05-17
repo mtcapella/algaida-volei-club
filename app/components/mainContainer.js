@@ -2,17 +2,17 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./navbar";
 import Footer from "./footer";
+import styles from "./mainContainer.module.css";
 
 export default function MainContainer({ children }) {
   const path = usePathname();
-  // si empieza por /backvolei, no pinto ni nav ni footer
   const isAdmin = path?.startsWith("/backvolei");
-  console.log("isAdmin", isAdmin, path);
+
   return (
-    <>
+    <div className={styles.wrapper}>
       {!isAdmin && <Navbar />}
-      {children}
+      <div className={styles.content}>{children}</div>
       {!isAdmin && <Footer />}
-    </>
+    </div>
   );
 }

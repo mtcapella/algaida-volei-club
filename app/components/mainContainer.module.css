@@ -1,0 +1,15 @@
+/* mainContainer.module.css */
+
+/* Wrapper general que engloba todo */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* El mínimo es la pantalla completa */
+}
+
+/* Contenido principal que se expande automáticamente */
+.content {
+  flex: 1;
+  padding-bottom: 1rem; /* Evita que el contenido toque el footer */
+}
+

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import styles from "./success.module.css";
+
 export default function SuccessPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -44,7 +46,7 @@ export default function SuccessPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.successPage}>
         <h2>⏳ Verificando tu pago...</h2>
       </div>
     );
@@ -52,7 +54,7 @@ export default function SuccessPage() {
 
   if (error) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <div className={styles.successPage}>
         <h2>❌ Hubo un error al verificar tu inscripción.</h2>
         <p>Por favor, contacta con el club o intenta de nuevo.</p>
       </div>
@@ -60,7 +62,7 @@ export default function SuccessPage() {
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className={styles.successPage}>
       <h1>✅ ¡Pago completado!</h1>
       <p>
         Gracias, <strong>{playerName}</strong>, tu inscripción ha sido
