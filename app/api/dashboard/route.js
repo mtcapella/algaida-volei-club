@@ -34,10 +34,29 @@ export async function GET() {
     );
 
     const [[{ pendiente }]] = await db.execute(
-      `SELECT COUNT(DISTINCT r.player_id) AS pendiente 
-       FROM registrations r 
-       LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id 
-       WHERE r.season_id = ? AND (p.status IS NULL OR p.status != 'completed')`,
+      `SELECT 
+  COUNT(DISTINCT r.player_id) AS pendiente
+FROM 
+  registrations r
+LEFT JOIN (
+  SELECT 
+    player_id, 
+    season_id, 
+    SUM(amount) AS paid_amount
+  FROM 
+    payments
+  WHERE 
+    status = 'completed'
+  GROUP BY 
+    player_id, season_id
+) p_sum
+  ON p_sum.player_id = r.player_id
+ AND p_sum.season_id = r.season_id
+WHERE 
+  r.season_id        = ?
+  AND r.split_payment  = 1
+  AND COALESCE(p_sum.paid_amount,0) < r.total_fee;
+`,
       [seasonId]
     );
 

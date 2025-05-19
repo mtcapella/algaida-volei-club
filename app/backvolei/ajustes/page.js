@@ -62,8 +62,19 @@ export default function SettingsPage() {
     getFormStatus();
   }, []);
 
-  /* ---------- update endpoint ---------- */
+  // función para actualizar el estado del formulario
   const updateFormStatus = async (enabled) => {
+    // validar fechas
+    if (closesAt.getTime() <= opensAt.getTime()) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Fechas no válidas",
+        detail: "La fecha de cierre debe ser posterior a la de apertura.",
+        life: 3000,
+      });
+      return;
+    }
+
     if (
       !window.confirm(
         `¿Seguro que deseas ${enabled ? "abrir" : "cerrar"} las inscripciones?`
@@ -100,14 +111,24 @@ export default function SettingsPage() {
       });
     }
   };
-
-  /* ---------- create new season ---------- */
+  // crear nueva temporada y cerrar la actual
   const handleCreateSeason = async () => {
     if (!newStart || !newEnd) {
       toast.current?.show({
         severity: "warn",
         summary: "Fechas requeridas",
         detail: "Debes indicar inicio y fin.",
+        life: 3000,
+      });
+      return;
+    }
+
+    // validar fechas
+    if (newEnd.getTime() <= newStart.getTime()) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Fechas no válidas",
+        detail: "La fecha de cierre debe ser posterior a la de inicio.",
         life: 3000,
       });
       return;
@@ -155,7 +176,7 @@ export default function SettingsPage() {
     }
   };
 
-  /* ---------- render ---------- */
+  // funciones de renderizado
   if (loadingStatus) {
     return (
       <div className="flex justify-content-center" style={{ height: "60vh" }}>

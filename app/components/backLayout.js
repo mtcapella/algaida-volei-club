@@ -37,7 +37,7 @@ export default function BackLayout({ children, onLogout }) {
     <div className={styles.container}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <Image src="/img/logo.jpg" alt="Logo" width={50} height={50} />
+          <Image src="/img/logo_w.png" alt="Logo" width={100} height={100} />
         </div>
         <nav>
           <ul>

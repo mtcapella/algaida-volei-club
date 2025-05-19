@@ -17,7 +17,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       {/* Logo */}
       <div className={styles.logo}>
-        <Image src="/img/logo.jpg" alt="Logo" width={50} height={50} />
+        <Image src="/img/logo.png" alt="Logo" width={100} height={100} />
       </div>
 
       {/* Desktop Navigation */}
@@ -41,7 +41,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       <div className={styles.mobileNav}>
-        <Link href={isHome ? "/inscripcion" : "/"}>
+        <Link href={isHome ? "/inscription" : "/"}>
           <span className={styles.link}>
             {isHome ? t("nav.inscription") : t("nav.home")}
           </span>

@@ -105,11 +105,12 @@ export async function POST(request) {
     }
 
     // 6) PAGO
+    const status = data.status || "pending"; // Cambia a "pending" si no se proporciona
     await conn.query(
       `INSERT INTO payments
-         (player_id, season_id, amount, paid_at)
-       VALUES (?, ?, ?, NOW())`,
-      [playerId, seasonId, data.amount]
+         (player_id, season_id, amount, status, paid_at)
+       VALUES (?, ?, ?, ?, NOW())`,
+      [playerId, seasonId, data.amount, status]
     );
 
     await conn.commit();

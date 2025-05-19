@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
-export async function POST() {
+export async function POST(request) {
   const db = await pool.getConnection();
+
+  // vemos que nos llega por el post
+  const body = await request.json();
+  const { start_date, end_date } = body;
+
+  // obetenemos el nombre de la temporada cogiendo el año actual y el siguiente ejmeplo Temporada 2023 - 2024 de las variables start_date y end_date
+
+  const seasonName = `Temporada ${new Date(
+    start_date
+  ).getFullYear()} - ${new Date(end_date).getFullYear()}`;
 
   try {
     await db.beginTransaction();
@@ -16,13 +26,7 @@ export async function POST() {
     // 3. Crear la nueva temporada como activa
     const [result] = await db.query(
       `INSERT INTO seasons (name, start_date, end_date, is_active) VALUES (?, ?, ?, 1)`,
-      [
-        `Temporada ${new Date().getFullYear() + 1} - ${
-          new Date().getFullYear() + 2
-        }`,
-        `${new Date().getFullYear() + 1}-09-01`,
-        `${new Date().getFullYear() + 2}-06-30`,
-      ]
+      [seasonName, start_date, end_date]
     );
 
     if (result.affectedRows === 0) {

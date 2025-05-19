@@ -51,6 +51,7 @@ export default function PaymentsPage() {
     fetchPayments();
   }, []);
 
+  console.log(payments);
   /* ------------- update payment --------------- */
   const handleUpdatePayment = async (row) => {
     const confirm = window.confirm(
@@ -64,7 +65,10 @@ export default function PaymentsPage() {
       const res = await fetch(`${base}/api/payments/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId: row.playerId }),
+        body: JSON.stringify({
+          playerId: row.playerId,
+          amount: row.debt,
+        }),
       });
       if (!res.ok) throw new Error();
       toast.current?.show({

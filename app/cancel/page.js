@@ -28,8 +28,9 @@ function CancelPage() {
       if (!sessionId) return setStatus("error");
 
       try {
+        const base = process.env.NEXT_PUBLIC_DOMAIN;
         const res = await fetch(
-          `/api/verify-checkout-session?session_id=${sessionId}`
+          `${base}/api/verify-checkout-session?session_id=${sessionId}`
         );
         const data = await res.json();
 

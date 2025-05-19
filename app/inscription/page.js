@@ -26,18 +26,21 @@ import { useTranslation } from "react-i18next";
 
 import Tesseract from "tesseract.js";
 import { verifyOCR } from "@/libs/verifyOCR";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export default function InscriptionPage() {
   // hacemos un use state para http://localhost:3000/api/form/status para saber si el formulario está activo o no
   // y si no lo está, mostramos un mensaje de el formulario no está activo en estos momentos
 
   const [formActive, setFormActive] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     const checkFormStatus = async () => {
-      const res = await fetch("/api/form/status");
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const res = await fetch(`${base}/api/form/status`);
       const data = await res.json();
-      console.log("Estado del formulario:", data);
+      setLoading(false);
       if (data.enabled === 1 && data.isActive) {
         setFormActive(true);
       } else {
@@ -208,8 +211,8 @@ export default function InscriptionPage() {
         splitPayment,
         participateLottery,
       };
-
-      const resp = await fetch("/api/register", {
+      const base = process.env.NEXT_PUBLIC_DOMAIN;
+      const resp = await fetch(`${base}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -227,7 +230,7 @@ export default function InscriptionPage() {
       // Ahora generamos la sesión de pago con Stripe
       const fullName = `${data.first_name} ${data.last_name}`;
 
-      const stripeRes = await fetch("/api/create-checkout-session", {
+      const stripeRes = await fetch(`${base}/api/create-checkout-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -279,6 +282,13 @@ export default function InscriptionPage() {
   //  Funciones de  Render
   if (!formActive) {
     // Si el formulario no está activo, mostramos un mensaje
+    if (loading) {
+      return (
+        <div className={styles.inscriptionPage}>
+          <ProgressSpinner />
+        </div>
+      );
+    }
     return (
       <div className={styles.inscriptionPage}>
         <h1>{t("inscription.form.notActive")}</h1>
@@ -480,7 +490,10 @@ export default function InscriptionPage() {
 
                       try {
                         // Verificamos primero si hay deudas o el jugador ya está registrado
-                        const res = await fetch(`/api/check-user/${dniVal}`);
+                        const base = process.env.NEXT_PUBLIC_DOMAIN;
+                        const res = await fetch(
+                          `${base}/api/check-user/${dniVal}`
+                        );
                         const data = await res.json();
 
                         // Comprobamos si el jugador tiene deudas pendientes

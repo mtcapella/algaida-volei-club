@@ -18,9 +18,10 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 import styles from "./jugadores.module.css";
+import Image from "next/image";
 
 export default function Players() {
-  /* ----------------------------- state & refs ---------------------------- */
+  // estados y refs
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -34,7 +35,7 @@ export default function Players() {
   const dt = useRef(null);
   const toast = useRef(null);
 
-  /* ----------------------------- react‑form ------------------------------ */
+  // react-hook-form datos del formulario de nuevo jugador
   const {
     control,
     register,
@@ -46,7 +47,7 @@ export default function Players() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  /* ------------------------------- effects ------------------------------- */
+  // use effect para cargar jugadores y equipos al inicio
   useEffect(() => {
     fetchPlayers();
     fetchTeams();
@@ -56,6 +57,7 @@ export default function Players() {
     const base = process.env.NEXT_PUBLIC_DOMAIN;
     const res = await fetch(`${base}/api/players`);
     const data = await res.json();
+    console.log(data);
     setPlayers(data);
   };
 
@@ -325,7 +327,7 @@ export default function Players() {
         />
       </div>
 
-      {/* ----------------------------- datatable ---------------------------- */}
+      {/* Data table de los jeugadores */}
       <DataTable
         ref={dt}
         value={players}
@@ -338,6 +340,19 @@ export default function Players() {
         emptyMessage="No se encontraron jugadores."
       >
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
+        <Column
+          field="photoUrl"
+          header="Foto"
+          body={(rowData) => (
+            <Image
+              src={rowData.photoUrl || "/img/default-avatar.png"}
+              alt="Foto"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
+          )}
+        />
         <Column field="firstName" header="Nombre" sortable />
         <Column field="lastName" header="Apellido" sortable />
         <Column field="dni" header="DNI" sortable />
@@ -354,7 +369,7 @@ export default function Players() {
                   key={doc.type}
                   icon={getIconClass(doc.type)}
                   className="p-button-text"
-                  onClick={() => window.open(doc.url, "_blank")}
+                  onClick={() => window.open(doc.file_url, "_blank")}
                   tooltip={doc.type.toUpperCase()}
                   tooltipOptions={{ position: "top" }}
                 />
