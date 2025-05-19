@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -12,6 +12,8 @@ import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
+
+import { ImageTokenContext } from "@/app/components/imageTokenProvider"; // Importa el contexto del token de imagen
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -31,6 +33,11 @@ export default function Players() {
   const [newDialogVisible, setNewDialogVisible] = useState(false);
   const [checkingDni, setCheckingDni] = useState(false);
   const [dniChecked, setDniChecked] = useState(false);
+  const { token, loading } = useContext(ImageTokenContext);
+
+  console.log("Token de imagen:", token);
+
+  console.log("token", token);
 
   const dt = useRef(null);
   const toast = useRef(null);
@@ -282,7 +289,9 @@ export default function Players() {
       });
     }
   };
-
+  if (loading) {
+    return <div>Cargando imágenes...</div>;
+  }
   /* ----------------------------------------------------------------------- */
   return (
     <div className={styles.container}>

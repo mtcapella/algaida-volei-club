@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/libs/firebase";
 import BackLayout from "@/app/components/backLayout";
+import { ImageTokenProvider } from "@/app/components/imageTokenProvider";
 
 export default function BackvoleiLayout({ children }) {
   const [user, setUser] = useState(undefined);
@@ -49,7 +50,7 @@ export default function BackvoleiLayout({ children }) {
         router.replace("/backvolei/login");
       }}
     >
-      {children}
+      <ImageTokenProvider>{children}</ImageTokenProvider>
     </BackLayout>
   );
 }
