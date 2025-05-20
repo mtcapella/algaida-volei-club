@@ -6,6 +6,16 @@
     "sponsors": "PATROCINADORES",
     "inscription": "INSCRIPCIÓN"
   },
+  "backNavbar": {
+    "dashboard": "Panel de control",
+    "players": "Jugadores",
+    "teams": "Equipos",
+    "categories": "Categorías",
+    "seasons": "Temporadas",
+    "payments": "Pagos",
+    "settings": "Configuración",
+    "logOut": "Cerrar sesión"
+  },
   "home": {
     "title": "ALGAIDA VOLEI CLUB"
   },
@@ -246,7 +256,7 @@
       "sumaryAndPayment": "Resumen y pago",
       "youMostResponse": "Debes responder sobre",
       "firstPay": "Primer pago de",
-      "rest" : "Resto de",
+      "rest": "Resto de",
       "outsidePlatform": "Fuera de la plataforma",
 
       "OCRwaiting": "Por favor, espera mientras verificamos el DNI/NIE. Este proceso puede tardar unos minutos.",
@@ -280,8 +290,27 @@
     "newPlayer": "Nuevo jugador",
     "editPlayer": "Editar jugador",
     "deletePlayer": "Eliminar jugador",
+    "searchPlayer": "Buscar jugador",
+    "dontFindPlayer": "No se ha encontrado el jugador",
     "newTeam": "Nuevo equipo",
     "yes": "Sí",
     "no": "No"
+  },
+  "dashboard": {
+    "title": "Panel de control",
+    "totalPlayers": "Jugadores totales",
+    "totalTeams": "Equipos totales",
+    "inscriptions": "Inscripciones",
+    "payed": "Pagados",
+    "paymetsPending": "Pagos pendientes",
+    "payments": "Pagos",
+    "playersForCategory": "Jugadores por categoría",
+    "sponsors": "Patrocinadores",
+    "settings": "Configuración"
+  },
+  "players": {
+    "playerDeleted": "Jugador eliminado",
+    "thePlayer": "El jugador",
+    "hasDeleted": "ha sido eliminado"
   }
 }

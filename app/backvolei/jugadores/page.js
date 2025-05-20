@@ -12,6 +12,7 @@ import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { useTranslation } from "react-i18next";
 
 import { ImageTokenContext } from "@/app/components/imageTokenProvider"; // Importa el contexto del token de imagen
 
@@ -23,6 +24,7 @@ import styles from "./jugadores.module.css";
 import Image from "next/image";
 
 export default function Players() {
+  const { t } = useTranslation();
   // estados y refs
   const [players, setPlayers] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -75,7 +77,7 @@ export default function Players() {
     setTeams(data);
   };
 
-  /* --------------------- helpers / acciones en tabla --------------------- */
+  /*helpers */
   const handleDelete = async (playerId, playerName) => {
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
@@ -85,8 +87,10 @@ export default function Players() {
       if (response.ok) {
         toast.current.show({
           severity: "success",
-          summary: "Jugador eliminado",
-          detail: `El jugador ${playerName} ha sido eliminado.`,
+          summary: t("buttons.playerDeleted"),
+          detail: `${t("buttons.thePlayer")} ${playerName} ${t(
+            "buttons.hasDeleted"
+          )}.`,
           life: 3000,
         });
         setPlayers((prev) => prev.filter((p) => p.playerId !== playerId));
@@ -297,19 +301,19 @@ export default function Players() {
     <div className={styles.container}>
       <Toast ref={toast} />
 
-      {/* ------------------------- toolbar / acciones ------------------------ */}
+      {/* toolboar de acciones */}
       <Toolbar
         className="p-mb-4"
         left={() => (
-          <div className="flex gap-2">
+          <div className={styles.flexGap2}>
             <Button
-              label="Refrescar"
+              label={t("buttons.update")}
               icon="pi pi-refresh"
               className="p-button-secondary"
               onClick={fetchPlayers}
             />
             <Button
-              label="Exportar CSV"
+              label={t("buttons.exportCSV")}
               icon="pi pi-file"
               className="p-button-success"
               onClick={() => dt.current.exportCSV()}
@@ -318,7 +322,7 @@ export default function Players() {
         )}
         right={() => (
           <Button
-            label="Nuevo Jugador"
+            label={t("buttons.newPlayer")}
             icon="pi pi-user-plus"
             className="p-button-primary"
             onClick={() => setNewDialogVisible(true)}
@@ -326,13 +330,13 @@ export default function Players() {
         )}
       />
 
-      {/* ------------------------------ filtro ------------------------------ */}
+      {/* Filtro */}
       <div className="p-input-icon-left p-mb-4">
         <i className="pi pi-search" />
         <InputText
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Buscar jugador..."
+          placeholder={t("buttons.searchPlayer")}
         />
       </div>
 
@@ -346,7 +350,7 @@ export default function Players() {
         globalFilter={globalFilter}
         selection={selectedPlayers}
         onSelectionChange={(e) => setSelectedPlayers(e.value)}
-        emptyMessage="No se encontraron jugadores."
+        emptyMessage={t("buttons.dontFindPlayer")}
       >
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
         <Column
@@ -372,7 +376,7 @@ export default function Players() {
           field="documents"
           header="Documentos"
           body={(rowData) => (
-            <div className="flex gap-2">
+            <div className={styles.flex}>
               {rowData.documents.map((doc) => (
                 <Button
                   key={doc.type}
@@ -390,7 +394,7 @@ export default function Players() {
         <Column
           header="Acciones"
           body={(rowData) => (
-            <div className="flex gap-2">
+            <div className={styles.flex}>
               <Button
                 icon="pi pi-pencil"
                 className="p-button-text p-button-warning"
@@ -488,7 +492,7 @@ export default function Players() {
           {/* DNI */}
           <div className="field">
             <label>DNI</label>
-            <div className="flex gap-2">
+            <div className={styles.flexGap2}>
               <Controller
                 name="dni"
                 control={control}

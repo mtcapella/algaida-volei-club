@@ -20,3 +20,13 @@
   color: var(--color-primary);
   font-size: 1.5rem;
 }
+
+.flex {
+  display: flex;
+
+}
+
+.flexGap2 {
+  display: flex;
+  gap: 2rem
+}

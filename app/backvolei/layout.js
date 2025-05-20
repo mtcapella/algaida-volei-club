@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/libs/firebase";
 import BackLayout from "@/app/components/backLayout";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { ImageTokenProvider } from "@/app/components/imageTokenProvider";
 
 export default function BackvoleiLayout({ children }) {
@@ -20,9 +21,9 @@ export default function BackvoleiLayout({ children }) {
     return () => unsub();
   }, []);
 
-  // 1) Mientras Firebase determina el estado:
+  // 1) Mientras Firebase determina el estado mostramos un spinner
   if (user === undefined) {
-    return <div>Cargando...</div>;
+    return <ProgressSpinner style={{ width: "50px", height: "50px" }} />;
   }
 
   // 2) Si no hay user y NO estamos en /backvolei/login, forzamos login

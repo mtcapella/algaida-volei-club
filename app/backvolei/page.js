@@ -1,45 +1,79 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { ProgressSpinner } from "primereact/progressspinner";
 import styles from "./dashboard.module.css";
 
-export default async function Dashboard() {
+import { useTranslation } from "react-i18next";
+
+export default function Dashboard() {
+  const { t } = useTranslation();
+
+  const [totalPlayers, setTotalPlayers] = useState(0);
+  const [totalTeams, setTotalTeams] = useState(0);
+  const [pagos, setPagos] = useState({ pagado: 0, pendiente: 0 });
+  const [jugadoresPorCategoria, setJugadoresPorCategoria] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // obtenemos los datos del dashboard desde la API
   // usando la cache no-store para que siempre se obtengan los datos actualizados
 
-  const base = process.env.NEXT_PUBLIC_DOMAIN;
-  const res = await fetch(`${base}/api/dashboard`, {
-    cache: "no-store",
-  });
-  const { totalPlayers, totalTeams, pagos, jugadoresPorCategoria } =
-    await res.json();
+  const getDashboardData = async () => {
+    const base = process.env.NEXT_PUBLIC_DOMAIN;
+    const res = await fetch(`${base}/api/dashboard`, {
+      cache: "no-store",
+    });
+    return res.json();
+  };
+  useEffect(() => {
+    getDashboardData()
+      .then((data) => {
+        setTotalPlayers(data.totalPlayers);
+        setTotalTeams(data.totalTeams);
+        setPagos(data.pagos);
+        setJugadoresPorCategoria(data.jugadoresPorCategoria);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
+  if (loading) {
+    return <ProgressSpinner />;
+  }
   return (
     <>
-      <h2>Dashboard General</h2>
+      <h2>{t("dashboard.title")}</h2>
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <i className={`pi pi-users ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>Jugadores Totales</div>
+          <div className={styles.statTitle}>{t("dashboard.totalPlayers")}</div>
           <div className={styles.statValue}>{totalPlayers}</div>
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-briefcase ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>Equipos Totales</div>
+          <div className={styles.statTitle}>{t("dashboard.totalPlayers")}</div>
           <div className={styles.statValue}>{totalTeams}</div>
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-money-bill ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>Pagado</div>
+          <div className={styles.statTitle}>{t("dashboard.payed")}</div>
           <div className={styles.statValue}>{pagos.pagado}</div>
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-clock ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>Pendiente</div>
+          <div className={styles.statTitle}>
+            {t("dashboard.paymetsPending")}
+          </div>
           <div className={styles.statValue}>{pagos.pendiente}</div>
         </div>
       </div>
 
       <section className={styles.categoryList}>
-        <h3>Jugadores por Categoría</h3>
+        <h3>{t("dashboard.playersForCategory")}</h3>
         {jugadoresPorCategoria.map(({ category, totalPlayers }) => (
           <div key={category} className={styles.categoryItem}>
             • {category}: {totalPlayers}
