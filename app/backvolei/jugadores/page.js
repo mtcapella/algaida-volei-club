@@ -99,7 +99,7 @@ export default function Players() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar el jugador.",
+        detail: t("players.cantDeletePLayer"),
         life: 3000,
       });
     }
@@ -155,8 +155,8 @@ export default function Players() {
       if (response.ok) {
         toast.current.show({
           severity: "success",
-          summary: "Jugador actualizado",
-          detail: "Los cambios han sido guardados.",
+          summary: t("players.playerUpdated"),
+          detail: t("players.changesSaved"),
           life: 3000,
         });
         setEditDialogVisible(false);
@@ -166,7 +166,7 @@ export default function Players() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo actualizar el jugador.",
+        detail: t("players.playerNotUpdated"),
         life: 3000,
       });
     }
@@ -302,7 +302,7 @@ export default function Players() {
     }
   };
   if (loading) {
-    return <div>Cargando imágenes...</div>;
+    return <ProgressSpinner />;
   }
   /* ----------------------------------------------------------------------- */
   return (

@@ -311,6 +311,10 @@
   "players": {
     "playerDeleted": "Jugador eliminado",
     "thePlayer": "El jugador",
-    "hasDeleted": "ha sido eliminado"
+    "hasDeleted": "ha sido eliminado",
+    "cantDeletePLayer": "No se pudo eliminar el jugador.",
+    "playerUpdated": "Jugador actualizado",
+    "changesSaved": "changes have been saved",
+    "playerNotUpdated": "No se pudo actualizar el jugador."
   }
 }
