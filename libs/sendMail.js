@@ -15,13 +15,13 @@ export async function sendMail({ playerId, dni, name, email, total_pago }) {
   const db = await pool.getConnection();
 
   try {
-    // Obtener últimos 3 documentos por orden descendente
+    // Obtener últimos 2 documentos por orden descendente
     const [docs] = await db.execute(
       `SELECT file_url
        FROM documents
-       WHERE player_id = ? AND season_id = ?
+       WHERE player_id = ? AND season_id = ? AND doc_type != 'dni'
        ORDER BY uploaded_at DESC
-       LIMIT 3`,
+       LIMIT 2`,
       [playerId, seasonId]
     );
 
@@ -44,8 +44,6 @@ export async function sendMail({ playerId, dni, name, email, total_pago }) {
       total_pago: total_pago / 100,
       docs: docUrls,
     };
-
-    console.log("Cuerpo del correo:", body);
 
     const response = await fetch(
       "http://s1044554372.mialojamiento.es/mail.php",

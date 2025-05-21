@@ -25,42 +25,56 @@ ON DUPLICATE KEY UPDATE
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 5. (Re)crear el procedure archive_debts
-DROP PROCEDURE IF EXISTS `archive_debts`;
+
+
 DELIMITER $$
-CREATE DEFINER=`mike`@`%` PROCEDURE `algaida_volei_club`.`archive_debts`()
+
+DROP PROCEDURE IF EXISTS archive_debts$$
+
+CREATE PROCEDURE archive_debts()
 BEGIN
-    -- Obtener la temporada activa
-    DECLARE active_season_id INT;
-    SELECT id INTO active_season_id FROM seasons WHERE is_active = 1 LIMIT 1;
+  DECLARE v_season INT DEFAULT NULL;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_season = NULL;
 
-    -- Verificar si existe temporada activa
-    IF active_season_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay temporada activa';
-    END IF;
+  -- 1) Averiguar temporada activa
+  SELECT id
+    INTO v_season
+    FROM seasons
+   WHERE is_active = 1
+   LIMIT 1;
 
-    -- Insertar las deudas en el histórico sin violar ONLY_FULL_GROUP_BY
-    INSERT INTO debt_history (player_id, season_id, total_due, total_paid, status)
-    SELECT 
-        r.player_id, 
-        r.season_id, 
-        MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) AS total_due,
-        IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) AS total_paid,
-        (CASE 
-            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) = MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) THEN 'completed'
-            WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) > 0 THEN 'partially_paid'
-            ELSE 'pending' 
-        END) AS status
-    FROM registrations r
-    LEFT JOIN payments p ON p.player_id = r.player_id AND p.season_id = r.season_id
-    WHERE r.season_id = active_season_id AND r.split_payment = 1
-    GROUP BY r.player_id, r.season_id;
+  IF v_season IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay temporada activa';
+  END IF;
 
-    -- Actualizar las deudas como saldadas para la temporada activa
-    UPDATE registrations 
-    SET split_payment = 0 
-    WHERE season_id = active_season_id AND split_payment = 1;
+  -- 2) Limpiar histórico de esa temporada (evita duplicados)
+  DELETE FROM debt_history
+   WHERE season_id = v_season;
 
-END;
+  -- 3) Volcar todas las inscripciones de la temporada
+  INSERT INTO debt_history
+    (player_id, season_id, total_due, total_paid, status)
+  SELECT
+    r.player_id,
+    r.season_id,
+    -- cuota según participe o no en lotería
+    MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END) AS total_due,
+    -- sólo pagos COMPLETADOS
+    IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0) AS total_paid,
+    -- si ha pagado toda la cuota → completed; sino → pending
+    CASE
+      WHEN IFNULL(SUM(CASE WHEN p.status = 'completed' THEN p.amount ELSE 0 END), 0)
+           = MAX(CASE WHEN r.participate_lottery = 1 THEN 380 ELSE 400 END)
+        THEN 'completed'
+      ELSE 'pending'
+    END AS status
+  FROM registrations r
+  LEFT JOIN payments p
+    ON p.player_id = r.player_id
+   AND p.season_id = r.season_id
+  WHERE r.season_id = v_season
+  GROUP BY r.player_id, r.season_id;
+
+END$$
+
 DELIMITER ;
-
-
