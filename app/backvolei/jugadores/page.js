@@ -105,6 +105,14 @@ export default function Players() {
     }
   };
 
+  // helper para crear ulr de firebase en base al token
+
+  const createUrl = (path) => {
+    if (!path || !token) return "";
+    return `https://firebasestorage.googleapis.com/v0/b/algaida-volei-club.firebasestorage.app/o/${encodeURIComponent(
+      path
+    )}?alt=media&token=${token}`;
+  };
   // Helper para determinar el icono de cada documento
   const docIcon = {
     dni: "pi pi-id-card", // DNI / pasaporte
@@ -358,7 +366,7 @@ export default function Players() {
           header="Foto"
           body={(rowData) => (
             <Image
-              src={rowData.photoUrl || "/img/default-avatar.png"}
+              src={createUrl(rowData.photoUrl) || "/img/logo.png"}
               alt="Foto"
               width={50}
               height={50}
@@ -382,7 +390,10 @@ export default function Players() {
                   key={doc.type}
                   icon={getIconClass(doc.type)}
                   className="p-button-text"
-                  onClick={() => window.open(doc.file_url, "_blank")}
+                  onClick={() => {
+                    const url = createUrl(doc.file_url);
+                    if (url) window.open(url, "_blank");
+                  }}
                   tooltip={doc.type.toUpperCase()}
                   tooltipOptions={{ position: "top" }}
                 />

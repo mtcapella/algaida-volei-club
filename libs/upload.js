@@ -1,13 +1,14 @@
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// upload.js
+import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "./firebase"; // Asegúrate de que la ruta sea correcta
 
-// sube un archivo a Firebase Storage y devuelve la URL pública
+// Sube un archivo y devuelve solo el path (sin token)
 export async function uploadFile(file, folder) {
-  const fileRef = ref(storage, `${folder}/${Date.now()}-${file.name}`);
+  const filePath = `${folder}/${Date.now()}-${file.name}`;
+  const fileRef = ref(storage, filePath);
 
-  // sube el blob
   await uploadBytes(fileRef, file);
 
-  // devuelve la URL pública
-  return getDownloadURL(fileRef);
+  // Devuelve solo el path relativo
+  return filePath;
 }

@@ -1,32 +1,52 @@
 import { getActiveSeason } from "@/libs/seasons";
 import pool from "@/libs/mysql";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "@/libs/firebase";
+
+const buildSecureFirebaseUrl = (path, token) => {
+  if (!path || !token) return "";
+  return `https://firebasestorage.googleapis.com/v0/b/algaida-volei-club.firebasestorage.app/o/${encodeURIComponent(
+    path
+  )}?alt=media&token=${token}`;
+};
 
 export async function sendMail({ playerId, dni, name, email, total_pago }) {
   const seasonId = await getActiveSeason();
   const db = await pool.getConnection();
 
   try {
-    // Obtener URLs de documentos de la temporada activa
+    // Obtener últimos 3 documentos por orden descendente
     const [docs] = await db.execute(
       `SELECT file_url
        FROM documents
-       WHERE player_id = ? AND season_id = ?`,
+       WHERE player_id = ? AND season_id = ?
+       ORDER BY uploaded_at DESC
+       LIMIT 3`,
       [playerId, seasonId]
     );
 
-    const docUrls = docs.map((doc) => doc.file_url);
+    // Obtener token temporal desde el primer documento (si hay)
+    let token = null;
+    if (docs.length > 0) {
+      const fileRef = ref(storage, docs[0].file_url);
+      const url = await getDownloadURL(fileRef);
+      token = new URL(url).searchParams.get("token");
+    }
 
-    // Montar el cuerpo del POST
+    const docUrls = docs.map((doc) =>
+      buildSecureFirebaseUrl(doc.file_url, token)
+    );
+
     const body = {
       name,
       email,
       dni,
-      total_pago: total_pago / 100, // Convertir a euros
+      total_pago: total_pago / 100,
       docs: docUrls,
     };
 
     console.log("Cuerpo del correo:", body);
-    // Enviar POST al endpoint PHP
+
     const response = await fetch(
       "http://s1044554372.mialojamiento.es/mail.php",
       {
@@ -37,7 +57,7 @@ export async function sendMail({ playerId, dni, name, email, total_pago }) {
         body: JSON.stringify(body),
       }
     );
-    console.log("response", response);
+
     if (!response.ok) {
       console.error("Fallo al enviar el correo:", await response.text());
     }
