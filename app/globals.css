@@ -15,36 +15,3 @@ a {
   box-sizing: border-box;
 }
 
-
-/* Base (por defecto para móviles <576px) */
-.container {
-  /* estilos adaptados a móviles pequeñitos */
-}
-
-/* A partir de 576px */
-@media (min-width: 576px) {
-  .container {
-    /* e.g. ancho, columnas, tipografías un poco más grandes */
-  }
-}
-
-/* A partir de 768px */
-@media (min-width: 768px) {
-  .container {
-    /* grid más amplio, etc. */
-  }
-}
-
-/* A partir de 992px */
-@media (min-width: 992px) {
-  .container {
-    /* e.g. 2 o 3 columnas en tu layout */
-  }
-}
-
-/* A partir de 1200px */
-@media (min-width: 1200px) {
-  .container {
-    /* max-width mayor, 4 columnas, etc. */
-  }
-}

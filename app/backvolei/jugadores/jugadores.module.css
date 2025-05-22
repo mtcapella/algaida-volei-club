@@ -30,3 +30,12 @@
   display: flex;
   gap: 2rem
 }
+
+.p-input-icon-left > i.pi-search {
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  left: 10px !important;
+  color: #6b7280; /* opcional, grisecito */
+  font-size: 1rem;
+}

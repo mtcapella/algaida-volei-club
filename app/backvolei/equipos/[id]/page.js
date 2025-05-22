@@ -1,6 +1,6 @@
 "use client";
 
-/* Team details page – con desasignación usando PUT /api/assign-player { teamId: null } */
+// pagina de detalle de un equipo
 
 import React, { use as usePromise, useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
@@ -12,18 +12,24 @@ import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Dialog } from "primereact/dialog";
 
+import styles from "../equipos.module.css";
+
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
+//import i18n from "../../i18nextInit.js";
+import { useTranslation } from "react-i18next";
+
 export default function TeamPage({ params }) {
+  const { t } = useTranslation(); // i18n
   const { id } = usePromise(params);
 
   const [team, setTeam] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // assign modal state
+  // modal de asignar jugador
   const [assignDialogVisible, setAssignDialogVisible] = useState(false);
   const [availablePlayers, setAvailablePlayers] = useState([]);
   const [loadingAvailable, setLoadingAvailable] = useState(false);
@@ -34,7 +40,7 @@ export default function TeamPage({ params }) {
   const dt = useRef(null);
   const toast = useRef(null);
 
-  /* --------------------------- helpers --------------------------------- */
+  // helpers
   const fetchTeam = async () => {
     setLoading(true);
     try {
@@ -165,16 +171,16 @@ export default function TeamPage({ params }) {
 
   /* ------------------ render helpers ----------------------------------- */
   const leftToolbarTemplate = () => (
-    <div className="flex gap-2">
+    <div className={styles.flexGap2}>
       <Button
-        label="Refrescar"
+        label={t("buttons.update")}
         icon="pi pi-refresh"
         className="p-button-secondary"
         onClick={fetchTeam}
         disabled={loading}
       />
       <Button
-        label="Exportar CSV"
+        label={t("buttons.exportCSV")}
         icon="pi pi-file"
         className="p-button-success"
         onClick={() => dt.current.exportCSV()}
@@ -185,7 +191,7 @@ export default function TeamPage({ params }) {
 
   const rightToolbarTemplate = () => (
     <Button
-      label="Añadir jugadora"
+      label={t("buttons.addPlayer")}
       icon="pi pi-user-plus"
       className="p-button-primary"
       onClick={openAssignDialog}
@@ -229,7 +235,9 @@ export default function TeamPage({ params }) {
           <h1 className="mb-3 text-2xl font-semibold">{team.teamName}</h1>
           <p className="mb-4 text-sm text-color-secondary">
             {team.categoryName}
-            {team.coachName ? ` · Entrenador/a: ${team.coachName}` : ""}
+            {team.coachName
+              ? ` · ${t("teams.trainer")}: ${team.coachName}`
+              : ""}
           </p>
         </>
       )}
@@ -240,12 +248,13 @@ export default function TeamPage({ params }) {
         right={rightToolbarTemplate}
       />
 
-      <div className="p-input-icon-left p-mb-3">
-        <i className="pi pi-search" />
+      <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+        <i className={`pi pi-search ${styles.inputSearchIcon}`} />
         <InputText
+          className={styles.inputSearchInput}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Buscar jugadora..."
+          placeholder={t("buttons.searchPlayer")}
         />
       </div>
 
@@ -258,11 +267,11 @@ export default function TeamPage({ params }) {
         globalFilter={globalFilter}
         emptyMessage="No se encontraron jugadoras en este equipo."
       >
-        <Column field="first_name" header="Nombre" sortable />
-        <Column field="last_name" header="Apellido" sortable />
-        <Column field="dni" header="DNI" sortable />
+        <Column field="first_name" header={t("players.name")} sortable />
+        <Column field="last_name" header={t("players.surname")} sortable />
+        <Column field="dni" header={t("players.dni")} sortable />
         <Column
-          header="Acciones"
+          header={t("players.actions")}
           body={deleteBodyTemplate}
           style={{ width: "4rem" }}
         />
@@ -270,7 +279,7 @@ export default function TeamPage({ params }) {
 
       {/* Dialogo asignar jugadora */}
       <Dialog
-        header="Añadir jugadora al equipo"
+        header={t("teams.addPlayerToTeam")}
         visible={assignDialogVisible}
         style={{ width: "500px" }}
         modal
@@ -291,25 +300,25 @@ export default function TeamPage({ params }) {
               selection={selectedPlayer}
               onSelectionChange={(e) => setSelectedPlayer(e.value)}
               dataKey="playerId"
-              emptyMessage="No hay jugadoras disponibles."
+              emptyMessage={t("teams.noPlayersAvailable")}
               paginator
               rows={5}
               rowsPerPageOptions={[5, 10]}
               className="p-mb-2"
             >
               <Column selectionMode="single" style={{ width: "3rem" }} />
-              <Column field="firstName" header="Nombre" sortable />
-              <Column field="lastName" header="Apellido" sortable />
+              <Column field="firstName" header={t("players.name")} sortable />
+              <Column field="lastName" header={t("players.surname")} sortable />
             </DataTable>
 
-            <div className="flex justify-content-end gap-2 mt-3">
+            <div className={`${styles.flexGap2} ${styles.padding}`}>
               <Button
-                label="Cancelar"
+                label={t("buttons.cancel")}
                 className="p-button-text"
                 onClick={() => setAssignDialogVisible(false)}
               />
               <Button
-                label="Guardar"
+                label={t("buttons.save")}
                 icon="pi pi-check"
                 disabled={!selectedPlayer || assigning}
                 loading={assigning}

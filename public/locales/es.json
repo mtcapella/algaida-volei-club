@@ -280,6 +280,7 @@
     "cancel": "Cancelar",
     "next": "Siguiente",
     "send": "Enviar",
+    "save": "Guardar",
     "readMore": "Leer más",
     "close": "Cerrar",
     "back": "Volver",
@@ -289,6 +290,7 @@
     "exportCSV": "Exportar CSV",
     "newPlayer": "Nuevo jugador",
     "editPlayer": "Editar jugador",
+    "addPlayer": "Añadir jugador",
     "deletePlayer": "Eliminar jugador",
     "searchPlayer": "Buscar jugador",
     "dontFindPlayer": "No se ha encontrado el jugador",
@@ -309,12 +311,41 @@
     "settings": "Configuración"
   },
   "players": {
+    "name": "Nombre",
+    "surname": "Apellidos",
     "playerDeleted": "Jugador eliminado",
     "thePlayer": "El jugador",
     "hasDeleted": "ha sido eliminado",
     "cantDeletePLayer": "No se pudo eliminar el jugador.",
     "playerUpdated": "Jugador actualizado",
     "changesSaved": "changes have been saved",
-    "playerNotUpdated": "No se pudo actualizar el jugador."
+    "playerNotUpdated": "No se pudo actualizar el jugador.",
+    "dni": "DNI/NIE",
+    "actions": "Acciones"
+  },
+  "teams": {
+    "teamCreated": "Equipo creado",
+    "teamCreatedCorrectly": "El equipo se ha creado correctamente.",
+    "teamDeleted": "Equipo eliminado",
+    "deleateTeam": "Eliminar equipo",
+    "actionCantBeUndo": "Esta acción no se puede deshacer.",
+    "theTeam": "El equipo",
+    "trainer": "Entrenador",
+    "category": "Categoría",
+    "selectCategory": "Selecciona una categoría",
+    "hasDeleted": "ha sido eliminado",
+    "cantDeleteTeam": "No se pudo eliminar el equipo.",
+    "hasDeletedCorrectly": "se ha eliminado correctamente.",
+    "teamUpdated": "Equipo actualizado",
+    "changesSaved": "Cambios guardados.",
+    "teamNotUpdated": "No se pudo actualizar el equipo.",
+    "addPlayerToTeam": "Añadir jugador al equipo",
+    "numberOfPlayers": "Nº de jugadores",
+    "editTeam": "Editar equipo",
+    "cantUpdateTeam": "No se pudo actualizar el equipo.",
+    "errorOnLoading": "Error al cargar los datos del equipo.",
+    "errorOnLoadindMesage": "Error al cargar los datos del equipo.",
+    "cantCreateTeam": "No se pudo crear el equipo.",
+    "noPlayersAvailable": "No hay jugadores disponibles para añadir al equipo."
   }
 }

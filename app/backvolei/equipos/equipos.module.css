@@ -1,0 +1,66 @@
+.inputSearchWrapper {
+    margin: 1rem 0 1rem 0;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.inputSearchIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.inputSearchInput {
+  padding-left: 2rem;
+  width: 30%;
+}
+
+
+.documentsIcons {
+  display: flex;
+  gap: 5px;
+ align-content: center;
+
+}
+.documentsIcons > div {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+
+.actionsIcons {
+  display: flex;
+    justify-content: center;
+
+}
+.actionsIcons > div {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+
+.flex {
+  display: flex;
+
+}
+
+.flexGap2 {
+  display: flex;
+  gap: 2rem;
+ 
+}
+
+.padding{
+     padding: 1rem 0 1rem 0;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

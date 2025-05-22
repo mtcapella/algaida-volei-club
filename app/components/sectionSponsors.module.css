@@ -15,7 +15,7 @@
   .sponsorsGrid {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     align-items: center;
     justify-items: center;
   }
@@ -25,10 +25,13 @@
   }
   
   .logo {
-    object-fit: contain;
-    opacity: 0.8;
-    transition: opacity 0.3s;
-  }
+  width: 100%;
+  max-width: 120px; 
+  height: auto;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
   
   .logo:hover {
     opacity: 1;

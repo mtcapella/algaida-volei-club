@@ -17,6 +17,8 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
+import styles from "./equipos.module.css";
+
 export default function Teams() {
   // i18n para la traduccion de los textos
   const { t } = useTranslation();
@@ -60,8 +62,8 @@ export default function Teams() {
     } catch (err) {
       toast.current?.show({
         severity: "error",
-        summary: "Error al cargar",
-        detail: "No se pudieron obtener los equipos.",
+        summary: t("teams.errorOnLoading"),
+        detail: t("teams.errorOnLoadindMesage"),
         life: 3000,
       });
     }
@@ -100,8 +102,8 @@ export default function Teams() {
       if (!res.ok) throw new Error();
       toast.current.show({
         severity: "success",
-        summary: "Equipo creado",
-        detail: "Equipo creado correctamente.",
+        summary: t("teams.teamCreated"),
+        detail: t("teams.teamCreatedCorrectly"),
         life: 3000,
       });
       setNewDialogVisible(false);
@@ -110,7 +112,7 @@ export default function Teams() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo crear el equipo.",
+        detail: t("teams.cantCreateTeam"),
         life: 3000,
       });
     } finally {
@@ -135,8 +137,8 @@ export default function Teams() {
       if (!res.ok) throw new Error();
       toast.current.show({
         severity: "success",
-        summary: "Equipo actualizado",
-        detail: "Cambios guardados.",
+        summary: t("teams.teamUpdated"),
+        detail: t("teams.changesSaved"),
         life: 3000,
       });
       setEditDialogVisible(false);
@@ -145,7 +147,7 @@ export default function Teams() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo actualizar el equipo.",
+        detail: t("teams.teamNotUpdated"),
         life: 3000,
       });
     } finally {
@@ -155,7 +157,9 @@ export default function Teams() {
 
   const handleDelete = async (team) => {
     const confirmDelete = window.confirm(
-      `¿Eliminar el equipo "${team.name}"? Esta acción no se puede deshacer.`
+      `¿${t("teams.deleateTeam")} "${team.name}"? ${t(
+        "teams.actionCantBeUndo"
+      )}`
     );
     if (!confirmDelete) return;
     try {
@@ -167,7 +171,9 @@ export default function Teams() {
       toast.current.show({
         severity: "success",
         summary: "Equipo eliminado",
-        detail: `El equipo ${team.name} se ha eliminado correctamente.`,
+        detail: `${t("teams.theTeam")} ${team.name} ${t(
+          "teams.hasDeletedCorrectly"
+        )}`,
         life: 3000,
       });
       setTeams((prev) => prev.filter((t) => t.id !== team.id));
@@ -175,7 +181,7 @@ export default function Teams() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar el equipo.",
+        detail: t("teams.cantDeleteTeam"),
         life: 3000,
       });
     }
@@ -183,7 +189,7 @@ export default function Teams() {
 
   /* render acciones */
   const actionsBody = (rowData) => (
-    <div className="flex gap-2">
+    <div className={styles.documentsIcons}>
       <Button
         icon="pi pi-eye"
         className="p-button-text p-button-info"
@@ -213,7 +219,7 @@ export default function Teams() {
       <Toolbar
         className="mb-4"
         left={() => (
-          <div className="flex gap-2">
+          <div className={styles.flexGap2}>
             <Button
               label={t("buttons.update")}
               icon="pi pi-refresh"
@@ -238,12 +244,13 @@ export default function Teams() {
         )}
       />
 
-      <div className="p-input-icon-left mb-3">
-        <i className="pi pi-search" />
+      <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+        <i className={`pi pi-search ${styles.inputSearchIcon}`} />
         <InputText
+          className={styles.inputSearchInput}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Buscar equipo..."
+          placeholder={t("buttons.searchPlayer")}
         />
       </div>
 
@@ -260,100 +267,112 @@ export default function Teams() {
         dataKey="id"
       >
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
-        <Column field="name" header="Nombre" sortable />
-        <Column field="coach_name" header="Entrenador" sortable />
-        <Column field="categoryName" header="Categoría" sortable />
+        <Column field="name" header={t("players.name")} sortable />
+        <Column field="coach_name" header={t("teams.trainer")} sortable />
+        <Column field="categoryName" header={t("teams.category")} sortable />
         <Column
           field="totalPlayers"
-          header="# Jugadores"
+          header={t("teams.numberOfPlayers")}
           sortable
           style={{ width: "8rem", textAlign: "center" }}
         />
-        <Column header="Acciones" body={actionsBody} />
+        <Column header={t("players.actions")} body={actionsBody} />
       </DataTable>
 
       {/* Dialog Nuevo */}
       <Dialog
-        header="Nuevo Equipo"
+        header={t("buttons.newTeam")}
         visible={newDialogVisible}
         style={{ width: 400 }}
         modal
         className="p-fluid"
         onHide={() => setNewDialogVisible(false)}
       >
-        <div className="field">
-          <label>Nombre</label>
-          <InputText
-            value={teamForm.name}
-            onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
+        <div className={styles.formContainer}>
+          <div className="field">
+            <label>{t("players.name")}</label>
+            <InputText
+              value={teamForm.name}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, name: e.target.value })
+              }
+            />
+          </div>
+          <div className="field">
+            <label>{t("teams.trainer")}</label>
+            <InputText
+              value={teamForm.coachName}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, coachName: e.target.value })
+              }
+            />
+          </div>
+          <div className="field">
+            <label>{t("teams.category")}</label>
+            <Dropdown
+              value={teamForm.categoryId}
+              options={categories.map((c) => ({ label: c.name, value: c.id }))}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, categoryId: e.value })
+              }
+              placeholder={t("teams.selectCategory")}
+            />
+          </div>
+          <Button
+            label={t("buttons.save")}
+            onClick={handleSaveNew}
+            disabled={submitting}
+            className="mt-2"
           />
         </div>
-        <div className="field">
-          <label>Entrenador</label>
-          <InputText
-            value={teamForm.coachName}
-            onChange={(e) =>
-              setTeamForm({ ...teamForm, coachName: e.target.value })
-            }
-          />
-        </div>
-        <div className="field">
-          <label>Categoría</label>
-          <Dropdown
-            value={teamForm.categoryId}
-            options={categories.map((c) => ({ label: c.name, value: c.id }))}
-            onChange={(e) => setTeamForm({ ...teamForm, categoryId: e.value })}
-            placeholder="Seleccionar categoría"
-          />
-        </div>
-        <Button
-          label="Guardar"
-          onClick={handleSaveNew}
-          disabled={submitting}
-          className="mt-2"
-        />
       </Dialog>
 
       {/* Dialog Editar */}
       <Dialog
-        header="Editar Equipo"
+        header={t("teams.editTeam")}
         visible={editDialogVisible}
         style={{ width: 400 }}
         modal
         className="p-fluid"
         onHide={() => setEditDialogVisible(false)}
       >
-        <div className="field">
-          <label>Nombre</label>
-          <InputText
-            value={teamForm.name}
-            onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
+        <div className={styles.formContainer}>
+          <div className="field">
+            <label>{t("players.name")}</label>
+            <InputText
+              value={teamForm.name}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, name: e.target.value })
+              }
+            />
+          </div>
+          <div className="field">
+            <label>{t("teams.trainer")}</label>
+            <InputText
+              value={teamForm.coachName}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, coachName: e.target.value })
+              }
+            />
+          </div>
+          <div className="field">
+            <label>{t("teams.category")}</label>
+            <Dropdown
+              value={teamForm.categoryId}
+              options={categories.map((c) => ({ label: c.name, value: c.id }))}
+              onChange={(e) =>
+                setTeamForm({ ...teamForm, categoryId: e.value })
+              }
+              placeholder={t("teams.selectCategory")}
+            />
+          </div>
+          <Button
+            label={t("buttons.save")}
+            onClick={handleSaveEdit}
+            disabled={submitting}
+            className="mt-2"
           />
         </div>
-        <div className="field">
-          <label>Entrenador</label>
-          <InputText
-            value={teamForm.coachName}
-            onChange={(e) =>
-              setTeamForm({ ...teamForm, coachName: e.target.value })
-            }
-          />
-        </div>
-        <div className="field">
-          <label>Categoría</label>
-          <Dropdown
-            value={teamForm.categoryId}
-            options={categories.map((c) => ({ label: c.name, value: c.id }))}
-            onChange={(e) => setTeamForm({ ...teamForm, categoryId: e.value })}
-            placeholder="Seleccionar categoría"
-          />
-        </div>
-        <Button
-          label="Guardar cambios"
-          onClick={handleSaveEdit}
-          disabled={submitting}
-          className="mt-2"
-        />
       </Dialog>
     </div>
   );
