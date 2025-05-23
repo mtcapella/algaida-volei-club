@@ -37,10 +37,6 @@ export default function Players() {
   const [dniChecked, setDniChecked] = useState(false);
   const { token, loading } = useContext(ImageTokenContext);
 
-  console.log("Token de imagen:", token);
-
-  console.log("token", token);
-
   const dt = useRef(null);
   const toast = useRef(null);
 
@@ -122,7 +118,8 @@ export default function Players() {
 
   const getIconClass = (type) => docIcon[type] ?? "pi pi-file"; // fallback
 
-  /* ------------------------------ editar --------------------------------- */
+  // helper para abrir el dialogo de editar jugador
+  // y pre‑rellenar los campos
   const openEditDialog = (player) => {
     setPlayerToEdit({
       playerId: player.playerId,
@@ -172,7 +169,7 @@ export default function Players() {
     }
   };
 
-  /* --------------------------- comprobación DNI -------------------------- */
+  // helper para comporbar el DNI / NIE
   const handleCheckDni = async () => {
     const dni = getValues("dni")?.toUpperCase().trim();
     if (!dni || checkingDni) return;
@@ -189,11 +186,14 @@ export default function Players() {
       if (data.exists && data.registered) {
         toast.current.show({
           severity: "error",
-          summary: "Jugador ya registrado",
-          detail: "Ya inscrito en la temporada activa.",
+          summary: t("players.playerRegistered"),
+          detail: t("players.playerHasRegistered"),
           life: 3000,
         });
-        setError("dni", { type: "duplicated", message: "Jugador ya inscrito" });
+        setError("dni", {
+          type: "duplicated",
+          message: t("players.playerHasRegistered"),
+        });
         setDniChecked(false);
         return;
       }
@@ -201,11 +201,11 @@ export default function Players() {
       if (data.exists && data.hasDebt) {
         toast.current.show({
           severity: "error",
-          summary: "Jugador con deuda",
-          detail: "Tiene pagos pendientes.",
+          summary: t("players.playerWithDebt"),
+          detail: t("players.playerHasDebt"),
           life: 3000,
         });
-        setError("dni", { type: "debt", message: "Jugador con deudas" });
+        setError("dni", { type: "debt", message: t("players.playerWithDebt") });
         setDniChecked(false);
         return;
       }
@@ -218,8 +218,8 @@ export default function Players() {
         setValue("exists", true);
         toast.current.show({
           severity: "info",
-          summary: "Jugador encontrado",
-          detail: "Completa los datos restantes.",
+          summary: t("players.playerFind"),
+          detail: t("players.completeOtherData"),
           life: 3000,
         });
       } else {
@@ -227,8 +227,8 @@ export default function Players() {
         setValue("exists", false);
         toast.current.show({
           severity: "success",
-          summary: "Nuevo jugador",
-          detail: "Jugador no encontrado. Puedes crearlo.",
+          summary: t("players.newPlayer"),
+          detail: t("players.playerNotFindYouCanCreate"),
           life: 3000,
         });
       }
@@ -237,7 +237,7 @@ export default function Players() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo comprobar el jugador.",
+        detail: t("players.cantCheckPlayer"),
         life: 3000,
       });
       setDniChecked(false);
@@ -283,8 +283,8 @@ export default function Players() {
       if (response.ok) {
         toast.current.show({
           severity: "success",
-          summary: "Jugador creado",
-          detail: "Jugador registrado exitosamente.",
+          summary: t("players.playerCreated"),
+          detail: t("players.playerCreatedCorrectly"),
           life: 3000,
         });
         setNewDialogVisible(false);
@@ -296,7 +296,7 @@ export default function Players() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo registrar el jugador.",
+        detail: t("players.cantRegisterPlayer"),
         life: 3000,
       });
     }
@@ -339,16 +339,18 @@ export default function Players() {
       />
 
       {/* Filtro */}
-      <div className="p-input-icon-left p-mb-4">
-        <i className="pi pi-search" />
+
+      <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+        <i className={`pi pi-search ${styles.inputSearchIcon}`} />
         <InputText
+          className={styles.inputSearchInput}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder={t("buttons.searchPlayer")}
         />
       </div>
 
-      {/* Data table de los jeugadores */}
+      {/* Data table de los juagadores */}
       <DataTable
         ref={dt}
         value={players}
@@ -363,26 +365,26 @@ export default function Players() {
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
         <Column
           field="photoUrl"
-          header="Foto"
+          header={t("players.photo")}
           body={(rowData) => (
             <Image
               src={createUrl(rowData.photoUrl) || "/img/logo.png"}
-              alt="Foto"
+              alt={rowData.firstName + " " + rowData.lastName}
               width={50}
-              height={50}
+              height={80}
               className="rounded-full"
             />
           )}
         />
-        <Column field="firstName" header="Nombre" sortable />
-        <Column field="lastName" header="Apellido" sortable />
-        <Column field="dni" header="DNI" sortable />
-        <Column field="category" header="Categoría" sortable />
-        <Column field="team" header="Equipo" sortable />
-        <Column field="paymentStatus" header="Estado de Pago" sortable />
+        <Column field="firstName" header={t("players.name")} sortable />
+        <Column field="lastName" header={t("players.surname")} sortable />
+        <Column field="dni" header={t("players.dni")} sortable />
+        <Column field="category" header={t("teams.category")} sortable />
+        <Column field="team" header={t("teams.category")} sortable />
+        <Column field="paymentStatus" header={t("teams.team")} sortable />
         <Column
           field="documents"
-          header="Documentos"
+          header={t("players.document")}
           body={(rowData) => (
             <div className={styles.flex}>
               {rowData.documents.map((doc) => (
@@ -403,7 +405,7 @@ export default function Players() {
         />
 
         <Column
-          header="Acciones"
+          header={t("players.actions")}
           body={(rowData) => (
             <div className={styles.flex}>
               <Button
@@ -423,9 +425,9 @@ export default function Players() {
         />
       </DataTable>
 
-      {/* ------------------------- Dialog Editar ------------------------- */}
+      {/* ------------------------- Modal de editar ------------------------- */}
       <Dialog
-        header="Editar Jugador"
+        header={t("players.editPlayer")}
         visible={editDialogVisible}
         style={{ width: "450px" }}
         modal
@@ -433,9 +435,9 @@ export default function Players() {
         onHide={() => setEditDialogVisible(false)}
       >
         {playerToEdit && (
-          <>
+          <div className={styles.formContainer}>
             <div className="field">
-              <label>Nombre</label>
+              <label>{t("players.name")}</label>
               <InputText
                 value={playerToEdit.firstName}
                 onChange={(e) =>
@@ -447,7 +449,7 @@ export default function Players() {
               />
             </div>
             <div className="field">
-              <label>Apellido</label>
+              <label>{t("players.surname")}</label>
               <InputText
                 value={playerToEdit.lastName}
                 onChange={(e) =>
@@ -456,7 +458,7 @@ export default function Players() {
               />
             </div>
             <div className="field">
-              <label>Equipo</label>
+              <label>{t("teams.team")}</label>
               <Dropdown
                 value={playerToEdit.teamId}
                 options={teams.map((team) => ({
@@ -466,11 +468,11 @@ export default function Players() {
                 onChange={(e) =>
                   setPlayerToEdit({ ...playerToEdit, teamId: e.value })
                 }
-                placeholder="Seleccionar equipo"
+                placeholder={t("teams.selectTeam")}
               />
             </div>
             <div className="field">
-              <label>Fecha de nacimiento</label>
+              <label>{t("players.birthDate")}</label>
               <Calendar
                 value={playerToEdit.dateOfBirth}
                 onChange={(e) =>
@@ -481,14 +483,14 @@ export default function Players() {
               />
             </div>
 
-            <Button label="Guardar cambios" onClick={handleSaveEdit} />
-          </>
+            <Button label={t("buttons.save")} onClick={handleSaveEdit} />
+          </div>
         )}
       </Dialog>
 
       {/* ------------------------- Dialog Nuevo ------------------------- */}
       <Dialog
-        header="Nuevo Jugador"
+        header={t("buttons.newPlayer")}
         visible={newDialogVisible}
         style={{ width: "450px" }}
         modal
@@ -499,16 +501,24 @@ export default function Players() {
           setDniChecked(false);
         }}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={styles.formContainer}
+        >
           {/* DNI */}
           <div className="field">
-            <label>DNI</label>
+            <label>{t("players.dni")}</label>
             <div className={styles.flexGap2}>
               <Controller
                 name="dni"
                 control={control}
                 defaultValue=""
-                rules={{ required: "El DNI es obligatorio" }}
+                rules={{
+                  required: {
+                    value: true,
+                    message: t("inscription.form.dniError"),
+                  },
+                }}
                 render={({ field }) => (
                   <InputText
                     {...field}
@@ -534,48 +544,48 @@ export default function Players() {
 
           {/* Nombre */}
           <div className="field">
-            <label>Nombre</label>
+            <label>{t("inscription.form.name")}</label>
             <Controller
               name="firstName"
               control={control}
               defaultValue=""
-              rules={{ required: "El nombre es obligatorio" }}
+              rules={{ required: t("inscription.form.nameError") }}
               render={({ field }) => <InputText {...field} />}
             />
           </div>
 
           {/* Apellido */}
           <div className="field">
-            <label>Apellido</label>
+            <label> {t("inscription.form.surname")}</label>
             <Controller
               name="lastName"
               control={control}
               defaultValue=""
-              rules={{ required: "El apellido es obligatorio" }}
+              rules={{ required: t("inscription.form.surnameError") }}
               render={({ field }) => <InputText {...field} />}
             />
           </div>
 
           {/* Email */}
           <div className="field">
-            <label>Email</label>
+            <label>{t("inscription.form.email")}</label>
             <InputText {...register("email")} />
           </div>
 
           {/* Teléfono */}
           <div className="field">
-            <label>Teléfono</label>
+            <label>{t("inscription.form.phone")}</label>
             <InputText {...register("phone")} />
           </div>
 
           {/* Equipo */}
           <div className="field">
-            <label>Equipo</label>
+            <label>{t("teams.team")}</label>
             <Controller
               name="teamId"
               control={control}
               defaultValue={null}
-              rules={{ required: "El equipo es obligatorio" }}
+              rules={{ required: t("teams.teamIsMandatory") }}
               render={({ field }) => (
                 <Dropdown
                   {...field} // value y onChange ya unidos a RHF
@@ -583,7 +593,7 @@ export default function Players() {
                     label: t.name,
                     value: t.id,
                   }))}
-                  placeholder="Seleccionar equipo"
+                  placeholder={t("teams.selectTeam")}
                   className={errors.teamId && "p-invalid"}
                 />
               )}
@@ -592,7 +602,7 @@ export default function Players() {
 
           {/* Fecha nacimiento */}
           <div className="field">
-            <label>Fecha de nacimiento</label>
+            <label>{t("players.birthDate")}</label>
             <Controller
               name="dateOfBirth"
               control={control}
@@ -611,7 +621,7 @@ export default function Players() {
 
           <Button
             type="submit"
-            label={checkingDni ? "Comprobando..." : "Guardar"}
+            label={checkingDni ? t("players.checking") : t("buttons.save")}
             disabled={checkingDni || isSubmitting}
             className="mt-2"
           />

@@ -211,7 +211,7 @@ export default function Teams() {
     </div>
   );
 
-  /* ------------- UI -------------- */
+  // render de la pagina
   return (
     <div className="p-4">
       <Toast ref={toast} />
@@ -263,7 +263,7 @@ export default function Teams() {
         globalFilter={globalFilter}
         selection={selectedTeams}
         onSelectionChange={(e) => setSelectedTeams(e.value)}
-        emptyMessage="No se encontraron equipos."
+        emptyMessage={t("teams.notFindTeams")}
         dataKey="id"
       >
         <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
@@ -327,7 +327,7 @@ export default function Teams() {
         </div>
       </Dialog>
 
-      {/* Dialog Editar */}
+      {/* Modal de Editar */}
       <Dialog
         header={t("teams.editTeam")}
         visible={editDialogVisible}

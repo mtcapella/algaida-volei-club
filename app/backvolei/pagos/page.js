@@ -12,15 +12,19 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import styles from "./pagos.module.css";
+
+import { useTranslation } from "react-i18next";
 
 export default function PaymentsPage() {
+  const { t } = useTranslation();
   const [payments, setPayments] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const dt = useRef(null);
   const toast = useRef(null);
 
-  /* ---------------- fetch helpers ---------------- */
+  // fetch pagos temporada actual
   const fetchPayments = async () => {
     setLoading(true);
     try {
@@ -39,7 +43,7 @@ export default function PaymentsPage() {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudieron cargar los pagos.",
+        detail: t("payments.errorToloading"),
         life: 3000,
       });
     } finally {
@@ -55,7 +59,9 @@ export default function PaymentsPage() {
   /* ------------- update payment --------------- */
   const handleUpdatePayment = async (row) => {
     const confirm = window.confirm(
-      `Vas a actualizar el pago de ${row.first_name} ${row.last_name}.\nEsta acción es irreversible. ¿Continuar?`
+      `${t("payments.toUpdatePayment")} ${row.first_name} ${
+        row.last_name
+      }.\n${t("payments.thisActionCantBeUndo")}`
     );
     if (!confirm) return;
 
@@ -70,11 +76,13 @@ export default function PaymentsPage() {
           amount: row.debt,
         }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error("Error al actualizar el pago");
       toast.current?.show({
         severity: "success",
         summary: "Pago actualizado",
-        detail: `El pago de ${row.first_name} ${row.last_name} ha sido marcado como completado.`,
+        detail: `${t("payments.thePayment")} ${row.first_name} ${
+          row.last_name
+        } ${t("payments.hasUpdated")}`,
         life: 3000,
       });
       fetchPayments();
@@ -83,7 +91,7 @@ export default function PaymentsPage() {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo actualizar el pago.",
+        detail: t("payments.cantUpdatePayment"),
         life: 3000,
       });
     } finally {
@@ -91,18 +99,18 @@ export default function PaymentsPage() {
     }
   };
 
-  /* ---------------- toolbar ------------------- */
+  /* barra de herramietas */
   const leftToolbarTemplate = () => (
-    <div className="flex gap-2">
+    <div className={styles.flexGap2}>
       <Button
-        label="Refrescar"
+        label={t("buttons.update")}
         icon="pi pi-refresh"
         className="p-button-secondary"
         onClick={fetchPayments}
         disabled={loading}
       />
       <Button
-        label="Exportar CSV"
+        label={t("buttons.exportCSV")}
         icon="pi pi-file"
         className="p-button-success"
         onClick={() => dt.current.exportCSV()}
@@ -126,16 +134,19 @@ export default function PaymentsPage() {
   return (
     <div className="p-m-4">
       <Toast ref={toast} />
-      <h1 className="mb-3 text-2xl font-semibold">Pagos temporada actual</h1>
+      <h1 className="mb-3 text-2xl font-semibold">
+        {t("payments.paymentsForActualSeason")}
+      </h1>
 
       <Toolbar className="p-mb-3" left={leftToolbarTemplate} />
 
-      <div className="p-input-icon-left p-mb-3">
-        <i className="pi pi-search" />
+      <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+        <i className={`pi pi-search ${styles.inputSearchIcon}`} />
         <InputText
+          className={styles.inputSearchInput}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Buscar jugador..."
+          placeholder={t("buttons.searchPlayer")}
         />
       </div>
 
@@ -146,38 +157,38 @@ export default function PaymentsPage() {
         rows={10}
         rowsPerPageOptions={[5, 10, 20]}
         globalFilter={globalFilter}
-        emptyMessage="No se encontraron pagos."
+        emptyMessage={t("payments.dontFindPayments")}
       >
-        <Column field="first_name" header="Nombre" sortable />
-        <Column field="last_name" header="Apellido" sortable />
-        <Column field="dni" header="DNI" sortable />
+        <Column field="first_name" header={t("payments.name")} sortable />
+        <Column field="last_name" header={t("payments.name")} sortable />
+        <Column field="dni" header={t("payments.dni")} sortable />
         <Column
           field="total_fee"
-          header="Cuota (€)"
+          header={t("payments.quote")}
           body={(row) => Number(row.total_fee).toFixed(2)}
           sortable
         />
         <Column
           field="totalPaid"
-          header="Pagado (€)"
+          header={t("payments.payed")}
           body={(row) => Number(row.totalPaid).toFixed(2)}
           sortable
         />
         <Column
           field="debt"
-          header="Deuda (€)"
+          header={t("payments.debt")}
           body={(row) => row.debt.toFixed(2)}
           sortable
         />
         <Column
-          header="Acciones"
+          header={t("payments.actions")}
           body={(row) =>
             row.split_payment === 1 ? (
               <Button
                 icon="pi pi-wallet"
                 className="p-button-text p-button-warning"
                 onClick={() => handleUpdatePayment(row)}
-                tooltip="Actualizar pago"
+                tooltip={t("payments.updatePayment")}
                 tooltipOptions={{ position: "top" }}
               />
             ) : null

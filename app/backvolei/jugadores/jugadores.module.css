@@ -39,3 +39,30 @@
   color: #6b7280; /* opcional, grisecito */
   font-size: 1rem;
 }
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputSearchWrapper {
+    margin: 1rem 0 1rem 0;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.inputSearchIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.inputSearchInput {
+  padding-left: 2rem;
+  width: 30%;
+}

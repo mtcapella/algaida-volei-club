@@ -1,6 +1,12 @@
 "use client";
 
-import React, { use as usePromise, useState, useEffect, useRef } from "react";
+import React, {
+  use as usePromise,
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+} from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -13,30 +19,32 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
-/* ---------------- helpers ---------------- */
+import { ImageTokenContext } from "@/app/components/imageTokenProvider"; // Importa el contexto del token de imagen
+
+// helper que devuelve el icono según el tipo de documento
 const docIcon = {
   dni: "pi pi-id-card",
   lopd: "pi pi-shield",
   usoimagenes: "pi pi-image",
 };
 
-/* ------------- componente --------------- */
 export default function SeasonDetail({ params }) {
   const { id } = usePromise(params);
 
   const [season, setSeason] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { token, loading } = useContext(ImageTokenContext);
+  const [loadingFetch, setLoadingFetch] = useState(false);
 
-  /* filtros locales por tab */
+  // filtros para las tablas
   const [playersFilter, setPlayersFilter] = useState("");
   const [teamsFilter, setTeamsFilter] = useState("");
   const [paymentsFilter, setPaymentsFilter] = useState("");
 
   const toast = useRef(null);
 
-  /* ------- fetch season ------- */
+  // fetchear la temporada que llega por params
   const fetchSeason = async () => {
-    setLoading(true);
+    setLoadingFetch(true);
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
       const res = await fetch(`${base}/api/seasons/${id}`);
@@ -51,7 +59,7 @@ export default function SeasonDetail({ params }) {
         life: 4000,
       });
     } finally {
-      setLoading(false);
+      setLoadingFetch(false);
     }
   };
 
@@ -60,12 +68,33 @@ export default function SeasonDetail({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // helper para crear la url de las imágenes de firebase con el token
+  const createUrl = (path) => {
+    if (!path || !token) return "";
+    return `https://firebasestorage.googleapis.com/v0/b/algaida-volei-club.firebasestorage.app/o/${encodeURIComponent(
+      path
+    )}?alt=media&token=${token}`;
+  };
+
   /* -------- body templates -------- */
   const documentBody = (row) => {
-    const docs =
-      Array.isArray(row.documents) && row.documents.length
-        ? row.documents.filter((d) => d && d.url)
-        : [];
+    /* convierte string → array y filtra nulls */
+    let docs = [];
+
+    if (Array.isArray(row.documents)) {
+      docs = row.documents;
+    } else if (
+      typeof row.documents === "string" &&
+      row.documents.trim().startsWith("[")
+    ) {
+      try {
+        docs = JSON.parse(row.documents);
+      } catch {
+        docs = [];
+      }
+    }
+
+    docs = docs.filter((d) => d && d.url);
 
     if (!docs.length) return <span className="text-xs opacity-60">–</span>;
 
@@ -76,7 +105,7 @@ export default function SeasonDetail({ params }) {
             key={doc.url}
             icon={docIcon[doc.type] ?? "pi pi-file"}
             className="p-button-text"
-            onClick={() => window.open(doc.url, "_blank")}
+            onClick={() => window.open(createUrl(doc.url), "_blank")}
             tooltip={doc.type?.toUpperCase()}
             tooltipOptions={{ position: "top" }}
           />
@@ -130,7 +159,7 @@ export default function SeasonDetail({ params }) {
   };
 
   /* -------- render -------- */
-  if (loading && !season) {
+  if (loadingFetch && loading && !season) {
     return (
       <div
         className="flex justify-content-center align-items-center"

@@ -54,7 +54,7 @@ export default function TeamPage({ params }) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo cargar la información del equipo.",
+        detail: t("teams.teamInfoCantBeLoaded"),
         life: 3000,
       });
     } finally {
@@ -67,7 +67,7 @@ export default function TeamPage({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  /* ---------- asignar jugadora ----------------------------------------- */
+  /* ---------- asignar jugador al equipo ----------------------------------------- */
   const openAssignDialog = async () => {
     if (!team) return;
     setAssignDialogVisible(true);
@@ -85,7 +85,7 @@ export default function TeamPage({ params }) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo cargar la lista de jugadoras disponibles.",
+        detail: t("teams.playersListCantBeLoaded"),
         life: 3000,
       });
       setAvailablePlayers([]);
@@ -110,8 +110,8 @@ export default function TeamPage({ params }) {
       if (!res.ok) throw new Error();
       toast.current?.show({
         severity: "success",
-        summary: "Jugadora asignada",
-        detail: "La jugadora se ha añadido al equipo.",
+        summary: t("teams.playerAssigned"),
+        detail: t("teams.playerAsignedCorrectly"),
         life: 3000,
       });
       setAssignDialogVisible(false);
@@ -122,7 +122,7 @@ export default function TeamPage({ params }) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo asignar la jugadora.",
+        detail: t("teams.playerNotAsigned"),
         life: 3000,
       });
     } finally {
@@ -130,10 +130,12 @@ export default function TeamPage({ params }) {
     }
   };
 
-  /* --------- quitar jugadora ------------------------------------------- */
+  /* --------- borrar jugador ------------------------------------------- */
   const handleRemove = async (rowData) => {
     const ok = window.confirm(
-      `¿Quieres eliminar a ${rowData.first_name} ${rowData.last_name} del equipo?`
+      `${t("teams.doyouWantEliminatePlayer")} ${rowData.first_name} ${
+        rowData.last_name
+      } ${t("teams.fromTheTeam")}`
     );
     if (!ok) return;
     console.log("eliminar", rowData);
@@ -151,8 +153,8 @@ export default function TeamPage({ params }) {
       if (!res.ok) throw new Error();
       toast.current?.show({
         severity: "success",
-        summary: "Jugadora eliminada",
-        detail: "La jugadora ha sido eliminada del equipo.",
+        summary: t("teams.playerEliminated"),
+        detail: t("teams.playerEliminatedCorrectly"),
         life: 3000,
       });
       fetchTeam();
@@ -161,7 +163,7 @@ export default function TeamPage({ params }) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo eliminar la jugadora.",
+        detail: t("teams.playerNotEliminated"),
         life: 3000,
       });
     } finally {
@@ -169,7 +171,7 @@ export default function TeamPage({ params }) {
     }
   };
 
-  /* ------------------ render helpers ----------------------------------- */
+  /* funciones de render */
   const leftToolbarTemplate = () => (
     <div className={styles.flexGap2}>
       <Button
@@ -214,7 +216,6 @@ export default function TeamPage({ params }) {
     />
   );
 
-  /* -------------------------- UI --------------------------------------- */
   if (loading && !team) {
     return (
       <div
@@ -265,7 +266,7 @@ export default function TeamPage({ params }) {
         rows={10}
         rowsPerPageOptions={[5, 10, 20]}
         globalFilter={globalFilter}
-        emptyMessage="No se encontraron jugadoras en este equipo."
+        emptyMessage={t("teams.playersNotFound")}
       >
         <Column field="first_name" header={t("players.name")} sortable />
         <Column field="last_name" header={t("players.surname")} sortable />

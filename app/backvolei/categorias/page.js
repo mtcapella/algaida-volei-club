@@ -11,7 +11,10 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
+import { useTranslation } from "react-i18next";
+
 export default function CategoriesPage() {
+  const { t } = useTranslation();
   const toast = useRef(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +33,7 @@ export default function CategoriesPage() {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudieron cargar las categorías",
+        detail: t("categories.cantLoadCategories"),
       });
     } finally {
       setLoading(false);
@@ -48,13 +51,19 @@ export default function CategoriesPage() {
   return (
     <div className={styles.container}>
       <Toast ref={toast} />
-      <h1>Categorías</h1>
+      <h1>{t("categories.title")}</h1>
       <div className={styles.grid}>
         {categories.map((cat) => (
           <Card key={cat.id} title={cat.name} className={styles.card}>
-            <p className="m-0 p-0">{cat.totalPlayers} Jugadores</p>
-            <p className="m-0 p-0">{cat.totalTeams} Equipos</p>
-            <p className={styles.percent}>{cat.percentage}% del total</p>
+            <p className="m-0 p-0">
+              {cat.totalPlayers} {t("categories.players")}
+            </p>
+            <p className="m-0 p-0">
+              {cat.totalTeams} {t("categories.teams")}
+            </p>
+            <p className={styles.percent}>
+              {cat.percentage}% {t("categories.forTheTotal")}
+            </p>
           </Card>
         ))}
       </div>

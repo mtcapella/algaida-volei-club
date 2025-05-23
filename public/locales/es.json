@@ -313,18 +313,40 @@
   "players": {
     "name": "Nombre",
     "surname": "Apellidos",
+    "birthDate": "Fecha de nacimiento",
     "playerDeleted": "Jugador eliminado",
     "thePlayer": "El jugador",
     "hasDeleted": "ha sido eliminado",
     "cantDeletePLayer": "No se pudo eliminar el jugador.",
     "playerUpdated": "Jugador actualizado",
-    "changesSaved": "changes have been saved",
+    "changesSaved": "Los cambios se han guardado.",
     "playerNotUpdated": "No se pudo actualizar el jugador.",
     "dni": "DNI/NIE",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "newPlayer": "Nuevo jugador",
+    "editPlayer": "Editar jugador",
+    "playerCreated": "Jugador creado",
+    "playerCreatedCorrectly": "El jugador se ha creado correctamente.",
+    "cantCheckPlayer": "No se pudo comprobar el jugador.",
+    "playerNotFindYouCanCreate": "No se ha encontrado el jugador. Puedes crear uno nuevo.",
+    "completeOtherData": "Completar otros datos",
+    "playerFind": "Jugador encontrado",
+    "playerWithDebt": "Jugador con deuda",
+    "playerHasDebt": "El jugador tiene deudas pendientes",
+    "playerRegistered" : "Jugador ya registrado",
+    "cantRegisterPlayer": "No se pudo registrar el jugador.",
+    "playerHasRegistered": "El jugador ya está inscrito en la temporada actual.",
+    "photo": "Foto",
+    "document": "Documento",
+    "checking": "Comprobando..."
+
   },
   "teams": {
+    "team": "Equipo",
     "teamCreated": "Equipo creado",
+    "selectTeam": "Selecciona un equipo",
+    "notFindTeams": "No se han encontrado equipos.",
+    "teamIsMandatory": "El equipo es obligatorio",
     "teamCreatedCorrectly": "El equipo se ha creado correctamente.",
     "teamDeleted": "Equipo eliminado",
     "deleateTeam": "Eliminar equipo",
@@ -346,6 +368,61 @@
     "errorOnLoading": "Error al cargar los datos del equipo.",
     "errorOnLoadindMesage": "Error al cargar los datos del equipo.",
     "cantCreateTeam": "No se pudo crear el equipo.",
-    "noPlayersAvailable": "No hay jugadores disponibles para añadir al equipo."
+    "noPlayersAvailable": "No hay jugadores disponibles para añadir al equipo.",
+    "teamInfoCantBeLoaded": "No se pudieron cargar los datos del equipo.",
+    "playersListCantBeLoaded": "No se pudo cargar la lista de jugadores.",
+    "playerAsigned": "Jugador asignado",
+    "playerAsignedCorrectly": "El jugador se ha asignado correctamente al equipo.",
+    "playerNotAsigned": "No se pudo asignar el jugador al equipo.",
+    "doyouWantEliminatePlayer": "¿Quieres eliminar a",
+    "fromTheTeam": "del equipo?",
+    "playerEliminated": "Jugador eliminado",
+    "playerEliminatedCorrectly": "El jugador se ha eliminado correctamente del equipo.",
+    "playerNotEliminated": "No se pudo eliminar el jugador del equipo.",
+    "playersNotFound": "No se encontraron jugadoras en este equipo."
+
+  }, 
+  "login": {
+    "login": "Iniciar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "rememberMe": "Recuérdame",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "loginError": "Error al iniciar sesión. Por favor, verifica tus credenciales.",
+    "logout": "Cerrar sesión"
+  },
+  "payments": {
+
+    "errorToloading": "Error al cargar los datos de los pagos.",
+    "toUpdatePayment": "Vas a actualizar el pago de",
+    "thisActionCantBeUndo": "Esta acción no se puede deshacer ¿Continuar?.",
+    "thePayment": "El pago de",
+    "hasUpdated": "ha sido marcado como completado.",
+    "cantUpdatePayment": "No se pudo actualizar el pago.",
+    "paymentsForActualSeason": "Pagos de la temporada actual",
+    "dontFindPayments": "No se han encontrado pagos.",
+    "name": "Nombre",
+    "surname": "Apellidos",
+    "dni": "DNI/NIE",
+    "quote": "Cuota (€)",
+    "payed": "Pagado (€)",
+    "pending": "Pendiente (€)",
+    "debt": "Deuda (€)",
+    "actions": "Acciones",
+    "updatePayment": "Actualizar pago"
+  },
+  "categories": {
+    "title": "Categorías",
+    "players": "Jugadores",
+    "teams": "Equipos",
+    "forTheTotal": "de total",
+    "cantLoadCategories": "No se pudieron cargar las categorías."
+  },
+  "seasons": {
+    "players": "Jugadores",
+    "teams": "Equipos",
+    "active": "Activa",
+    "finished": "Finalizada",
+    "cantLoadSeasons": "No se pudieron cargar las temporadas."
   }
 }
