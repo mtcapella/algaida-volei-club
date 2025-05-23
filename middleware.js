@@ -1,27 +1,48 @@
+// middleware.js  (raíz del proyecto)
 import { NextResponse } from "next/server";
 
-const allowedHosts = ["localhost:3000", "algaidavoleiclub.es"];
+// Orígenes permitidos
+const allowedOrigins = ["http://localhost:3000", "https://algaidavoleiclub.es"];
 
-export function middleware(request) {
-  const origin = request.headers.get("origin");
-  const referer = request.headers.get("referer");
-  const host = request.headers.get("host");
+export function middleware(req) {
+  const origin = req.headers.get("origin");
 
-  // Si hay origin o referer, comprobar si están en la whitelist
-  const isAllowed =
-    (origin && allowedHosts.some((h) => origin.includes(h))) ||
-    (referer && allowedHosts.some((h) => referer.includes(h))) ||
-    (host && allowedHosts.some((h) => host.includes(h)));
-
-  if (!isAllowed) {
-    return new NextResponse("Request bloqueado: origen no autorizado", {
-      status: 403,
-    });
+  // 1️⃣  Bloquea orígenes no autorizados
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new NextResponse("Origen no permitido", { status: 403 });
   }
 
-  return NextResponse.next();
+  // 2️⃣  Responde al pre-flight (OPTIONS)
+  if (req.method === "OPTIONS") {
+    return createCorsResponse(origin);
+  }
+
+  // 3️⃣  Petición normal: deja pasar y añade cabeceras CORS
+  const res = NextResponse.next();
+  setCorsHeaders(res, origin);
+  return res;
+}
+
+function createCorsResponse(origin) {
+  const res = new NextResponse(null, { status: 204 });
+  setCorsHeaders(res, origin);
+  return res;
+}
+
+function setCorsHeaders(res, origin) {
+  if (origin) res.headers.set("Access-Control-Allow-Origin", origin);
+  res.headers.set("Vary", "Origin"); // para caché
+  res.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  res.headers.set("Access-Control-Allow-Credentials", "true");
 }
 
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ["/api/:path*"], // solo tus endpoints
 };
