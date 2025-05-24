@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import styles from "./dashboard.module.css";
-
+import { api } from "@/libs/api"; // Asegúrate de que la ruta sea correcta
 import { useTranslation } from "react-i18next";
 
 export default function Dashboard() {
@@ -18,10 +18,10 @@ export default function Dashboard() {
   // usando la cache no-store para que siempre se obtengan los datos actualizados
 
   const getDashboardData = async () => {
-    const base = process.env.NEXT_PUBLIC_DOMAIN;
-    const res = await fetch(`${base}/api/dashboard`, {
-      cache: "no-store",
-    });
+    // const base = process.env.NEXT_PUBLIC_DOMAIN;
+    const res = await api("/api/dashboard");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
     return res.json();
   };
   useEffect(() => {

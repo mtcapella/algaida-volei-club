@@ -1,21 +1,22 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 import { getActiveSeason } from "@/libs/seasons";
 
-export async function GET() {
+export async function GET(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const db = await pool.getConnection();
 
   try {
-    const [seasonResult] = await db.execute(
-      `SELECT id FROM seasons WHERE is_active = 1 LIMIT 1`
-    );
-    if (seasonResult.length === 0) {
-      return NextResponse.json(
-        { error: "No hay temporada activa" },
-        { status: 500 }
-      );
-    }
-    const seasonId = seasonResult[0].id;
+    const seasonId = await getActiveSeason();
 
     // Jugadores registrados con pago completado
     const [playersResult] = await db.execute(

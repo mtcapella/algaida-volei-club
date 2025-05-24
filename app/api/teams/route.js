@@ -1,10 +1,19 @@
-// /api/teams/route.js
-
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
+import { getActiveSeason } from "@/libs/seasons";
 
-// 🏐 GET para listar equipos mejorado
-export async function GET() {
+// GET para listar equipos
+export async function GET(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const db = await pool.getConnection();
 
   try {
@@ -51,6 +60,14 @@ export async function GET() {
 
 // 🏐 POST para crear un nuevo equipo
 export async function POST(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const db = await pool.getConnection();
 
   try {

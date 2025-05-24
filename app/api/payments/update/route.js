@@ -1,13 +1,23 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 export async function PUT(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const db = await pool.getConnection();
 
   try {
     const { playerId, amount } = await request.json();
 
-    // 1️⃣ Obtener datos actuales del jugador
+    //  Obtener datos actuales del jugador
     const [registrationResult] = await db.execute(
       `SELECT 
           r.total_fee, 
@@ -29,18 +39,18 @@ export async function PUT(request) {
 
     const { total_fee, split_payment, totalPaid } = registrationResult[0];
 
-    // 2️⃣ Verificar si la deuda está completamente pagada
+    //  Verificar si la deuda está completamente pagada
     const newTotalPaid = totalPaid + amount;
     const remainingDebt = total_fee - newTotalPaid;
 
-    // 3️⃣ Actualizar pagos
+    //  Actualizar pagos
     await db.execute(
       `INSERT INTO payments (player_id, season_id, amount, paid_at, status, origin)
        VALUES (?, (SELECT id FROM seasons WHERE is_active = 1 LIMIT 1), ?, NOW(), 'completed', 'manual')`,
       [playerId, amount]
     );
 
-    // 4️⃣ Actualizar estado de deuda
+    // Actualizar estado de deuda
     await db.execute(
       `UPDATE registrations 
        SET split_payment = ?, total_fee = ?

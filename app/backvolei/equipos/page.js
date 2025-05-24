@@ -10,6 +10,8 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 
+import { api } from "@/libs/api"; // Importa la función api
+
 import i18n from "../../i18nextInit.js";
 import { useTranslation } from "react-i18next";
 
@@ -54,8 +56,7 @@ export default function Teams() {
 
   const fetchTeams = async () => {
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/teams`);
+      const res = await api(`/api/teams`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setTeams(data);
@@ -89,8 +90,7 @@ export default function Teams() {
     if (!teamForm.name || !teamForm.categoryId) return;
     setSubmitting(true);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/teams`, {
+      const res = await api(`/api/teams`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -124,8 +124,7 @@ export default function Teams() {
     if (!teamForm.name || !teamForm.categoryId) return;
     setSubmitting(true);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/teams/${teamForm.id}`, {
+      const res = await api(`/api/teams/${teamForm.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -163,8 +162,7 @@ export default function Teams() {
     );
     if (!confirmDelete) return;
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/teams/${team.id}`, {
+      const res = await api(`/api/teams/${team.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error();

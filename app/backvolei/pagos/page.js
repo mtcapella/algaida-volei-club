@@ -12,7 +12,10 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+
 import styles from "./pagos.module.css";
+
+import { api } from "@/libs/api";
 
 import { useTranslation } from "react-i18next";
 
@@ -28,8 +31,7 @@ export default function PaymentsPage() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/payments/current`);
+      const res = await api(`/api/payments/current`);
       if (!res.ok) throw new Error("Error al cargar pagos");
       const data = await res.json();
       // añade campo deuda precalculado (number)
@@ -67,8 +69,7 @@ export default function PaymentsPage() {
 
     try {
       setLoading(true);
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/payments/update`, {
+      const res = await api(`/api/payments/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

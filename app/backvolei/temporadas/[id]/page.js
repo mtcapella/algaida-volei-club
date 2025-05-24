@@ -15,6 +15,8 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 
+import { api } from "@/libs/api"; // Importa la función api
+
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -46,8 +48,7 @@ export default function SeasonDetail({ params }) {
   const fetchSeason = async () => {
     setLoadingFetch(true);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/seasons/${id}`);
+      const res = await api(`/api/seasons/${id}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setSeason(data);
@@ -134,8 +135,7 @@ export default function SeasonDetail({ params }) {
       return;
 
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/seasons/${id}`, {
+      const res = await api(`/api/seasons/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerId: row.playerId }),

@@ -12,6 +12,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 import { useTranslation } from "react-i18next";
+import { api } from "@/libs/api";
 
 export default function CategoriesPage() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/categories`);
+      const res = await api(`/api/categories`);
       const data = await res.json();
       setCategories(data);
     } catch (err) {

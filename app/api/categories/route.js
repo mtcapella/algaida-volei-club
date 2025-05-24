@@ -1,7 +1,16 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
-export async function GET() {
+export async function GET(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
   const db = await pool.getConnection();
 
   try {

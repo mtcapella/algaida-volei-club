@@ -1,9 +1,19 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 // 🗑️ DELETE inscripción del jugador
 export async function DELETE(request, context) {
-  const { playerId } = context.params;
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
+  const { playerId } = await context.params;
 
   console.log("DELETE playerId:", context.params);
 

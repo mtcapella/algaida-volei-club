@@ -1,12 +1,16 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
-// GET /api/seasons/[id]
-// Resumen de temporada no activa:
-//   • jugadores + documentos
-//   • equipos
-//   • deudas
 export async function GET(request, context) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
   const { id } = await context.params;
   const db = await pool.getConnection();
 
@@ -96,6 +100,14 @@ export async function GET(request, context) {
 // PUT /api/seasons/[id]  { playerId: number }
 // Marca la deuda del jugador como pagada igualando total_paid a total_due.
 export async function PUT(request, { params }) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const { id } = params; // season id from URL
   const db = await pool.getConnection();
 

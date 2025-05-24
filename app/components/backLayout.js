@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 
 import styles from "./backLayout.module.css";
 
+import { api } from "@/libs/api"; // Asegúrate de que este path sea correcto
+
 export default function BackLayout({ children, onLogout }) {
   const { t } = useTranslation();
 
@@ -28,7 +30,7 @@ export default function BackLayout({ children, onLogout }) {
 
   const getTeams = async () => {
     setLoading(true); // setLoading a true para que se muestre el skeleton
-    fetch("/api/teams", {
+    api("/api/teams", {
       cache: "no-store", // para que no use el cache
     })
       .then((res) => res.json())
@@ -38,7 +40,7 @@ export default function BackLayout({ children, onLogout }) {
   };
   const getSeasons = async () => {
     setLoading(true); // setLoading a true para que se muestre el skeleton
-    fetch("/api/seasons", {
+    api("/api/seasons", {
       cache: "no-store", // para que no use el cach e
     })
       .then((res) => res.json())
@@ -48,7 +50,7 @@ export default function BackLayout({ children, onLogout }) {
   };
 
   const getSeason = async () => {
-    fetch("/api/seasons/active", {
+    api("/api/seasons/active", {
       cache: "no-store", // para que no use el cach e
     })
       .then((res) => res.json())

@@ -8,7 +8,7 @@ import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useTranslation } from "react-i18next";
-
+import { api } from "@/libs/api";
 import styles from "./ajustes.module.css";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -147,8 +147,8 @@ export default function SettingsPage() {
         start_date: newStart.toISOString().split("T")[0],
         end_date: newEnd.toISOString().split("T")[0],
       };
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/seasons/close-and-create`, {
+
+      const res = await api(`/api/seasons/close-and-create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

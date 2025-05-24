@@ -1,8 +1,18 @@
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 // GET: Listar todas las temporadas con total de jugadores y equipos
-export async function GET() {
+export async function GET(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const db = await pool.getConnection();
 
   try {
@@ -33,6 +43,13 @@ export async function GET() {
 
 // POST: Crear una nueva temporada (por defecto inactiva)
 export async function POST(request) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
   const db = await pool.getConnection();
 
   try {

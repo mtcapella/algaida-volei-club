@@ -11,6 +11,8 @@ import Link from "next/link";
 
 import styles from "./temporadas.module.css";
 
+import { api } from "@/libs/api"; // Asegúrate de que este path sea correcto
+
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -33,8 +35,8 @@ export default function SeasonsPage() {
   const fetchSeasons = async () => {
     try {
       setLoading(true);
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/seasons`);
+
+      const res = await api(`/api/seasons`);
       const data = await res.json();
       setSeasons(data);
     } catch (err) {
@@ -51,36 +53,6 @@ export default function SeasonsPage() {
   useEffect(() => {
     fetchSeasons();
   }, []);
-
-  /** create season */
-  const submitSeason = async () => {
-    if (!form.name || !form.startDate || !form.endDate) {
-      toast.current.show({ severity: "warn", summary: "Faltan datos" });
-      return;
-    }
-    try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const response = await fetch(`${base}/api/seasons`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          startDate: form.startDate?.toISOString().split("T")[0],
-          endDate: form.endDate?.toISOString().split("T")[0],
-        }),
-      });
-      if (!response.ok) throw new Error();
-      toast.current.show({
-        severity: "success",
-        summary: "Temporada creada",
-      });
-      setDialogVisible(false);
-      setForm({ name: "", startDate: null, endDate: null });
-      fetchSeasons();
-    } catch {
-      toast.current.show({ severity: "error", summary: "No se pudo crear" });
-    }
-  };
 
   const leftToolbar = () => (
     <div className="flex gap-2">

@@ -1,10 +1,18 @@
-// /api/teams/[id]/route.js
-
+export const runtime = "nodejs"; // Usar Node.js para este endpoint
+import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
 // GET para obtener un equipo por ID
 export async function GET(request, context) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const { id } = await context.params;
 
   if (!id) {
@@ -88,6 +96,17 @@ export async function GET(request, context) {
 
 // PUT para actualizar datos de un equipo
 export async function PUT(request, context) {
+  console.log("PUT TEAM");
+  console.log("Context params:", context.params);
+  console.log("Request body:", request);
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const { id } = await context.params;
 
   if (!id) {
@@ -143,6 +162,14 @@ export async function PUT(request, context) {
 
 // 🗑️ DELETE para borrar equipo
 export async function DELETE(request, context) {
+  try {
+    await requireFirebaseUser(request);
+  } catch (e) {
+    // ③ verifica
+    const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
+    return NextResponse.json({ error: msg }, { status: 401 });
+  }
+
   const { id } = await context.params;
 
   if (!id) {

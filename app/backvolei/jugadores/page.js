@@ -14,6 +14,8 @@ import { Calendar } from "primereact/calendar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useTranslation } from "react-i18next";
 
+import { api } from "@/libs/api"; // Importa la configuración de la API
+
 import { ImageTokenContext } from "@/app/components/imageTokenProvider"; // Importa el contexto del token de imagen
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -59,16 +61,14 @@ export default function Players() {
   }, []);
 
   const fetchPlayers = async () => {
-    const base = process.env.NEXT_PUBLIC_DOMAIN;
-    const res = await fetch(`${base}/api/players`);
+    const res = await api(`/api/players`);
     const data = await res.json();
     console.log(data);
     setPlayers(data);
   };
 
   const fetchTeams = async () => {
-    const base = process.env.NEXT_PUBLIC_DOMAIN;
-    const res = await fetch(`${base}/api/teams`);
+    const res = await api(`/api/teams`);
     const data = await res.json();
     setTeams(data);
   };
@@ -76,8 +76,7 @@ export default function Players() {
   /*helpers */
   const handleDelete = async (playerId, playerName) => {
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const response = await fetch(`${base}/api/players/${playerId}`, {
+      const response = await api(`/api/players/${playerId}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -135,8 +134,7 @@ export default function Players() {
     try {
       const { playerId, firstName, lastName, teamId, dateOfBirth } =
         playerToEdit;
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const response = await fetch(`${base}/api/players/${playerId}`, {
+      const response = await api(`/api/players/${playerId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -177,7 +175,7 @@ export default function Players() {
     setCheckingDni(true);
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/check-user/${dni}`);
+      const res = await api(`/api/check-user/${dni}`);
       const data = await res.json();
 
       // reset de errores previos
@@ -256,8 +254,7 @@ export default function Players() {
     }
 
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const response = await fetch(`${base}/api/register`, {
+      const response = await api(`/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

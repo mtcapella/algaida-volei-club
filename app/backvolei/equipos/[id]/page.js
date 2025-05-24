@@ -12,6 +12,8 @@ import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Dialog } from "primereact/dialog";
 
+import { api } from "@/libs/api"; // helper para hacer peticiones a la API
+
 import styles from "../equipos.module.css";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -45,7 +47,7 @@ export default function TeamPage({ params }) {
     setLoading(true);
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/teams/${id}`);
+      const res = await api(`/api/teams/${id}`);
       if (!res.ok) throw new Error("Error al cargar el equipo");
       const data = await res.json();
       setTeam(data);
@@ -74,8 +76,8 @@ export default function TeamPage({ params }) {
     setLoadingAvailable(true);
     try {
       const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(
-        `${base}/api/available/${encodeURIComponent(team.categoryName)}`
+      const res = await api(
+        `/api/available/${encodeURIComponent(team.categoryName)}`
       );
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -98,8 +100,7 @@ export default function TeamPage({ params }) {
     if (!selectedPlayer) return;
     setAssigning(true);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/assign-player`, {
+      const res = await api("/api/assign-player", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -141,8 +142,7 @@ export default function TeamPage({ params }) {
     console.log("eliminar", rowData);
     setRemovingId(rowData.playerId);
     try {
-      const base = process.env.NEXT_PUBLIC_DOMAIN;
-      const res = await fetch(`${base}/api/assign-player`, {
+      const res = await api("/api/assign-player", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
