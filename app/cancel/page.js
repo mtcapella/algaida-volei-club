@@ -5,10 +5,13 @@ import { useSearchParams } from "next/navigation";
 
 import styles from "./cancel.module.css";
 
+import { useTranslation } from "react-i18next";
+
 export default function CancelPageWrapper() {
+  const { t } = useTranslation();
   return (
     <div className={styles.cancelPage}>
-      <Suspense fallback={<p>⏳ Verificando cancelación...</p>}>
+      <Suspense fallback={<p>{t("cancelPage.verifying")}</p>}>
         <CancelPage />
       </Suspense>
     </div>
@@ -17,6 +20,7 @@ export default function CancelPageWrapper() {
 }
 
 function CancelPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -52,26 +56,28 @@ function CancelPage() {
     verificarCancelacion();
   }, [sessionId]);
 
-  if (status === "loading") return <p>⏳ Verificando cancelación...</p>;
+  if (status === "loading") return <p>{t("cancelPage.verifying")}</p>;
 
   if (status === "error") {
     return (
       <div>
-        <h2>❌ Algo salió mal al procesar la cancelación.</h2>
-        <p>Por favor, contacta con el club o vuelve a intentarlo más tarde.</p>
+        <h2>{t("cancelPage.somethingWentWrong")}</h2>
+        <p>{t("cancelPage.pleaseContact")}</p>
       </div>
     );
   }
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>❌ Pago cancelado</h1>
+      <h1>{t("cancelPage.paymentCancelled")}</h1>
       <p>
         {playerName
-          ? `Hola, ${playerName}, tu inscripción no se ha completado.`
-          : "El pago ha sido cancelado y no se ha registrado la inscripción."}
+          ? `${t("cancelPage.hello")} ${playerName}, ${t(
+              "cancelPage.yourInscription"
+            )}`
+          : t("cancelPage.thePaymentWasCancelled")}
       </p>
-      <p>Si fue un error, puedes volver atrás e intentarlo de nuevo.</p>
+      <p>${t("cancelPage.ifItsWasAMistake")}</p>
     </div>
   );
 }

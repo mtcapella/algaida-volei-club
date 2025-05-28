@@ -16,14 +16,16 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 export default function SettingsPage() {
-  /* ---------- i18n ---------- */
+  // Inicializamos i18n para traducciones
+
   const { i18n } = useTranslation();
   const changeLang = (lng) => i18n.changeLanguage(lng);
+  const { t } = useTranslation();
 
-  /* ---------- refs ---------- */
+  // referencia para el Toast
   const toast = useRef(null);
 
-  /* ---------- state ---------- */
+  // Estados para el formulario
   const [loadingStatus, setLoadingStatus] = useState(true);
   const [formEnabled, setFormEnabled] = useState(false);
   const [opensAt, setOpensAt] = useState(null);
@@ -50,7 +52,7 @@ export default function SettingsPage() {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "No se pudo obtener el estado del formulario.",
+        detail: t("settings.cantGetFormStatus"),
         life: 3000,
       });
     } finally {
@@ -60,7 +62,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     getFormStatus();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // función para actualizar el estado del formulario
   const updateFormStatus = async (enabled) => {
@@ -68,8 +70,8 @@ export default function SettingsPage() {
     if (closesAt.getTime() <= opensAt.getTime()) {
       toast.current?.show({
         severity: "warn",
-        summary: "Fechas no válidas",
-        detail: "La fecha de cierre debe ser posterior a la de apertura.",
+        summary: t("settings.invalitDate"),
+        detail: t("settings.dateCanNot"),
         life: 3000,
       });
       return;
@@ -77,7 +79,9 @@ export default function SettingsPage() {
 
     if (
       !window.confirm(
-        `¿Seguro que deseas ${enabled ? "abrir" : "cerrar"} las inscripciones?`
+        `${t("settings.areYouSure")} ${
+          enabled ? t("settings.open") : t("settings.close")
+        } ${t("settings.theIncription")}`
       )
     )
       return;
@@ -97,16 +101,18 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error();
       toast.current?.show({
         severity: "success",
-        summary: "Éxito",
-        detail: `Inscripciones ${enabled ? "abiertas" : "cerradas"}`,
+        summary: t("settings.success"),
+        detail: `${t("settings.inscrptions")} ${
+          enabled ? t("settings.opened") : t("settings.closed")
+        }`,
         life: 2500,
       });
       setFormEnabled(enabled);
     } catch (err) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo actualizar el estado.",
+        summary: t("settings.error"),
+        detail: t("settings.cantUpdateStatus"),
         life: 3000,
       });
     }
@@ -116,8 +122,8 @@ export default function SettingsPage() {
     if (!newStart || !newEnd) {
       toast.current?.show({
         severity: "warn",
-        summary: "Fechas requeridas",
-        detail: "Debes indicar inicio y fin.",
+        summary: t("settings.dateRequired"),
+        detail: t("settings.initDateAndEndDate"),
         life: 3000,
       });
       return;
@@ -127,19 +133,14 @@ export default function SettingsPage() {
     if (newEnd.getTime() <= newStart.getTime()) {
       toast.current?.show({
         severity: "warn",
-        summary: "Fechas no válidas",
-        detail: "La fecha de cierre debe ser posterior a la de inicio.",
+        summary: t("settings.datesNotValid"),
+        detail: t("settings.closeDateBeforeInit"),
         life: 3000,
       });
       return;
     }
 
-    if (
-      !window.confirm(
-        "Al crear una nueva temporada la actual se cerrará y las deudas se trasladarán. Esta acción es irreversible. ¿Continuar?"
-      )
-    )
-      return;
+    if (!window.confirm(t("settings.closeSeasonWarning"))) return;
 
     setSavingSeason(true);
     try {
@@ -156,8 +157,8 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error();
       toast.current?.show({
         severity: "success",
-        summary: "Temporada creada",
-        detail: "La nueva temporada se creó correctamente.",
+        summary: t("settings.seasonCreated"),
+        detail: t("settings.seasonCreatedCorrectly"),
         life: 3000,
       });
       setNewSeasonVisible(false);
@@ -167,8 +168,8 @@ export default function SettingsPage() {
     } catch (err) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo crear la temporada.",
+        summary: t("settings.error"),
+        detail: t("settings.cantCreateSeason"),
         life: 3000,
       });
     } finally {
@@ -202,17 +203,17 @@ export default function SettingsPage() {
             { label: "Català", value: "ca" },
             { label: "English", value: "en" },
           ]}
-          placeholder="Selecciona idioma"
+          placeholder={t("settings.selectLenguage")}
           className="w-full"
         />
       </div>
 
       {/* Inscripciones */}
       <div className={styles.block}>
-        <p style={{ marginBottom: "0.5rem" }}>Inscripciones</p>
-        <div className="grid" style={{ gap: "1rem" }}>
+        <p style={{ marginBottom: "0.5rem" }}>{t("settings.inscrptions")}</p>
+        <div className={styles.dateContainer}>
           <div className="col-12 md:col-6">
-            <label>Abren el</label>
+            <label>{t("settings.openAt")}</label>
             <Calendar
               value={opensAt}
               onChange={(e) => setOpensAt(e.value)}
@@ -221,7 +222,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="col-12 md:col-6">
-            <label>Cierran el</label>
+            <label>{t("settings.closeAt")}</label>
             <Calendar
               value={closesAt}
               onChange={(e) => setClosesAt(e.value)}
@@ -232,28 +233,29 @@ export default function SettingsPage() {
         </div>
         <div className={styles.inlineCenter} style={{ gap: "1rem" }}>
           <Button
-            label="Abrir"
+            label={t("settings.open")}
             className="p-button-sm p-button-success"
             disabled={formEnabled}
             onClick={() => updateFormStatus(true)}
           />
           <Button
-            label="Cerrar"
+            label={t("settings.close")}
             className="p-button-sm p-button-danger"
             disabled={!formEnabled}
             onClick={() => updateFormStatus(false)}
           />
         </div>
         <small style={{ display: "block", marginTop: ".5rem" }}>
-          Estado actual: {formEnabled ? "Abierto" : "Cerrado"}
+          {t("settings.actualStatus")}:{" "}
+          {formEnabled ? t("settings.open2") : t("settings.close2")}
         </small>
       </div>
 
       {/* Crear nueva temporada */}
       <div className={styles.block}>
-        <p style={{ marginBottom: "0.5rem" }}>Nueva temporada</p>
+        <p style={{ marginBottom: "0.5rem" }}>{t("settings.newSeason")}</p>
         <Button
-          label="Crear nueva temporada"
+          label={t("settings.createNewSeason")}
           icon="pi pi-plus-circle"
           className="p-button-sm"
           onClick={() => setNewSeasonVisible(true)}
@@ -262,14 +264,14 @@ export default function SettingsPage() {
 
       {/* Dialog nueva temporada */}
       <Dialog
-        header="Crear nueva temporada"
+        header={t("settings.createNewSeason")}
         visible={newSeasonVisible}
         style={{ width: "420px" }}
         modal
         onHide={() => setNewSeasonVisible(false)}
       >
-        <div className="p-fluid" style={{ gap: "1rem" }}>
-          <label>Inicio</label>
+        <div className={styles.formContainer} style={{ gap: "1rem" }}>
+          <label>{t("settings.start")}</label>
           <Calendar
             value={newStart}
             onChange={(e) => setNewStart(e.value)}
@@ -277,7 +279,7 @@ export default function SettingsPage() {
             dateFormat="yy-mm-dd"
           />
 
-          <label style={{ marginTop: "1rem" }}>Fin</label>
+          <label style={{ marginTop: "1rem" }}>{t("settings.end")}</label>
           <Calendar
             value={newEnd}
             onChange={(e) => setNewEnd(e.value)}
@@ -285,18 +287,15 @@ export default function SettingsPage() {
             dateFormat="yy-mm-dd"
           />
 
-          <div
-            className="flex justify-content-end mt-4"
-            style={{ gap: "1rem" }}
-          >
+          <div className={styles.buttonsContainer} style={{ gap: "1rem" }}>
             <Button
-              label="Cancelar"
+              label={t("settings.cancel")}
               className="p-button-text p-button-sm"
               onClick={() => setNewSeasonVisible(false)}
               disabled={savingSeason}
             />
             <Button
-              label="Guardar"
+              label={t("settings.save")}
               icon="pi pi-check"
               className="p-button-sm"
               loading={savingSeason}

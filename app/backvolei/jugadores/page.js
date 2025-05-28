@@ -75,6 +75,8 @@ export default function Players() {
 
   /*helpers */
   const handleDelete = async (playerId, playerName) => {
+    if (!window.confirm(t("players.confirmDelete", { playerName }))) return;
+
     try {
       const response = await api(`/api/players/${playerId}`, {
         method: "DELETE",

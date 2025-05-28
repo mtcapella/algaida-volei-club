@@ -338,7 +338,9 @@
     "playerHasRegistered": "El jugador ya está inscrito en la temporada actual.",
     "photo": "Foto",
     "document": "Documento",
-    "checking": "Comprobando..."
+    "checking": "Comprobando...",
+    "total": "Total (€)",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar al jugador?"
 
   },
   "teams": {
@@ -379,7 +381,7 @@
     "playerEliminated": "Jugador eliminado",
     "playerEliminatedCorrectly": "El jugador se ha eliminado correctamente del equipo.",
     "playerNotEliminated": "No se pudo eliminar el jugador del equipo.",
-    "playersNotFound": "No se encontraron jugadoras en este equipo."
+    "playersNotFound": "No se encontraron jugadores en este equipo."
 
   }, 
   "login": {
@@ -417,12 +419,76 @@
     "teams": "Equipos",
     "forTheTotal": "de total",
     "cantLoadCategories": "No se pudieron cargar las categorías."
+
   },
   "seasons": {
     "players": "Jugadores",
     "teams": "Equipos",
     "active": "Activa",
     "finished": "Finalizada",
-    "cantLoadSeasons": "No se pudieron cargar las temporadas."
+    "cantLoadSeasons": "No se pudieron cargar las temporadas.",
+    "seasonCantBeLoaded": "No se pudiero cargar la temporada.",
+    "error": "Error",
+    "markAsPaid": "Marcar como pagado",
+    "markAsPaidMessage": "Vas a marcar como pagado a",
+    "thisActionCantBeUndo": "Esta acción no se puede deshacer. ¿Continuar?",
+    "paymentUpdated": "Pago actualizado",
+    "paymentUpdatedCorrectly": "marcado como pagado.",
+    "cantUpdatePayment": "No se pudo actualizar el pago.",
+    "cantFindPlayers": "No se encontraron jugadores.",
+    "cantFindTeams": "No se encontraron equipos.",
+    "canFindPayments": "No se encontraron pagos.",
+    "status": "Estado",
+    "actions": "Acciones"
+  },
+  "settings": {
+    "cantGetFormStatus": "No se pudieron obtener los datos del formulario.",
+    "inscrptions" : "Inscripciones",
+    "invalitDate": "Fecha inválida",
+    "dateCanNot": "La fecha de cierre debe ser posterior a la de apertura.",
+    "areYouSure": "¿Estás seguro",
+    "open": "Abrir",
+    "close": "Cerrar",
+    "opened" : "Abiertas",
+    "closed": "Cerradas",
+    "success" : "Éxito",
+    "theIncription": "las inscripciones?",
+    "error" : "Error",
+    "cantUpdateStatus": "No se pudo actualizar el estado de las inscripciones.",
+    "dateRequired": "La fecha es obligatoria",
+    "initDateAndEndDate": "Debes indicar fecha de inicio y fin",
+    "datesNotValid": "Las fechas no son válidas",
+    "closeDateBeforeInit": "La fecha de cierre debe ser posterior a la de apertura",
+    "closeSeasonWarning": "Al crear una nueva temporada la actual se cerrará y las deudas se trasladarán. Esta acción es irreversible. ¿Continuar?",
+    "seasonCreated": "Temporada creada",
+    "seasonCantBeLoaded": "No se pudieron cargar la temporada.",
+    "seasonCreatedCorrectly": "La temporada se ha creado correctamente.",
+    "cantCreateSeason": "No se pudo crear la temporada.",
+    "selectLenguage": "Selecciona el idioma",
+    "openAt": "Abieren el",
+    "closeAt": "Cierran el",
+    "actualStatus": "Estado actual",
+    "open2": "Abierto",
+    "close2": "Cerrado",
+    "newSeason": "Nueva temporada",
+    "createNewSeason": "Crear nueva temporada",
+    "start" : "Inicio",
+    "end": "Fin",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+
+  },
+  "cancelPage": {
+    "title": "Inscripción cancelada",
+    "verifying" : "⏳ Verificando cancelación...",
+    "somethingWentWrong": "Algo salió mal al cancelar la inscripción.",
+    "pleaseContact": "Por favor, contacta con el soporte del club para resolver el problema.",
+    "paymentCancelled": "Pago cancelado",
+    "paymentCancelledMessage": "Tu inscripción ha sido cancelada correctamente.",
+    "hello" : "Hola",
+    "yourInscription": "tu inscripción no se ha completado.",
+    "thePaymentWasCancelled": "El pago ha sido cancelado y no se ha registrado la inscripción.",
+    "ifItsWasAMistake": "Si fue un error, puedes volver a intentarlo."
+
   }
 }

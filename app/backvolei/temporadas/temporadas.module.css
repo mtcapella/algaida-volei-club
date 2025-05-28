@@ -56,3 +56,31 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
+
+    .inputSearchWrapper {
+    margin: 1rem 0 1rem 0;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.inputSearchIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.inputSearchInput {
+  padding-left: 2rem;
+  width: 30%;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}

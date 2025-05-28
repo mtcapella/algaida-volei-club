@@ -21,7 +21,13 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
+// importa traducciones
+
+import { useTranslation } from "react-i18next";
+
 import { ImageTokenContext } from "@/app/components/imageTokenProvider"; // Importa el contexto del token de imagen
+
+import styles from "../temporadas.module.css"; // Importa los estilos específicos
 
 // helper que devuelve el icono según el tipo de documento
 const docIcon = {
@@ -31,7 +37,8 @@ const docIcon = {
 };
 
 export default function SeasonDetail({ params }) {
-  const { id } = usePromise(params);
+  const { t } = useTranslation();
+  const { id } = usePromise(params); // extrae el id de los params
 
   const [season, setSeason] = useState(null);
   const { token, loading } = useContext(ImageTokenContext);
@@ -55,8 +62,8 @@ export default function SeasonDetail({ params }) {
     } catch (err) {
       toast.current.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo cargar la temporada.",
+        summary: t("seasons.error"),
+        detail: t("seasons.seasonCantBeLoaded"),
         life: 4000,
       });
     } finally {
@@ -77,7 +84,7 @@ export default function SeasonDetail({ params }) {
     )}?alt=media&token=${token}`;
   };
 
-  /* -------- body templates -------- */
+  /* templates varios */
   const documentBody = (row) => {
     /* convierte string → array y filtra nulls */
     let docs = [];
@@ -118,18 +125,20 @@ export default function SeasonDetail({ params }) {
   const payButtonBody = (row) =>
     row.status === "pending" ? (
       <Button
-        icon="pi pi-check"
-        className="p-button-success p-button-text"
+        icon="pi pi-wallet"
+        className="p-button-text p-button-warning"
         onClick={() => handlePay(row)}
-        tooltip="Marcar pagado"
+        tooltip={t("seasons.markAsPaid")}
       />
     ) : null;
 
-  /* -------- PUT pago -------- */
+  /* actualizar pago */
   const handlePay = async (row) => {
     if (
       !window.confirm(
-        `Vas a marcar como pagado a ${row.first_name} ${row.last_name}. Esta acción es irreversible. ¿Continuar?`
+        `${t("seasons.markAsPaidMessage")} ${row.first_name} ${
+          row.last_name
+        }. ${t("seasons.thisActionCantBeUndo")}`
       )
     )
       return;
@@ -143,16 +152,18 @@ export default function SeasonDetail({ params }) {
       if (!res.ok) throw new Error();
       toast.current.show({
         severity: "success",
-        summary: "Pago actualizado",
-        detail: `${row.first_name} ${row.last_name} marcado como pagado.`,
+        summary: t("seasons.paymentUpdated"),
+        detail: `${row.first_name} ${row.last_name} ${t(
+          "seasons.paymentUpdatedCorrectly"
+        )}`,
         life: 3000,
       });
       fetchSeason();
     } catch (err) {
       toast.current.show({
         severity: "error",
-        summary: "Error",
-        detail: "No se pudo actualizar el pago.",
+        summary: t("seasons.error"),
+        detail: t("seasons.cantUpdatePayment"),
         life: 3000,
       });
     }
@@ -179,13 +190,14 @@ export default function SeasonDetail({ params }) {
 
       <TabView>
         {/* TAB Jugadores */}
-        <TabPanel header="Jugadores">
-          <div className="p-input-icon-left p-mb-3">
-            <i className="pi pi-search" />
+        <TabPanel header={t("categories.players")}>
+          <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+            <i className={`pi pi-search ${styles.inputSearchIcon}`} />
             <InputText
+              className={styles.inputSearchInput}
               value={playersFilter}
               onChange={(e) => setPlayersFilter(e.target.value)}
-              placeholder="Buscar jugadora..."
+              placeholder={t("buttons.searchPlayer")}
             />
           </div>
           <DataTable
@@ -194,14 +206,14 @@ export default function SeasonDetail({ params }) {
             rows={10}
             rowsPerPageOptions={[5, 10, 20]}
             globalFilter={playersFilter}
-            emptyMessage="No se encontraron jugadoras"
+            emptyMessage={t("seasons.cantFindPlayers")}
           >
-            <Column field="first_name" header="Nombre" sortable />
-            <Column field="last_name" header="Apellido" sortable />
-            <Column field="dni" header="DNI" sortable />
+            <Column field="first_name" header={t("players.name")} sortable />
+            <Column field="last_name" header={t("players.surname")} sortable />
+            <Column field="dni" header={t("players.dni")} sortable />
             <Column
               field="date_of_birth"
-              header="F. Nacimiento"
+              header={t("players.birthDate")}
               body={(row) => row.date_of_birth?.split("T")[0]}
               sortable
             />
@@ -210,64 +222,72 @@ export default function SeasonDetail({ params }) {
         </TabPanel>
 
         {/* TAB Equipos */}
-        <TabPanel header="Equipos">
-          <div className="p-input-icon-left p-mb-3">
-            <i className="pi pi-search" />
+        <TabPanel header={t("seasons.teams")}>
+          <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+            <i className={`pi pi-search ${styles.inputSearchIcon}`} />
             <InputText
-              value={teamsFilter}
+              className={styles.inputSearchInput}
+              value={playersFilter}
               onChange={(e) => setTeamsFilter(e.target.value)}
-              placeholder="Buscar equipo..."
+              placeholder={t("buttons.searchPlayer")}
             />
           </div>
+
           <DataTable
             value={season?.teams || []}
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 20]}
             globalFilter={teamsFilter}
-            emptyMessage="No se encontraron equipos"
+            emptyMessage={t("seasons.cantFindTeams")}
           >
-            <Column field="name" header="Equipo" sortable />
-            <Column field="coach_name" header="Entrenador/a" sortable />
-            <Column field="category" header="Categoría" sortable />
-            <Column field="totalPlayers" header="# Jugadoras" sortable />
+            <Column field="name" header={t("teams.team")} sortable />
+            <Column field="coach_name" header={t("teams.trainer")} sortable />
+            <Column field="category" header={t("teams.category")} sortable />
+            <Column
+              field="totalPlayers"
+              header={t("teams.numberOfPlayers")}
+              sortable
+            />
           </DataTable>
         </TabPanel>
 
         {/* TAB Pagos */}
-        <TabPanel header="Pagos">
-          <div className="p-input-icon-left p-mb-3">
-            <i className="pi pi-search" />
+        <TabPanel header={t("dashboard.payments")}>
+          <div className={`${styles.inputSearchWrapper} p-mb-4`}>
+            <i className={`pi pi-search ${styles.inputSearchIcon}`} />
             <InputText
-              value={paymentsFilter}
+              className={styles.inputSearchInput}
+              value={playersFilter}
               onChange={(e) => setPaymentsFilter(e.target.value)}
-              placeholder="Buscar pago..."
+              placeholder={t("buttons.searchPlayer")}
             />
           </div>
+
           <DataTable
             value={season?.payments || []}
             paginator
             rows={10}
             rowsPerPageOptions={[5, 10, 20]}
             globalFilter={paymentsFilter}
-            emptyMessage="No se encontraron pagos"
+            emptyMessage={t("seasons.canFindPayments")}
           >
-            <Column field="first_name" header="Nombre" sortable />
-            <Column field="last_name" header="Apellido" sortable />
+            <Column field="first_name" header={t("players.name")} sortable />
+            <Column field="last_name" header={t("players.surname")} sortable />
             <Column
               field="totalDue"
-              header="Total (€)"
+              header={t("players.total")}
               body={(row) => Number(row.totalDue).toFixed(2)}
               sortable
             />
             <Column
               field="totalPaid"
-              header="Pagado (€)"
+              header={t("payments.payed")}
               body={(row) => Number(row.totalPaid).toFixed(2)}
               sortable
             />
-            <Column field="status" header="Estado" sortable />
-            <Column header="Acciones" body={payButtonBody} />
+            <Column field="status" header={t("seasons.status")} sortable />
+            <Column header={t("seasons.actions")} body={payButtonBody} />
           </DataTable>
         </TabPanel>
       </TabView>
