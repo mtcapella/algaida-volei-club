@@ -4,156 +4,491 @@
     "club": "CLUB",
     "location": "LOCATION",
     "sponsors": "SPONSORS",
-    "inscription": "INSCRIPTION"
+    "inscription": "REGISTRATION"
+  },
+  "backNavbar": {
+    "dashboard": "Dashboard",
+    "players": "Players",
+    "teams": "Teams",
+    "categories": "Categories",
+    "seasons": "Seasons",
+    "payments": "Payments",
+    "settings": "Settings",
+    "logOut": "Log out"
   },
   "home": {
     "title": "ALGAIDA VOLEI CLUB"
   },
   "club": {
     "title": "THE CLUB",
-    "titleColumn1": "Column 1 Title",
-    "column1": "Descriptive content for the first column related to the club. Here you can put information about the history, mission, or services of the club.",
-    "titleColumn2": "Column 2 Title",
-    "column2": "Descriptive content for the second column related to the club. Here you can put information about the coaches, facilities, or any other relevant aspect."
+    "titleColumn1": "🏐 Who we are",
+    "column1": "Algaida Volei Club is much more than a sports club: it is a school of values, a committed community, and a place to grow as individuals through sport.\n\nWe are part of Algàlia Esports Club, an organisation rooted in the municipality of Algaida that promotes sport from a formative, inclusive and non-profit perspective.\n\nWe are dedicated to promoting and developing volleyball among children and young people, combining passion for the game with respect, effort and teamwork.\n\nOur teams compete in various school and federation categories, always supported by a close-knit and committed coaching staff aligned with the club’s values.\n\nWhether you are new to the sport or already have experience, here you will find a space to learn, excel and enjoy yourself with your team-mates.",
+    "titleColumn2": "🌱 Our values",
+    "column2": "At Algaida Volei Club we place great importance on:\n\n• Education in values such as respect, responsibility and commitment.\n\n• Positive coexistence, with clear behaviour guidelines and smooth communication between the club, families and athletes.\n\n• Support for families, who are a key part of our sports project.\n\n• Respect for facilities and equipment, understanding that the club belongs to everyone.\n\nEach season we launch a structured and accessible registration process that includes all the necessary information on documents, fees and conditions. It can be completed easily through an online form.\n\nOur goal is not only to train volleyball players but also to help form good people—responsible, supportive and keen to improve every day.\n\nThank you for being part of our community. Together, we will keep volleyball growing in Algaida!"
   },
   "location": {
     "title": "LOCATION",
-    "mapTitle": "Club Location"
+    "mapTitle": "Club location"
   },
   "sponsors": {
     "title": "SPONSORS"
   },
   "footer": {
-    "privatePolicy": "Privacy Policy",
-    "cookies": "Cookie Policy",
-    "legal": "Legal Notice"
+    "privatePolicy": "Privacy policy",
+    "cookies": "Cookie policy",
+    "legal": "Legal notice"
   },
   "legalPages": {
     "privacyPolicy": {
-      "title": "Privacy Policy",
+      "title": "Privacy policy",
       "sections": [
         {
-          "heading": "1. Data Controller",
-          "content": "The data controller for this site is Algaida Volei Club, located at Calle X, City, Country."
+          "heading": "1. Data controller",
+          "content": "The data controller for the information collected in this form is Algaida Volei Club, located at Calle X, City, Country."
         },
         {
-          "heading": "2. Purpose of Processing",
-          "content": "Data is processed to manage registrations, issue receipts, and communicate club-related activities."
+          "heading": "2. Purpose of processing",
+          "content": "Data are used to manage registrations, issue receipts and send communications related to club activities."
         },
         {
-          "heading": "3. Your Rights",
-          "content": "You may exercise your rights of access, rectification, deletion, objection, restriction, and portability by contacting contacto@algaidavolei.es."
+          "heading": "3. Data-subject rights",
+          "content": "You can exercise your rights of access, rectification, erasure, objection, restriction and portability by contacting contacto@algaidavolei.es."
         },
         {
-          "heading": "4. Data Retention",
-          "content": "Data will be retained for the duration of the current sports season and until removal is requested."
+          "heading": "4. Data retention",
+          "content": "Data will be kept for the current sports season and until their erasure is requested."
         }
       ]
     },
     "legalNotice": {
-      "title": "Legal Notice",
+      "title": "Legal notice",
       "sections": [
         {
-          "heading": "1. Website Identification",
-          "content": "This website www.algaidavolei.es is operated by Algaida Volei Club (ID: XXXX), registered at Calle X, City."
+          "heading": "1. Website identification",
+          "content": "This website, www.algaidavolei.es, is operated by Algaida Volei Club (Tax ID: XXXX), with its registered office at Calle X, City."
         },
         {
-          "heading": "2. Terms of Use",
-          "content": "Use of this website grants the status of User and implies acceptance of these Legal Notice terms."
+          "heading": "2. Terms of use",
+          "content": "Access to and use of this website confer the status of User and imply acceptance of the terms set out in this Legal Notice."
         },
         {
-          "heading": "3. Intellectual Property",
-          "content": "All content, design, and code are protected under applicable intellectual property laws."
+          "heading": "3. Intellectual property",
+          "content": "The contents, design and code of this site are protected by current intellectual-property regulations."
         }
       ]
     },
     "cookiesPolicy": {
-      "title": "Cookie Policy",
+      "title": "Cookie policy",
       "sections": [
         {
-          "heading": "1. What are Cookies?",
-          "content": "Cookies are small files sent by websites to the user's browser to store certain information."
+          "heading": "1. What are cookies?",
+          "content": "Cookies are small files that websites send to the User’s browser to store certain information."
         },
         {
-          "heading": "2. Types of Cookies Used",
-          "content": "We use technical cookies for functionality, analytics cookies for statistical purposes, and third‑party cookies (Google Analytics)."
+          "heading": "2. Types of cookies we use",
+          "content": "We use technical cookies for operation, analytics cookies for statistics, and third-party cookies (Google Analytics)."
         },
         {
-          "heading": "3. Disabling Cookies",
-          "content": "You can configure your browser to refuse or delete cookies. Please refer to your browser's help section."
+          "heading": "3. Disabling and deleting cookies",
+          "content": "You can configure your browser to reject or delete all cookies. See your browser’s help section for details."
         }
       ]
     },
     "dataProtectionNotice": {
-      "title": "Data Protection",
+      "title": "Data protection",
       "sections": [
         {
-          "heading": "1. Data Controller",
-          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Address: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARES. Phone: +34 651873851. Email: algaidavoleiclub@gmail.com. There is no obligation to appoint a Data Protection Officer under Article 37 of Regulation (EU) 2016/679."
+          "heading": "1. Data controller",
+          "content": "ALGAIDA VOLEI CLUB – Tax ID: G16614737. Address: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARIC ISLANDS. Phone: 651 873 851. Email: algaidavoleiclub@gmail.com. No Data Protection Officer is required under Article 37 of Regulation (EU) 2016/679."
         },
         {
-          "heading": "2. Purpose of Processing",
-          "content": "We process the data you provide to deliver contracted sports and educational services for your child or dependent minor, as well as for administrative, accounting, and tax purposes, and for sending tailored service offers. A commercial profile will be created without automated decision-making. Data will be kept while the commercial relationship is active and up to 5 years after the last service unless deletion is requested."
+          "heading": "2. Purpose of processing",
+          "content": "We process the information provided to deliver contracted sports and training services, for administrative, accounting and tax purposes, to offer sports services according to your interests and to issue invoices. A commercial profile will be created, without automated decisions. Data will be stored while the commercial relationship exists and for up to five years after the last contract, unless erasure is requested."
         },
         {
-          "heading": "3. Legal Basis",
-          "content": "The legal basis is the performance of a contract, as per the Commercial and Civil Codes. Articles 20 and 21 of Law 34/2002 apply for commercial communications. Consent is requested for marketing communications and its withdrawal will not affect the contract. Providing personal data is required to deliver the service. Consent is required to receive commercial communications."
+          "heading": "3. Legal basis",
+          "content": "The legal basis is performance of the contract under the Commercial Code and Civil Code. For commercial communications, Articles 20 and 21 of Law 34/2002 apply. Consent is requested for commercial offers, and its withdrawal will not affect the service. Providing data is mandatory to deliver the service. Consent is mandatory to receive commercial communications."
         },
         {
           "heading": "4. Recipients",
-          "content": "No data will be shared with third parties, except as required by law. No international data transfers or automated decisions are foreseen."
+          "content": "Data will not be transferred to third parties unless legally required. No international transfers or automated decisions are expected."
         },
         {
-          "heading": "5. Data Subject Rights",
-          "content": "You have the right to confirm whether ALGAIDA VOLEI CLUB is processing your personal data. You may access, rectify, delete, restrict processing, object, or request data portability. You may lodge a complaint with the Spanish Data Protection Agency (www.agpd.es)."
+          "heading": "5. Data-subject rights",
+          "content": "Anyone has the right to confirm whether we process their data. You may access, rectify, delete, restrict processing, object and request portability. You may also lodge a complaint with the Spanish Data Protection Agency (www.agpd.es)."
         }
       ]
     },
     "imageConsent": {
-      "title": "Image Use Authorization",
+      "title": "Image-use authorisation",
       "sections": [
         {
           "heading": "1. Consent for minors or adults",
-          "content": "The parent or legal guardian (if the player is underage), or the player themselves (if of legal age), authorizes the use of their image and/or photographs for sports and communication activities of Algaida Volei Club. This includes publication on the club’s official website and social networks including Facebook and Instagram."
+          "content": "The father, mother or legal guardian (if the player is a minor), or the player themself (if of legal age), authorises the use of the player’s image and/or photographs in sports and communication activities of Algaida Volei Club. This authorisation includes publication of such images on the club’s official website and social networks, including Facebook and Instagram."
         },
         {
-          "heading": "2. Data processing information",
-          "content": "In accordance with Article 28 of the GDPR, Facebook Inc. and Instagram LLC will act as data processors. Data may be stored on their servers in the United States. This authorization excludes uses that infringe upon the right to honor, privacy, or personal image as per Spanish Organic Law 1/1985. This authorization is free of charge and does not imply economic compensation."
+          "heading": "2. Information on data processing",
+          "content": "In accordance with Article 28 of the GDPR, Facebook Inc. and Instagram LLC will act as processors of the personal data (images). The data may be stored on their servers in the United States. This authorisation excludes uses that infringe the right to honour, personal privacy or self-image in accordance with Organic Law 1/1985. The authorisation is free and does not give rise to economic rights for the use of the image."
         },
         {
           "heading": "3. Explicit consent",
-          "content": "Please indicate your decision for each of the following:\n1. Do you authorize the publication of images on the club's website?\n2. Do you authorize publication on Facebook and Instagram?\n3. Do you authorize the use of images on other official social networks?"
+          "content": "Please indicate your decision for each of the following items:\n1. Do you authorise publication of images on the club’s website?\n2. Do you authorise publication of images on Facebook and Instagram?\n3. Do you authorise use of images on other official club social networks?"
         }
       ]
     },
     "ethicCode": {
-      "title": "Code of Ethics and Conduct",
+      "title": "Ethical code and rules of conduct",
       "sections": [
         {
           "heading": "1. Introduction",
-          "content": "This code outlines the behavior, attitudes, and values expected of all members of Algaida Volei Club. Our goal is to promote a healthy, respectful environment committed to both athletic and personal development."
+          "content": "This ethical code sets out the guidelines and rules that define the behaviour, attitudes and values expected of everyone involved with Algaida Volei Club. Our aim is to foster a healthy, respectful environment committed to sporting and personal development."
         },
         {
-          "heading": "2. Rules of behavior and coexistence",
-          "content": "Respect your coach and teammates. Discuss doubts with your coach, learn actively, support others, avoid criticism, and take responsibility for your own sports equipment."
+          "heading": "2. Rules of conduct and behaviour",
+          "content": "Respect the coach and team-mates; ask the coach questions, learn actively, help others, avoid negative criticism and take responsibility for your own sports equipment."
         },
         {
           "heading": "3. Training guidelines",
-          "content": "Punctuality and attendance are mandatory. Respect all materials and facilities. Wear appropriate clothing, avoid items that can cause injury, take care of your health, and keep phones off during sessions."
+          "content": "Punctuality and mandatory attendance; respect for equipment and facilities; appropriate clothing; avoid objects that may cause injury; take care of your health; avoid mobile-phone use during sessions."
         },
         {
-          "heading": "4. Competition behavior",
-          "content": "Wear the proper uniform and show sportsmanship. Respect referees, opponents, and spectators. Notify the coach in advance if you cannot attend. Game time depends on attitude and attendance at training."
+          "heading": "4. Behaviour in competition",
+          "content": "Correct uniform, sporting attitude, respect for referee, opponents and spectators. Give advance notice if you cannot attend. Participation depends on attitude and attendance as decided by the coach."
         },
         {
-          "heading": "5. Good practice decalogue",
-          "content": "1. Respect municipal facilities. 2. Be punctual and attend all events. 3. Take care of club gear. 4. Play with other teams if asked. 5. Respect coaches. 6. Disciplinary criteria must align with club values. 7. Use the team liaison for communication. 8. Families are key to the project. 9. Respect during games and training. 10. Address complaints to the team liaison."
+          "heading": "5. Ten rules of good practice",
+          "content": "1. Respect municipal facilities. 2. Punctuality and mandatory attendance. 3. Take care of club equipment. 4. Play in other categories if required. 5. Respect coaches. 6. Disciplinary criteria consistent with club values. 7. Communicate through the team liaison. 8. Family involvement. 9. Respect during training and matches. 10. Complaints must be addressed to the team liaison."
         },
         {
           "heading": "6. Families and communication",
-          "content": "Families are essential. They should respect coaches’ decisions and use the official communication channel via the team liaison. Avoid giving tactical instructions during games or training."
+          "content": "Families are a fundamental pillar. They must respect coaches’ decisions and channel queries through the team liaison. Avoid technical interference during training and matches."
         }
       ]
     }
+  },
+  "inscription": {
+    "title": "REGISTRATION",
+    "subtitle": "Registration form",
+    "form": {
+      "personalData": "Personal data",
+      "name": "First name",
+      "namePlaceholder": "Enter your first name",
+      "nameError": "First name is required",
+      "surname": "Last name",
+      "surnamePlaceholder": "Enter your last name",
+      "surnameError": "Last name is required",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "emailError": "Email is required",
+      "emailInvalid": "Invalid email address",
+
+      "legalGuardianData": "Legal guardian’s data",
+      "legalGuardianName": "Guardian’s first name",
+      "legalGuardianNamePlaceholder": "Enter the guardian’s first name",
+      "legalGuardianNameError": "Guardian’s first name is required",
+      "legalGuardianSurname": "Guardian’s last name",
+      "legalGuardianSurnamePlaceholder": "Enter the guardian’s last name",
+      "legalGuardianSurnameError": "Guardian’s last name is required",
+      "legalGuardianDni": "Guardian’s DNI/NIE",
+      "legalGuardianDniPlaceholder": "Enter the guardian’s DNI/NIE",
+      "legalGuardianDniError": "Guardian’s DNI/NIE is required",
+      "legalGuardianDniInvalid": "Invalid guardian DNI/NIE",
+      "legalGuardianPhone": "Guardian’s phone",
+      "legalGuardianPhonePlaceholder": "Enter the guardian’s phone number",
+      "legalGuardianPhoneError": "Guardian’s phone is required",
+      "legalGuardianPhoneInvalid": "Invalid guardian phone number",
+
+      "legalGuardianEmail": "Guardian’s email",
+      "legalGuardianEmailPlaceholder": "Enter the guardian’s email",
+      "legalGuardianEmailError": "Guardian’s email is required",
+      "legalGuardianEmailInvalid": "Invalid guardian email",
+
+      "legalGurardianRelationship": "Relationship to player",
+      "legalGurdianRelationshipPlaceholder": "Select relationship to player",
+      "legalGurdianRelationshipError": "Relationship is required",
+
+      "father": "Father",
+      "mother": "Mother",
+      "guardian": "Guardian",
+
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "phoneError": "Phone number is required",
+      "phoneInvalid": "Invalid phone number",
+
+      "birthDate": "Date of birth",
+      "birthDatePlaceholder": "Select your date of birth",
+      "birthDateError": "Date of birth is required",
+      "futureDateError": "Date of birth cannot be in the future",
+      "dni": "DNI/NIE",
+      "dniPlaceholder": "Enter your DNI/NIE",
+      "dniError": "DNI/NIE is required",
+      "dniInvalid": "Invalid DNI/NIE",
+      "dniImage": "DNI/NIE image",
+      "dniImagePlaceholder": "Upload an image of your DNI/NIE",
+      "dniImageError": "DNI/NIE image is required",
+      "dniImageInvalid": "Uploaded file is not a valid image",
+      "dniImageSize": "Image size cannot exceed 2 MB",
+      "dniCheckError": "Error checking DNI/NIE. Please try again later.",
+      "playerImage": "Player photo",
+      "playerImagePlaceholder": "Upload a photo of the player",
+      "playerImageError": "Player photo is required",
+      "playerImageInvalid": "Uploaded file is not a valid image",
+      "playerImageSize": "Image size cannot exceed 2 MB",
+      "playerExistSeason": "Player is already registered for the current season",
+      "playerHasDebt": "Player has outstanding debts",
+      "playerNeedSolveDebt": "The player must settle outstanding debts before continuing with registration",
+
+      "legalConfirmation": "Legal confirmations",
+      "readAndAccept": "I have read and accept",
+      "readAndAcceptLOPD": "the data-protection policy (LOPD)",
+      "readAndAcceptError": "You must accept the privacy policy and legal notice",
+      "raadAndAcceosEthicCode": "the ethical code and rules of conduct",
+      "readAndAcceptEthicCodeError": "You must accept the ethical code and rules of conduct",
+      "authorizationImage": "I authorise",
+      "imageUse": "the use of the player’s image",
+      "oficialChannel": "on the club’s official channels",
+      "authorizationPublication": "I authorise publication of the player’s images on the website.",
+      "authorizationInstagram": "I authorise publication of the player’s images on Instagram and Facebook.",
+      "authorizationOtherSocial": "I authorise publication of the player’s images on other official club social networks.",
+      "sumaryAndPayment": "Summary and payment",
+      "youMostResponse": "You must answer about",
+      "firstPay": "First payment of",
+      "rest": "Remaining",
+      "outsidePlatform": "Outside the platform",
+
+      "OCRwaiting": "Please wait while we verify the DNI/NIE. This may take a few minutes.",
+      "OCRInvalid": "The DNI/NIE image is not valid. Please ensure the image is clear and legible.",
+      "OCRNoMatch": "The DNI/NIE does not match the entered DNI/NIE. Please check the data.",
+
+      "sumary": "Registration summary",
+      "totalMount": "Total amount",
+      "onlyOnePay": "In a single payment",
+      "loteryParticipation": "Lottery participation",
+      "splitPayment": "Split payment",
+      "now": "Now",
+      "youHaveaDebt": "You have an outstanding debt of",
+      "contactWithUs": "Contact us to resolve it",
+      "notActive": "Registration is not active",
+      "notActiveText": "Registration is not active at this time."
+    }
+  },
+  "buttons": {
+    "accept": "Accept",
+    "cancel": "Cancel",
+    "next": "Next",
+    "send": "Send",
+    "save": "Save",
+    "readMore": "Read more",
+    "close": "Close",
+    "back": "Back",
+    "pay": "Pay",
+    "register": "Register",
+    "update": "Update",
+    "exportCSV": "Export CSV",
+    "newPlayer": "New player",
+    "editPlayer": "Edit player",
+    "addPlayer": "Add player",
+    "deletePlayer": "Delete player",
+    "searchPlayer": "Search player",
+    "dontFindPlayer": "Player not found",
+    "newTeam": "New team",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalPlayers": "Total players",
+    "totalTeams": "Total teams",
+    "inscriptions": "Registrations",
+    "payed": "Paid",
+    "paymetsPending": "Pending payments",
+    "payments": "Payments",
+    "playersForCategory": "Players per category",
+    "sponsors": "Sponsors",
+    "settings": "Settings"
+  },
+  "players": {
+    "name": "First name",
+    "surname": "Last name",
+    "birthDate": "Date of birth",
+    "playerDeleted": "Player deleted",
+    "thePlayer": "Player",
+    "hasDeleted": "has been deleted",
+    "cantDeletePLayer": "Player could not be deleted.",
+    "playerUpdated": "Player updated",
+    "changesSaved": "Changes have been saved.",
+    "playerNotUpdated": "Player could not be updated.",
+    "dni": "DNI/NIE",
+    "actions": "Actions",
+    "newPlayer": "New player",
+    "editPlayer": "Edit player",
+    "playerCreated": "Player created",
+    "playerCreatedCorrectly": "The player has been created successfully.",
+    "cantCheckPlayer": "Could not check player.",
+    "playerNotFindYouCanCreate": "Player not found. You can create a new one.",
+    "completeOtherData": "Complete other data",
+    "playerFind": "Player found",
+    "playerWithDebt": "Player with debt",
+    "playerHasDebt": "Player has outstanding debts",
+    "playerRegistered": "Player already registered",
+    "cantRegisterPlayer": "Could not register player.",
+    "playerHasRegistered": "The player is already registered for the current season.",
+    "photo": "Photo",
+    "document": "Document",
+    "checking": "Checking...",
+    "total": "Total (€)",
+    "confirmDelete": "Are you sure you want to delete the player?"
+  },
+  "teams": {
+    "team": "Team",
+    "teamCreated": "Team created",
+    "selectTeam": "Select a team",
+    "notFindTeams": "No teams found.",
+    "teamIsMandatory": "Team is mandatory",
+    "teamCreatedCorrectly": "The team has been created successfully.",
+    "teamDeleted": "Team deleted",
+    "deleateTeam": "Delete team",
+    "actionCantBeUndo": "This action cannot be undone.",
+    "theTeam": "Team",
+    "trainer": "Coach",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "hasDeleted": "has been deleted",
+    "cantDeleteTeam": "Team could not be deleted.",
+    "hasDeletedCorrectly": "has been deleted successfully.",
+    "teamUpdated": "Team updated",
+    "changesSaved": "Changes saved.",
+    "teamNotUpdated": "Team could not be updated.",
+    "addPlayerToTeam": "Add player to team",
+    "numberOfPlayers": "No. of players",
+    "editTeam": "Edit team",
+    "cantUpdateTeam": "Team could not be updated.",
+    "errorOnLoading": "Error loading team data.",
+    "errorOnLoadindMesage": "Error loading team data.",
+    "cantCreateTeam": "Team could not be created.",
+    "noPlayersAvailable": "No players available to add to the team.",
+    "teamInfoCantBeLoaded": "Team data could not be loaded.",
+    "playersListCantBeLoaded": "Player list could not be loaded.",
+    "playerAsigned": "Player assigned",
+    "playerAsignedCorrectly": "Player has been successfully assigned to the team.",
+    "playerNotAsigned": "Player could not be assigned to the team.",
+    "doyouWantEliminatePlayer": "Do you want to remove",
+    "fromTheTeam": "from the team?",
+    "playerEliminated": "Player removed",
+    "playerEliminatedCorrectly": "Player has been removed from the team successfully.",
+    "playerNotEliminated": "Player could not be removed from the team.",
+    "playersNotFound": "No players found in this team."
+  },
+  "login": {
+    "login": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "loginError": "Login error. Please check your credentials.",
+    "logout": "Log out"
+  },
+  "payments": {
+    "errorToloading": "Error loading payment data.",
+    "toUpdatePayment": "You are about to update the payment for",
+    "thisActionCantBeUndo": "This action cannot be undone. Continue?",
+    "thePayment": "The payment for",
+    "hasUpdated": "has been marked as completed.",
+    "cantUpdatePayment": "Payment could not be updated.",
+    "paymentsForActualSeason": "Payments for the current season",
+    "dontFindPayments": "No payments found.",
+    "name": "First name",
+    "surname": "Last name",
+    "dni": "DNI/NIE",
+    "quote": "Fee (€)",
+    "payed": "Paid (€)",
+    "pending": "Pending (€)",
+    "debt": "Debt (€)",
+    "actions": "Actions",
+    "updatePayment": "Update payment"
+  },
+  "categories": {
+    "title": "Categories",
+    "players": "Players",
+    "teams": "Teams",
+    "forTheTotal": "of the total",
+    "cantLoadCategories": "Categories could not be loaded."
+  },
+  "seasons": {
+    "players": "Players",
+    "teams": "Teams",
+    "active": "Active",
+    "finished": "Finished",
+    "cantLoadSeasons": "Seasons could not be loaded.",
+    "seasonCantBeLoaded": "Season could not be loaded.",
+    "error": "Error",
+    "markAsPaid": "Mark as paid",
+    "markAsPaidMessage": "You are going to mark as paid",
+    "thisActionCantBeUndo": "This action cannot be undone. Continue?",
+    "paymentUpdated": "Payment updated",
+    "paymentUpdatedCorrectly": "marked as paid.",
+    "cantUpdatePayment": "Payment could not be updated.",
+    "cantFindPlayers": "No players found.",
+    "cantFindTeams": "No teams found.",
+    "canFindPayments": "No payments found.",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "settings": {
+    "cantGetFormStatus": "Could not get form status data.",
+    "inscrptions": "Registrations",
+    "invalitDate": "Invalid date",
+    "dateCanNot": "Closing date must be later than opening date.",
+    "areYouSure": "Are you sure",
+    "open": "Open",
+    "close": "Close",
+    "opened": "Open",
+    "closed": "Closed",
+    "success": "Success",
+    "theIncription": "the registrations?",
+    "error": "Error",
+    "cantUpdateStatus": "Could not update registration status.",
+    "dateRequired": "Date is required",
+    "initDateAndEndDate": "You must indicate a start and end date",
+    "datesNotValid": "Dates are not valid",
+    "closeSeasonWarning": "Creating a new season will close the current one and transfer any debts. This action is irreversible. Continue?",
+    "seasonCreated": "Season created",
+    "seasonCantBeLoaded": "Season could not be loaded.",
+    "seasonCreatedCorrectly": "The season has been created successfully.",
+    "cantCreateSeason": "Season could not be created.",
+    "selectLenguage": "Select language",
+    "openAt": "Open on",
+    "closeAt": "Close on",
+    "actualStatus": "Current status",
+    "open2": "Open",
+    "close2": "Closed",
+    "newSeason": "New season",
+    "createNewSeason": "Create new season",
+    "start": "Start",
+    "end": "End",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "cancelPage": {
+    "title": "Registration cancelled",
+    "verifying": "⏳ Verifying cancellation...",
+    "somethingWentWrong": "Something went wrong while cancelling the registration.",
+    "pleaseContact": "Please contact the club’s support to resolve the problem.",
+    "paymentCancelled": "Payment cancelled",
+    "paymentCancelledMessage": "Your registration has been cancelled successfully.",
+    "hello": "Hello",
+    "yourInscription": "your registration has not been completed.",
+    "thePaymentWasCancelled": "The payment was cancelled and the registration was not recorded.",
+    "ifItsWasAMistake": "If this was a mistake, you can try again."
+  },
+  "successPage": {
+    "verifying": "⏳ Verifying your payment...",
+    "somethingWentWrong": "Something went wrong while cancelling the registration.",
+    "pleaseContact": "Please contact the club’s support to resolve the problem.",
+    "paymentCancelled": "Payment cancelled",
+    "paymentSuccess": "✅ Payment successful",
+    "thanks": "Thank you,",
+    "paymentSuccessMessage": "Your registration has been completed successfully."
   }
 }

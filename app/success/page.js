@@ -5,10 +5,13 @@ import { useSearchParams } from "next/navigation";
 
 import styles from "./success.module.css";
 
+import { useTranslation } from "react-i18next";
+
 export default function SuccessPageWrapper() {
+  const { t } = useTranslation();
   return (
     <div className={styles.successPage}>
-      <Suspense fallback={<p>⏳ Verificando cancelación...</p>}>
+      <Suspense fallback={<p>{t("successPage.verifying")}</p>}>
         <SuccessPage />
       </Suspense>
     </div>
@@ -17,6 +20,7 @@ export default function SuccessPageWrapper() {
 }
 
 function SuccessPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -59,7 +63,7 @@ function SuccessPage() {
   if (loading) {
     return (
       <div>
-        <h2>⏳ Verificando tu pago...</h2>
+        <h2>{t("successPage.verifying")}</h2>
       </div>
     );
   }
@@ -67,18 +71,18 @@ function SuccessPage() {
   if (error) {
     return (
       <div className={styles.successPage}>
-        <h2>❌ Hubo un error al verificar tu inscripción.</h2>
-        <p>Por favor, contacta con el club o intenta de nuevo.</p>
+        <h2>{t("successPage.somethingWentWrong")}</h2>
+        <p>{t("successPage.pleaseContact")}</p>
       </div>
     );
   }
 
   return (
     <div className={styles.successPage}>
-      <h1>✅ ¡Pago completado!</h1>
+      <h1>{t("successPage.paymentSuccess")}</h1>
       <p>
-        Gracias, <strong>{playerName}</strong>, tu inscripción ha sido
-        confirmada correctamente.
+        {t("successPage.thanks")}, <strong>{playerName}</strong>,{" "}
+        {t("successPage.paymentSuccessMessage")}
       </p>
     </div>
   );

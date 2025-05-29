@@ -2,51 +2,61 @@
   "nav": {
     "home": "INICI",
     "club": "CLUB",
-    "location": "UBICACIÓ",
+    "location": "LOCALITZACIÓ",
     "sponsors": "PATROCINADORS",
     "inscription": "INSCRIPCIÓ"
+  },
+  "backNavbar": {
+    "dashboard": "Taulell de control",
+    "players": "Jugadors",
+    "teams": "Equips",
+    "categories": "Categories",
+    "seasons": "Temporades",
+    "payments": "Pagaments",
+    "settings": "Configuració",
+    "logOut": "Tancar sessió"
   },
   "home": {
     "title": "ALGAIDA VOLEI CLUB"
   },
   "club": {
     "title": "EL CLUB",
-    "titleColumn1": "Títol Columna 1",
-    "column1": "Contingut descriptiu per a la primera columna relacionat amb el club. Aquí pots posar informació sobre la història, la missió o els serveis del club.",
-    "titleColumn2": "Títol Columna 2",
-    "column2": "Contingut descriptiu per a la segona columna relacionat amb el club. Aquí pots posar informació sobre els entrenadors, les instal·lacions o qualsevol altre aspecte rellevant."
+    "titleColumn1": "🏐 Qui som",
+    "column1": "Algaida Volei Club és molt més que un club esportiu: és una escola de valors, una comunitat compromesa i un espai on créixer com a persones a través de l'esport.\n\nFormem part d'Algàlia Esports Club, entitat arrelada al municipi d'Algaida, que impulsa la pràctica esportiva des d'una perspectiva formativa, integradora i sense ànim de lucre.\n\nEns dediquem a fomentar i desenvolupar la pràctica del vòlei entre infants i joves, combinant la passió pel joc amb el respecte, l'esforç i el treball en equip.\n\nEls nostres equips competeixen en diferents categories escolars i federades, sempre amb l'acompanyament d'un equip tècnic proper, implicat i alineat amb els valors del club.\n\nTant si ets nou en aquest esport com si ja tens experiència, aquí trobaràs un espai on aprendre, superar-te i gaudir amb els teus companys i companyes.",
+    "titleColumn2": "🌱 Els nostres valors",
+    "column2": "A Algaida Volei Club donam molta importància a:\n\nL'educació en valors com el respecte, la responsabilitat i el compromís.\n\nLa convivència positiva, amb pautes clares de comportament i una comunicació fluida entre club, famílies i esportistes.\n\nEl suport a les famílies, que són part fonamental del nostre projecte esportiu.\n\nEl respecte per les instal·lacions i pel material, entenent que el club és de tothom.\n\nCada temporada es posa en marxa un procés d'inscripció estructurat i accessible, que inclou tota la informació necessària sobre documentació, quotes i condicions. Aquest procés es pot fer fàcilment mitjançant un formulari en línia.\n\nEl nostre objectiu no és només formar jugadors i jugadores de vòlei, sinó contribuir a formar bones persones, responsables, solidàries i amb ganes de millorar cada dia.\n\nGràcies per formar part de la nostra comunitat. Junts i juntes, continuem fent créixer el vòlei a Algaida!"
   },
   "location": {
-    "title": "UBICACIÓ",
+    "title": "LOCALITZACIÓ",
     "mapTitle": "Ubicació del Club"
   },
   "sponsors": {
     "title": "PATROCINADORS"
   },
   "footer": {
-    "privatePolicy": "Política de privadesa",
+    "privatePolicy": "Política de privacitat",
     "cookies": "Política de cookies",
     "legal": "Avís legal"
   },
   "legalPages": {
     "privacyPolicy": {
-      "title": "Política de privadesa",
+      "title": "Política de privacitat",
       "sections": [
         {
           "heading": "1. Responsable del tractament",
-          "content": "El responsable del tractament de les dades d’aquest formulari és Algaida Volei Club, amb domicili a Carrer X, Ciutat, País."
+          "content": "El responsable del tractament de les dades recollides en aquest formulari és Algaida Volei Club, amb domicili al Carrer X, Ciutat, País."
         },
         {
           "heading": "2. Finalitat del tractament",
-          "content": "Les dades s’utilitzen per gestionar inscripcions, emetre rebuts i comunicacions relacionades amb l’activitat del club."
+          "content": "Les dades s'utilitzen per gestionar inscripcions, emetre rebuts i comunicacions relacionades amb l'activitat del club."
         },
         {
-          "heading": "3. Drets dels interessats",
-          "content": "Pots exercir els drets d'accés, rectificació, supressió, oposició, limitació i portabilitat enviant un correu a contacto@algaidavolei.es."
+          "heading": "3. Drets de les persones interessades",
+          "content": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació i portabilitat adreçant-te a contacto@algaidavolei.es."
         },
         {
           "heading": "4. Conservació de les dades",
-          "content": "Les dades es conservaran durant la temporada esportiva vigent i fins que se sol·liciti la seva supressió."
+          "content": "Les dades es conservaran durant la temporada esportiva en curs i fins que se'n sol·liciti la supressió."
         }
       ]
     },
@@ -55,15 +65,15 @@
       "sections": [
         {
           "heading": "1. Identificació del lloc web",
-          "content": "Aquest lloc web www.algaidavolei.es és gestionat per Algaida Volei Club (CIF: XXXX), amb domicili social a Carrer X, Ciutat."
+          "content": "Aquest lloc web, www.algaidavolei.es, és operat per Algaida Volei Club (CIF: XXXX), amb domicili social al Carrer X, Ciutat."
         },
         {
-          "heading": "2. Condicions d’ús",
-          "content": "L’accés i ús d’aquest lloc web atorga la condició d’Usuari i accepta les condicions recollides en aquest Avís Legal."
+          "heading": "2. Condicions d'ús",
+          "content": "L'accés i ús d'aquest lloc web atribueix la condició d'Usuari i implica l'acceptació de les condicions recollides en aquest Avís Legal."
         },
         {
           "heading": "3. Propietat intel·lectual",
-          "content": "Els continguts, disseny i codi d’aquest lloc estan protegits per la normativa vigent en matèria de propietat intel·lectual."
+          "content": "Els continguts, el disseny i el codi d'aquest lloc estan protegits per la normativa vigent en matèria de propietat intel·lectual."
         }
       ]
     },
@@ -72,57 +82,57 @@
       "sections": [
         {
           "heading": "1. Què són les cookies?",
-          "content": "Les cookies són petits fitxers que els llocs web envien al navegador de l’Usuari per emmagatzemar certa informació."
+          "content": "Les cookies són petits fitxers que els llocs web envien al navegador de l'Usuari per emmagatzemar determinada informació."
         },
         {
           "heading": "2. Tipus de cookies que utilitzem",
-          "content": "Utilitzem cookies tècniques per al funcionament, d’anàlisi per obtenir informació estadística i de tercers (Google Analytics)."
+          "content": "Utilitzem cookies tècniques per al funcionament, d'anàlisi per obtenir informació estadística i de tercers (Google Analytics)."
         },
         {
           "heading": "3. Desactivació i eliminació",
-          "content": "Pots configurar el teu navegador per rebutjar o eliminar les cookies. Consulta l’ajuda del teu navegador per a més detalls."
+          "content": "Pots configurar el teu navegador per rebutjar o eliminar totes les cookies. Consulta l'ajuda del teu navegador per a més detalls."
         }
       ]
     },
     "dataProtectionNotice": {
-      "title": "Protecció de Dades",
+      "title": "Protecció de dades",
       "sections": [
         {
           "heading": "1. Responsable del tractament",
-          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Adreça: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARS. Telèfon: 651873851. Correu electrònic: algaidavoleiclub@gmail.com. No existeix obligació de disposar d’un Delegat de Protecció de Dades segons l’article 37 del Reglament (UE) 2016/679."
+          "content": "ALGAIDA VOLEI CLUB - CIF: G16614737. Adreça: CASAL PERE CAPELLÀ, C/ DELS CAVALLER Nº 22, 07210, ALGAIDA, BALEARS. Telèfon: 651 873 851. Correu electrònic: algaidavoleiclub@gmail.com. No hi ha obligació de disposar d'un Delegat de Protecció de Dades de conformitat amb l'art. 37 del Reglament (UE) 2016/679."
         },
         {
           "heading": "2. Finalitat del tractament",
-          "content": "Tractam la informació facilitada per prestar serveis esportius i formatius contractats, finalitats administratives, comptables, fiscals, oferir serveis segons interessos i realitzar la facturació. Es crearà un perfil comercial sense decisions automatitzades. Les dades es conservaran mentre hi hagi relació comercial i fins a 5 anys des de la darrera contractació, excepte si se'n sol·licita la supressió."
+          "content": "Tractem la informació facilitada per prestar els serveis esportius i formatius contractats, finalitats administratives, comptables i fiscals, oferir serveis esportius segons interessos i realitzar facturació. S'elaborarà un perfil comercial sense decisions automatitzades. Les dades es conservaran mentre existeixi relació comercial i fins a 5 anys des de la darrera contractació, llevat que se'n sol·liciti la supressió."
         },
         {
           "heading": "3. Legitimació",
-          "content": "La base legal és l’execució del contracte segons el Codi de Comerç i Codi Civil. Per comunicacions comercials s’apliquen els articles 20 i 21 de la Llei 34/2002. Es demana consentiment per a ofertes comercials, la seva retirada no condiciona el servei. És obligatori facilitar les dades per prestar el servei. El consentiment és necessari per rebre comunicacions comercials."
+          "content": "La base legal és l'execució del contracte segons el Codi de Comerç i el Codi Civil. Per a comunicacions comercials, s'apliquen els arts. 20 i 21 de la Llei 34/2002. Es sol·licita consentiment per a ofertes comercials, sense que la seva retirada condicioni el servei. És obligatori facilitar les dades per prestar el servei. El consentiment és obligatori per rebre comunicacions comercials."
         },
         {
           "heading": "4. Destinataris",
-          "content": "No es cediran dades a tercers, excepte obligació legal. No es preveuen transferències internacionals ni decisions automatitzades aplicables."
+          "content": "No es cediran dades a tercers, llevat d'obligació legal. No es preveuen transferències internacionals ni decisions automatitzades aplicables."
         },
         {
-          "heading": "5. Drets dels interessats",
-          "content": "Tota persona té dret a saber si tractam les seves dades. Pot accedir, rectificar, suprimir, limitar el tractament, oposar-se i sol·licitar portabilitat. Pot reclamar davant l’Agència Espanyola de Protecció de Dades (www.agpd.es)."
+          "heading": "5. Drets de les persones interessades",
+          "content": "Qualsevol persona té dret a confirmar si tractem les seves dades. Pot accedir, rectificar, suprimir, limitar el tractament, oposar-se'n i sol·licitar la portabilitat. Pot reclamar davant l'Agència Espanyola de Protecció de Dades (www.agpd.es)."
         }
       ]
     },
     "imageConsent": {
-      "title": "Autorització d'Ús d'Imatge",
+      "title": "Autorització d'ús d'imatge",
       "sections": [
         {
           "heading": "1. Consentiment per a menors o majors d'edat",
-          "content": "El pare, mare o tutor legal (si el/la jugador/a és menor d'edat), o el/la mateix/a jugador/a (si és major d'edat), autoritza l'ús de la seva imatge i/o fotografies en activitats esportives i comunicatives del Club Volei Algaida. Aquesta autorització inclou la publicació a la pàgina web i xarxes socials del club, incloent-hi Facebook i Instagram."
+          "content": "El pare, mare o tutor legal (en cas que el/la jugador/a sigui menor d'edat), o el/la mateix/a jugador/a (en cas de ser major d'edat), autoritza la utilització de la imatge i/o fotografies del jugador/a en el marc d'activitats esportives i comunicatives de l'Algaida Volei Club. Aquesta autorització inclou la publicació d'aquestes imatges a la pàgina web oficial del club i a les seves xarxes socials, incloent Facebook i Instagram."
         },
         {
           "heading": "2. Informació sobre el tractament de dades",
-          "content": "Segons l'article 28 del RGPD, s'informa que Facebook Inc. i Instagram LLC actuaran com a encarregats del tractament de les dades (imatges). Les dades poden ser emmagatzemades als seus servidors als Estats Units. Aquesta autorització exclou usos que puguin vulnerar el dret a l'honor, intimitat o pròpia imatge segons la Llei Orgànica 1/1985. L'autorització és gratuïta i no genera drets econòmics."
+          "content": "D'acord amb l'article 28 del RGPD, Facebook Inc. i Instagram LLC actuaran com a encarregats del tractament de les dades personals (imatges). Les dades podran emmagatzemar-se als seus servidors als Estats Units. Aquesta autorització exclou usos que vulnerin el dret a l'honor, la intimitat personal o la pròpia imatge conforme a la Llei Orgànica 1/1985. L'autorització és gratuïta i no genera drets econòmics per l'ús de la imatge."
         },
         {
           "heading": "3. Consentiment explícit",
-          "content": "Seleccioneu la vostra decisió en cadascun dels apartats següents:\n1. Autoritza la publicació d'imatges a la web del club?\n2. Autoritza la publicació a Facebook i Instagram?\n3. Autoritza l'ús d'imatges a altres xarxes socials oficials del club?"
+          "content": "Selecciona la teva decisió en cadascun dels apartats següents:\n1. Autoritzes la publicació d'imatges a la pàgina web del club?\n2. Autoritzes la publicació d'imatges a Facebook i Instagram?\n3. Autoritzes l'ús d'imatges en altres xarxes socials oficials del club?"
         }
       ]
     },
@@ -135,25 +145,350 @@
         },
         {
           "heading": "2. Normes de convivència i comportament",
-          "content": "Respectar l'entrenador/a i els companys/es d'equip. Comentar els dubtes amb el tècnic, aprendre activament, ajudar als altres, evitar crítiques negatives i responsabilitzar-se del material esportiu propi."
+          "content": "Respectar l'entrenador/a i els companys/es de l'equip. Consultar dubtes amb el tècnic, aprendre activament, ajudar els altres, evitar crítiques negatives i responsabilitzar-se del material esportiu propi."
         },
         {
           "heading": "3. Funcionament dels entrenaments",
-          "content": "Puntualitat i assistència obligatòria. Respectar el material i instal·lacions. Vestir adequadament, evitar objectes que puguin provocar lesions, tenir cura de la salut i evitar l'ús del mòbil durant la sessió."
+          "content": "Puntualitat i assistència obligatòria. Respectar el material i les instal·lacions. Vestimenta adequada, evitar objectes que puguin causar lesions, cuidar la salut i evitar l'ús del mòbil durant les sessions."
         },
         {
           "heading": "4. Comportament en competició",
-          "content": "Uniformitat correcta, actitud esportiva, respecte a l'àrbitre, al rival i al públic. Notificar absències amb antelació. L'entrenador decideix la participació en funció de l'actitud i l'assistència."
+          "content": "Uniforme correcte, actitud esportiva, respecte a l'àrbitre, rival i públic. Avisar amb antelació si no es pot assistir. La participació depèn de l'actitud i l'assistència segons l'entrenador/a."
         },
         {
           "heading": "5. Decàleg de bones pràctiques",
-          "content": "1. Respectar les instal·lacions municipals. 2. Puntualitat i assistència obligatòria. 3. Cura del material del club. 4. Participació en altres categories si es requereix. 5. Respecte als entrenadors. 6. Criteris disciplinaris coherents amb els valors del club. 7. Comunicació a través de l’enllaç d’equip. 8. Implicació de les famílies. 9. Respecte durant entrenaments i partits. 10. Les queixes han de dirigir-se a l’enllaç de l’equip."
+          "content": "1. Respectar les instal·lacions municipals. 2. Puntualitat i assistència obligatòria. 3. Cuidar el material del club. 4. Participar en altres categories si es requereix. 5. Respecte als entrenadors. 6. Criteris disciplinaris coherents amb els valors del club. 7. Comunicació a través de l'enllaç de l'equip. 8. Implicació de les famílies. 9. Respecte durant entrenaments i partits. 10. Les queixes s'han d'adreçar a l'enllaç de l'equip."
         },
         {
           "heading": "6. Famílies i comunicació",
-          "content": "Les famílies són un pilar fonamental. Han de respectar les decisions dels entrenadors i dirigir les seves consultes a través del canal establert (persona enllaç). Evitar interferències tècniques durant els entrenaments i partits."
+          "content": "Les famílies són un pilar fonamental. Han de respectar les decisions dels entrenadors i canalitzar les consultes a través de l'enllaç de l'equip. Evitar interferències tècniques durant entrenaments i partits."
         }
       ]
     }
+  },
+  "inscription": {
+    "title": "INSCRIPCIÓ",
+    "subtitle": "Formulari d'inscripció",
+    "form": {
+      "personalData": "Dades personals",
+      "name": "Nom",
+      "namePlaceholder": "Introdueix el teu nom",
+      "nameError": "El nom és obligatori",
+      "surname": "Cognoms",
+      "surnamePlaceholder": "Introdueix els teus cognoms",
+      "surnameError": "Els cognoms són obligatoris",
+      "email": "Correu electrònic",
+      "emailPlaceholder": "Introdueix el teu correu electrònic",
+      "emailError": "El correu electrònic és obligatori",
+      "emailInvalid": "El correu electrònic no és vàlid",
+
+      "legalGuardianData": "Dades del tutor legal",
+      "legalGuardianName": "Nom del tutor legal",
+      "legalGuardianNamePlaceholder": "Introdueix el nom del tutor legal",
+      "legalGuardianNameError": "El nom del tutor legal és obligatori",
+      "legalGuardianSurname": "Cognoms del tutor legal",
+      "legalGuardianSurnamePlaceholder": "Introdueix els cognoms del tutor legal",
+      "legalGuardianSurnameError": "Els cognoms del tutor legal són obligatoris",
+      "legalGuardianDni": "DNI/NIE del tutor legal",
+      "legalGuardianDniPlaceholder": "Introdueix el DNI/NIE del tutor legal",
+      "legalGuardianDniError": "El DNI/NIE del tutor legal és obligatori",
+      "legalGuardianDniInvalid": "El DNI/NIE del tutor legal no és vàlid",
+      "legalGuardianPhone": "Telèfon del tutor legal",
+      "legalGuardianPhonePlaceholder": "Introdueix el telèfon del tutor legal",
+      "legalGuardianPhoneError": "El telèfon del tutor legal és obligatori",
+      "legalGuardianPhoneInvalid": "El telèfon del tutor legal no és vàlid",
+
+      "legalGuardianEmail": "Correu electrònic del tutor legal",
+      "legalGuardianEmailPlaceholder": "Introdueix el correu electrònic del tutor legal",
+      "legalGuardianEmailError": "El correu electrònic del tutor legal és obligatori",
+      "legalGuardianEmailInvalid": "El correu electrònic del tutor legal no és vàlid",
+
+      "legalGurardianRelationship": "Relació amb el jugador",
+      "legalGurdianRelationshipPlaceholder": "Selecciona la relació amb el jugador",
+      "legalGurdianRelationshipError": "La relació amb el jugador és obligatòria",
+
+      "father": "Pare",
+      "mother": "Mare",
+      "guardian": "Tutor",
+
+      "phone": "Telèfon",
+      "phonePlaceholder": "Introdueix el teu número de telèfon",
+      "phoneError": "El número de telèfon és obligatori",
+      "phoneInvalid": "El número de telèfon no és vàlid",
+
+      "birthDate": "Data de naixement",
+      "birthDatePlaceholder": "Selecciona la teva data de naixement",
+      "birthDateError": "La data de naixement és obligatòria",
+      "futureDateError": "La data de naixement no pot ser futura",
+      "dni": "DNI/NIE",
+      "dniPlaceholder": "Introdueix el teu DNI/NIE",
+      "dniError": "El DNI/NIE és obligatori",
+      "dniInvalid": "El DNI/NIE no és vàlid",
+      "dniImage": "Imatge del DNI/NIE",
+      "dniImagePlaceholder": "Puja una imatge del teu DNI/NIE",
+      "dniImageError": "La imatge del DNI/NIE és obligatòria",
+      "dniImageInvalid": "El fitxer pujat no és una imatge vàlida",
+      "dniImageSize": "La mida de la imatge no pot superar els 2 MB",
+      "dniCheckError": "Error en comprovar el DNI/NIE. Si us plau, torna-ho a intentar més tard.",
+      "playerImage": "Imatge del jugador",
+      "playerImagePlaceholder": "Puja una imatge del jugador",
+      "playerImageError": "La imatge del jugador és obligatòria",
+      "playerImageInvalid": "El fitxer pujat no és una imatge vàlida",
+      "playerImageSize": "La mida de la imatge no pot superar els 2 MB",
+      "playerExistSeason": "El jugador ja està inscrit a la temporada actual",
+      "playerHasDebt": "El jugador té deutes pendents",
+      "playerNeedSolveDebt": "El jugador ha de resoldre els deutes pendents abans de continuar amb la inscripció",
+
+      "legalConfirmation": "Confirmacions legals",
+      "readAndAccept": "He llegit i accepto",
+      "readAndAcceptLOPD": "la política de protecció de dades (LOPD)",
+      "readAndAcceptError": "Has d'acceptar la política de privacitat i l'avís legal",
+      "raadAndAcceosEthicCode": "el codi ètic i normes de convivència",
+      "readAndAcceptEthicCodeError": "Has d'acceptar el codi ètic i normes de convivència",
+      "authorizationImage": "Autoritzo",
+      "imageUse": "l'ús de la imatge del jugador/a",
+      "oficialChannel": "als canals oficials del club",
+      "authorizationPublication": "Autoritzo la publicació d'imatges del jugador/a a la pàgina web.",
+      "authorizationInstagram": "Autoritzo la publicació d'imatges del jugador/a a Instagram i Facebook.",
+      "authorizationOtherSocial": "Autoritzo la publicació d'imatges del jugador/a en altres xarxes socials oficials del club.",
+      "sumaryAndPayment": "Resum i pagament",
+      "youMostResponse": "Has de respondre sobre",
+      "firstPay": "Primer pagament de",
+      "rest": "Resta de",
+      "outsidePlatform": "Fora de la plataforma",
+
+      "OCRwaiting": "Si us plau, espera mentre verifiquem el DNI/NIE. Aquest procés pot durar uns minuts.",
+      "OCRInvalid": "La imatge del DNI/NIE no és vàlida. Assegura-t que la imatge sigui clara i llegible.",
+      "OCRNoMatch": "El DNI/NIE no coincideix amb el DNI/NIE introduït. Verifica que les dades siguin correctes.",
+
+      "sumary": "Resum de la inscripció",
+      "totalMount": "Import total",
+      "onlyOnePay": "En un pagament únic",
+      "loteryParticipation": "Participació en la loteria",
+      "splitPayment": "Pagament fraccionat",
+      "now": "Ara",
+      "youHaveaDebt": "Tens un deute pendent de",
+      "contactWithUs": "Contacta amb nosaltres per resoldre'l",
+      "notActive": "La inscripció no està activa",
+      "notActiveText": "La inscripció no està activa en aquest moment."
+    }
+  },
+  "buttons": {
+    "accept": "Acceptar",
+    "cancel": "Cancel·lar",
+    "next": "Següent",
+    "send": "Enviar",
+    "save": "Desar",
+    "readMore": "Llegir més",
+    "close": "Tancar",
+    "back": "Tornar",
+    "pay": "Pagar",
+    "register": "Inscriure's",
+    "update": "Actualitzar",
+    "exportCSV": "Exportar CSV",
+    "newPlayer": "Nou jugador",
+    "editPlayer": "Editar jugador",
+    "addPlayer": "Afegir jugador",
+    "deletePlayer": "Eliminar jugador",
+    "searchPlayer": "Cercar jugador",
+    "dontFindPlayer": "No s'ha trobat el jugador",
+    "newTeam": "Nou equip",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "dashboard": {
+    "title": "Taulell de control",
+    "totalPlayers": "Jugadors totals",
+    "totalTeams": "Equips totals",
+    "inscriptions": "Inscripcions",
+    "payed": "Pagats",
+    "paymetsPending": "Pagaments pendents",
+    "payments": "Pagaments",
+    "playersForCategory": "Jugadors per categoria",
+    "sponsors": "Patrocinadors",
+    "settings": "Configuració"
+  },
+  "players": {
+    "name": "Nom",
+    "surname": "Cognoms",
+    "birthDate": "Data de naixement",
+    "playerDeleted": "Jugador eliminat",
+    "thePlayer": "El jugador",
+    "hasDeleted": "ha estat eliminat",
+    "cantDeletePLayer": "No s'ha pogut eliminar el jugador.",
+    "playerUpdated": "Jugador actualitzat",
+    "changesSaved": "Els canvis s'han desat.",
+    "playerNotUpdated": "No s'ha pogut actualitzar el jugador.",
+    "dni": "DNI/NIE",
+    "actions": "Accions",
+    "newPlayer": "Nou jugador",
+    "editPlayer": "Editar jugador",
+    "playerCreated": "Jugador creat",
+    "playerCreatedCorrectly": "El jugador s'ha creat correctament.",
+    "cantCheckPlayer": "No s'ha pogut comprovar el jugador.",
+    "playerNotFindYouCanCreate": "No s'ha trobat el jugador. Pots crear-ne un de nou.",
+    "completeOtherData": "Completa altres dades",
+    "playerFind": "Jugador trobat",
+    "playerWithDebt": "Jugador amb deute",
+    "playerHasDebt": "El jugador té deutes pendents",
+    "playerRegistered": "Jugador ja registrat",
+    "cantRegisterPlayer": "No s'ha pogut registrar el jugador.",
+    "playerHasRegistered": "El jugador ja està inscrit a la temporada actual.",
+    "photo": "Foto",
+    "document": "Document",
+    "checking": "Comprovant...",
+    "total": "Total (€)",
+    "confirmDelete": "Estàs segur que vols eliminar el jugador?"
+  },
+  "teams": {
+    "team": "Equip",
+    "teamCreated": "Equip creat",
+    "selectTeam": "Selecciona un equip",
+    "notFindTeams": "No s'han trobat equips.",
+    "teamIsMandatory": "L'equip és obligatori",
+    "teamCreatedCorrectly": "L'equip s'ha creat correctament.",
+    "teamDeleted": "Equip eliminat",
+    "deleateTeam": "Eliminar equip",
+    "actionCantBeUndo": "Aquesta acció no es pot desfer.",
+    "theTeam": "L'equip",
+    "trainer": "Entrenador",
+    "category": "Categoria",
+    "selectCategory": "Selecciona una categoria",
+    "hasDeleted": "ha estat eliminat",
+    "cantDeleteTeam": "No s'ha pogut eliminar l'equip.",
+    "hasDeletedCorrectly": "s'ha eliminat correctament.",
+    "teamUpdated": "Equip actualitzat",
+    "changesSaved": "Canvis desats.",
+    "teamNotUpdated": "No s'ha pogut actualitzar l'equip.",
+    "addPlayerToTeam": "Afegir jugador a l'equip",
+    "numberOfPlayers": "Nº de jugadors",
+    "editTeam": "Editar equip",
+    "cantUpdateTeam": "No s'ha pogut actualitzar l'equip.",
+    "errorOnLoading": "Error en carregar les dades de l'equip.",
+    "errorOnLoadindMesage": "Error en carregar les dades de l'equip.",
+    "cantCreateTeam": "No s'ha pogut crear l'equip.",
+    "noPlayersAvailable": "No hi ha jugadors disponibles per afegir a l'equip.",
+    "teamInfoCantBeLoaded": "No s'han pogut carregar les dades de l'equip.",
+    "playersListCantBeLoaded": "No s'ha pogut carregar la llista de jugadors.",
+    "playerAsigned": "Jugador assignat",
+    "playerAsignedCorrectly": "El jugador s'ha assignat correctament a l'equip.",
+    "playerNotAsigned": "No s'ha pogut assignar el jugador a l'equip.",
+    "doyouWantEliminatePlayer": "Vols eliminar",
+    "fromTheTeam": "de l'equip?",
+    "playerEliminated": "Jugador eliminat",
+    "playerEliminatedCorrectly": "El jugador s'ha eliminat correctament de l'equip.",
+    "playerNotEliminated": "No s'ha pogut eliminar el jugador de l'equip.",
+    "playersNotFound": "No s'han trobat jugadors en aquest equip."
+  },
+  "login": {
+    "login": "Iniciar sessió",
+    "email": "Correu electrònic",
+    "password": "Contrasenya",
+    "rememberMe": "Recorda'm",
+    "forgotPassword": "Has oblidat la contrasenya?",
+    "loginError": "Error en iniciar sessió. Verifica les credencials.",
+    "logout": "Tancar sessió"
+  },
+  "payments": {
+    "errorToloading": "Error en carregar les dades dels pagaments.",
+    "toUpdatePayment": "Vols actualitzar el pagament de",
+    "thisActionCantBeUndo": "Aquesta acció no es pot desfer. Continuar?",
+    "thePayment": "El pagament de",
+    "hasUpdated": "ha estat marcat com a completat.",
+    "cantUpdatePayment": "No s'ha pogut actualitzar el pagament.",
+    "paymentsForActualSeason": "Pagaments de la temporada actual",
+    "dontFindPayments": "No s'han trobat pagaments.",
+    "name": "Nom",
+    "surname": "Cognoms",
+    "dni": "DNI/NIE",
+    "quote": "Quota (€)",
+    "payed": "Pagat (€)",
+    "pending": "Pendent (€)",
+    "debt": "Deute (€)",
+    "actions": "Accions",
+    "updatePayment": "Actualitzar pagament"
+  },
+  "categories": {
+    "title": "Categories",
+    "players": "Jugadors",
+    "teams": "Equips",
+    "forTheTotal": "del total",
+    "cantLoadCategories": "No s'han pogut carregar les categories."
+  },
+  "seasons": {
+    "players": "Jugadors",
+    "teams": "Equips",
+    "active": "Activa",
+    "finished": "Finalitzada",
+    "cantLoadSeasons": "No s'han pogut carregar les temporades.",
+    "seasonCantBeLoaded": "No s'ha pogut carregar la temporada.",
+    "error": "Error",
+    "markAsPaid": "Marcar com a pagat",
+    "markAsPaidMessage": "Vas a marcar com a pagat a",
+    "thisActionCantBeUndo": "Aquesta acció no es pot desfer. Continuar?",
+    "paymentUpdated": "Pagament actualitzat",
+    "paymentUpdatedCorrectly": "marcat com a pagat.",
+    "cantUpdatePayment": "No s'ha pogut actualitzar el pagament.",
+    "cantFindPlayers": "No s'han trobat jugadors.",
+    "cantFindTeams": "No s'han trobat equips.",
+    "canFindPayments": "No s'han trobat pagaments.",
+    "status": "Estat",
+    "actions": "Accions"
+  },
+  "settings": {
+    "cantGetFormStatus": "No s'han pogut obtenir les dades del formulari.",
+    "inscrptions": "Inscripcions",
+    "invalitDate": "Data no vàlida",
+    "dateCanNot": "La data de tancament ha de ser posterior a la d'obertura.",
+    "areYouSure": "Estàs segur",
+    "open": "Obrir",
+    "close": "Tancar",
+    "opened": "Obertes",
+    "closed": "Tancades",
+    "success": "Èxit",
+    "theIncription": "les inscripcions?",
+    "error": "Error",
+    "cantUpdateStatus": "No s'ha pogut actualitzar l'estat de les inscripcions.",
+    "dateRequired": "La data és obligatòria",
+    "initDateAndEndDate": "Has d'indicar data d'inici i fi",
+    "datesNotValid": "Les dates no són vàlides",
+    "closeSeasonWarning": "En crear una nova temporada, l'actual es tancarà i els deutes es traslladaran. Aquesta acció és irreversible. Continuar?",
+    "seasonCreated": "Temporada creada",
+    "seasonCantBeLoaded": "No s'ha pogut carregar la temporada.",
+    "seasonCreatedCorrectly": "La temporada s'ha creat correctament.",
+    "cantCreateSeason": "No s'ha pogut crear la temporada.",
+    "selectLenguage": "Selecciona l'idioma",
+    "openAt": "Obren el",
+    "closeAt": "Tanquen el",
+    "actualStatus": "Estat actual",
+    "open2": "Obert",
+    "close2": "Tancat",
+    "newSeason": "Nova temporada",
+    "createNewSeason": "Crear nova temporada",
+    "start": "Inici",
+    "end": "Fi",
+    "save": "Desar",
+    "cancel": "Cancel·lar"
+  },
+  "cancelPage": {
+    "title": "Inscripció cancel·lada",
+    "verifying": "⏳ Verificant la cancel·lació...",
+    "somethingWentWrong": "Hi ha hagut un problema en cancel·lar l'inscripció.",
+    "pleaseContact": "Si us plau, contacta amb el suport del club per resoldre el problema.",
+    "paymentCancelled": "Pagament cancel·lat",
+    "paymentCancelledMessage": "La teva inscripció s'ha cancel·lat correctament.",
+    "hello": "Hola",
+    "yourInscription": "la teva inscripció no s'ha completat.",
+    "thePaymentWasCancelled": "El pagament ha estat cancel·lat i no s'ha registrat la inscripció.",
+    "ifItsWasAMistake": "Si ha estat un error, pots tornar-ho a intentar."
+  },
+  "successPage": {
+    "verifying": "⏳ Verificant el teu pagament...",
+    "somethingWentWrong": "Hi ha hagut un problema en cancel·lar l'inscripció.",
+    "pleaseContact": "Si us plau, contacta amb el suport del club per resoldre el problema.",
+    "paymentCancelled": "Pagament cancel·lat",
+    "paymentSuccess": "✅ Pagament realitzat amb èxit",
+    "thanks": "Gràcies,",
+    "paymentSuccessMessage": "La teva inscripció s'ha completat correctament."
   }
 }

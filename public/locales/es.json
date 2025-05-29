@@ -21,10 +21,10 @@
   },
   "club": {
     "title": "EL CLUB",
-    "titleColumn1": "Título Columna 1",
-    "column1": "Contenido descriptivo para la primera columna relacionado con el club. Aquí puedes poner información sobre la historia, misión o servicios del club.",
-    "titleColumn2": "Título Columna 2",
-    "column2": "Contenido descriptivo para la segunda columna relacionado con el club. Aquí puedes poner información sobre los entrenadores, instalaciones o cualquier otro aspecto relevante."
+    "titleColumn1": "🏐 Quiénes somos",
+    "column1": "Algaida Volei Club es mucho más que un club deportivo: es una escuela de valores, una comunidad comprometida y un espacio donde crecer como personas a través del deporte.\n\nFormamos parte de Algàlia Esports Club, entidad arraigada en el municipio de Algaida, que impulsa la práctica deportiva desde una perspectiva formativa, integradora y sin ánimo de lucro.\n\nNos dedicamos a fomentar y desarrollar la práctica del voley entre niños y jóvenes, combinando la pasión por el juego con el respeto, el esfuerzo y el trabajo en equipo.\n\nNuestros equipos compiten en distintas categorías escolares y federadas, siempre con el acompañamiento de un equipo técnico cercano, implicado y alineado con los valores del club.\n\nTanto si eres nuevo en este deporte como si ya tienes experiencia, aquí encontrarás un espacio en el que aprender, superarte y disfrutar con tus compañeros y compañeras.",
+    "titleColumn2": "🌱 Nuestros valores",
+    "column2": "En Algaida Volei Club, damos mucha importancia a:\n\nLa educación en valores como el respeto, la responsabilidad y el compromiso.\n\nLa convivencia positiva, con pautas claras de comportamiento y una fluida comunicación entre club, familias y deportistas.\n\nEl soporte a las familias, que son parte fundamental de nuestro proyecto deportivo.\n\nEl respeto por las instalaciones y por el material, entendiendo que el club es de todos y todas.\n\nCada temporada se pone en marcha un proceso de inscripción estructurado y accesible, que incluye toda la información necesaria sobre documentación, cuotas y condiciones. Este proceso se puede realizar de forma sencilla a través de un formulario online.\n\nNuestro objetivo no es sólo formar jugadores y jugadoras de voley, sino contribuir a formar a buenas personas, responsables, solidarias y con ganas de mejorar cada día.\n\nGracias por formar parte de nuestra comunidad. Juntos y juntas, ¡seguimos haciendo crecer el voley en Algaida!"
   },
   "location": {
     "title": "LOCALIZACIÓN",
@@ -333,7 +333,7 @@
     "playerFind": "Jugador encontrado",
     "playerWithDebt": "Jugador con deuda",
     "playerHasDebt": "El jugador tiene deudas pendientes",
-    "playerRegistered" : "Jugador ya registrado",
+    "playerRegistered": "Jugador ya registrado",
     "cantRegisterPlayer": "No se pudo registrar el jugador.",
     "playerHasRegistered": "El jugador ya está inscrito en la temporada actual.",
     "photo": "Foto",
@@ -341,7 +341,6 @@
     "checking": "Comprobando...",
     "total": "Total (€)",
     "confirmDelete": "¿Estás seguro de que quieres eliminar al jugador?"
-
   },
   "teams": {
     "team": "Equipo",
@@ -382,8 +381,7 @@
     "playerEliminatedCorrectly": "El jugador se ha eliminado correctamente del equipo.",
     "playerNotEliminated": "No se pudo eliminar el jugador del equipo.",
     "playersNotFound": "No se encontraron jugadores en este equipo."
-
-  }, 
+  },
   "login": {
     "login": "Iniciar sesión",
     "email": "Correo electrónico",
@@ -394,7 +392,6 @@
     "logout": "Cerrar sesión"
   },
   "payments": {
-
     "errorToloading": "Error al cargar los datos de los pagos.",
     "toUpdatePayment": "Vas a actualizar el pago de",
     "thisActionCantBeUndo": "Esta acción no se puede deshacer ¿Continuar?.",
@@ -419,7 +416,6 @@
     "teams": "Equipos",
     "forTheTotal": "de total",
     "cantLoadCategories": "No se pudieron cargar las categorías."
-
   },
   "seasons": {
     "players": "Jugadores",
@@ -443,17 +439,17 @@
   },
   "settings": {
     "cantGetFormStatus": "No se pudieron obtener los datos del formulario.",
-    "inscrptions" : "Inscripciones",
+    "inscrptions": "Inscripciones",
     "invalitDate": "Fecha inválida",
     "dateCanNot": "La fecha de cierre debe ser posterior a la de apertura.",
     "areYouSure": "¿Estás seguro",
     "open": "Abrir",
     "close": "Cerrar",
-    "opened" : "Abiertas",
+    "opened": "Abiertas",
     "closed": "Cerradas",
-    "success" : "Éxito",
+    "success": "Éxito",
     "theIncription": "las inscripciones?",
-    "error" : "Error",
+    "error": "Error",
     "cantUpdateStatus": "No se pudo actualizar el estado de las inscripciones.",
     "dateRequired": "La fecha es obligatoria",
     "initDateAndEndDate": "Debes indicar fecha de inicio y fin",
@@ -472,23 +468,30 @@
     "close2": "Cerrado",
     "newSeason": "Nueva temporada",
     "createNewSeason": "Crear nueva temporada",
-    "start" : "Inicio",
+    "start": "Inicio",
     "end": "Fin",
     "save": "Guardar",
     "cancel": "Cancelar"
-
   },
   "cancelPage": {
     "title": "Inscripción cancelada",
-    "verifying" : "⏳ Verificando cancelación...",
+    "verifying": "⏳ Verificando cancelación...",
     "somethingWentWrong": "Algo salió mal al cancelar la inscripción.",
     "pleaseContact": "Por favor, contacta con el soporte del club para resolver el problema.",
     "paymentCancelled": "Pago cancelado",
     "paymentCancelledMessage": "Tu inscripción ha sido cancelada correctamente.",
-    "hello" : "Hola",
+    "hello": "Hola",
     "yourInscription": "tu inscripción no se ha completado.",
     "thePaymentWasCancelled": "El pago ha sido cancelado y no se ha registrado la inscripción.",
     "ifItsWasAMistake": "Si fue un error, puedes volver a intentarlo."
-
+  },
+  "successPage": {
+    "verifying": "⏳ Verificando tu pago..",
+    "somethingWentWrong": "Algo salió mal al cancelar la inscripción.",
+    "pleaseContact": "Por favor, contacta con el soporte del club para resolver el problema.",
+    "paymentCancelled": "Pago cancelado",
+    "paymentSuccess": "✅ Pago realizado con éxito",
+    "thanks": "Gracias,",
+    "paymentSuccessMessage": "Tu inscripción ha sido completada correctamente."
   }
 }
