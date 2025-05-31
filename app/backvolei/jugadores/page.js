@@ -84,9 +84,9 @@ export default function Players() {
       if (response.ok) {
         toast.current.show({
           severity: "success",
-          summary: t("buttons.playerDeleted"),
-          detail: `${t("buttons.thePlayer")} ${playerName} ${t(
-            "buttons.hasDeleted"
+          summary: t("players.playerDeleted"),
+          detail: `${t("players.thePlayer")} ${playerName} ${t(
+            "players.hasDeleted"
           )}.`,
           life: 3000,
         });
@@ -584,7 +584,6 @@ export default function Players() {
               name="teamId"
               control={control}
               defaultValue={null}
-              rules={{ required: t("teams.teamIsMandatory") }}
               render={({ field }) => (
                 <Dropdown
                   {...field} // value y onChange ya unidos a RHF
