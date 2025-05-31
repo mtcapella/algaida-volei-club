@@ -7,7 +7,6 @@ export async function PUT(request) {
   try {
     await requireFirebaseUser(request);
   } catch (e) {
-    // ③ verifica
     const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
     return NextResponse.json({ error: msg }, { status: 401 });
   }
@@ -17,7 +16,7 @@ export async function PUT(request) {
   try {
     const { playerId, amount } = await request.json();
 
-    //  Obtener datos actuales del jugador
+    // Obtener datos actuales del jugador
     const [registrationResult] = await db.execute(
       `SELECT 
           r.total_fee, 
@@ -37,25 +36,26 @@ export async function PUT(request) {
       );
     }
 
-    const { total_fee, split_payment, totalPaid } = registrationResult[0];
+    const { total_fee, totalPaid } = registrationResult[0];
 
-    //  Verificar si la deuda está completamente pagada
-    const newTotalPaid = totalPaid + amount;
-    const remainingDebt = total_fee - newTotalPaid;
+    const fee = parseFloat(total_fee);
+    const paid = parseFloat(totalPaid);
+    const newTotalPaid = paid + amount;
+    const remainingDebt = Math.round((fee - newTotalPaid) * 100) / 100;
 
-    //  Actualizar pagos
+    // Insertar nuevo pago manual
     await db.execute(
       `INSERT INTO payments (player_id, season_id, amount, paid_at, status, origin)
        VALUES (?, (SELECT id FROM seasons WHERE is_active = 1 LIMIT 1), ?, NOW(), 'completed', 'manual')`,
       [playerId, amount]
     );
 
-    // Actualizar estado de deuda
+    // Actualizar estado de split_payment si queda deuda
     await db.execute(
       `UPDATE registrations 
        SET split_payment = ?, total_fee = ?
        WHERE player_id = ? AND season_id = (SELECT id FROM seasons WHERE is_active = 1 LIMIT 1)`,
-      [remainingDebt > 0 ? 1 : 0, total_fee, playerId]
+      [remainingDebt > 0 ? 1 : 0, fee, playerId]
     );
 
     return NextResponse.json({

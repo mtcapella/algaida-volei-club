@@ -13,7 +13,7 @@ ON DUPLICATE KEY UPDATE name=VALUES(name);
 -- 3. Insertar la temporada 2024-2025 y marcarla activa
 -- Ojo: ajusta start_date/end_date si quieres otras fechas
 INSERT INTO `seasons` (`id`,`name`,`start_date`,`end_date`,`is_active`,`is_locked`) VALUES
-  (1,'2024-2025','2024-09-01','2025-06-30',1,0)
+  (1,'Temporada 2024-2025','2024-09-01','2025-06-30',1,0)
 ON DUPLICATE KEY UPDATE
   `name`=VALUES(`name`),
   `start_date`=VALUES(`start_date`),
