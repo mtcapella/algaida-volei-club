@@ -3,7 +3,7 @@ import { requireFirebaseUser } from "@/libs/withAuth";
 import { NextResponse } from "next/server";
 import pool from "@/libs/mysql";
 
-// 🗑️ DELETE inscripción del jugador
+//  DELETE inscripción del jugador
 export async function DELETE(request, context) {
   try {
     await requireFirebaseUser(request);
@@ -75,12 +75,11 @@ export async function DELETE(request, context) {
   }
 }
 
-// ✍️ PUT para actualizar datos del jugador
+//  PUT para actualizar datos del jugador
 export async function PUT(request, context) {
   try {
     await requireFirebaseUser(request);
   } catch (e) {
-    // ③ verifica
     const msg = e.message === "NO_TOKEN" ? "Falta token" : "Token inválido";
     return NextResponse.json({ error: msg }, { status: 401 });
   }
@@ -92,10 +91,10 @@ export async function PUT(request, context) {
   }
 
   const db = await pool.getConnection();
+
   try {
     const { firstName, lastName, dateOfBirth, teamId } = await request.json();
 
-    // ② validación: teamId puede ser null
     if (!firstName?.trim() || !lastName?.trim() || !dateOfBirth) {
       return NextResponse.json(
         { error: "Faltan campos obligatorios" },
@@ -103,7 +102,7 @@ export async function PUT(request, context) {
       );
     }
 
-    /* … resto de la lógica idéntica … */
+    //  Actualiza datos del jugador
     await db.execute(
       `UPDATE players
        SET first_name = ?, last_name = ?, date_of_birth = ?
@@ -111,14 +110,19 @@ export async function PUT(request, context) {
       [firstName.trim(), lastName.trim(), dateOfBirth, playerId]
     );
 
-    /* temporada activa + update registrations … */
-    /* usa teamId (puede ser null) tal como ya lo hacías */
+    //  Actualiza el equipo en la inscripción
+    await db.execute(
+      `UPDATE registrations
+       SET team_id = ?
+       WHERE player_id = ? AND season_id = (SELECT id FROM seasons WHERE is_active = 1 LIMIT 1)`,
+      [teamId, playerId]
+    );
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("DB error:", err);
     return NextResponse.json(
-      { error: "Error al actualizar jugador" },
+      { error: "Error al actualizar jugador", detail: err.message },
       { status: 500 }
     );
   } finally {

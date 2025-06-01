@@ -246,7 +246,7 @@ export default function Players() {
     }
   };
 
-  /* -------------------------------- submit ------------------------------- */
+  /* ------- submit ------ */
   const onSubmit = async (data) => {
     // Si aún no validamos el DNI, hazlo
     if (!dniChecked) {
@@ -303,7 +303,9 @@ export default function Players() {
   if (loading) {
     return <ProgressSpinner />;
   }
-  /* ----------------------------------------------------------------------- */
+  /*  
+  funcion principal del componente
+  */
   return (
     <div className={styles.container}>
       <Toast ref={toast} />
@@ -424,7 +426,7 @@ export default function Players() {
         />
       </DataTable>
 
-      {/* ------------------------- Modal de editar ------------------------- */}
+      {/* Modal de editar */}
       <Dialog
         header={t("players.editPlayer")}
         visible={editDialogVisible}
@@ -487,7 +489,7 @@ export default function Players() {
         )}
       </Dialog>
 
-      {/* ------------------------- Dialog Nuevo ------------------------- */}
+      {/*  Dialog Nuevo  */}
       <Dialog
         header={t("buttons.newPlayer")}
         visible={newDialogVisible}

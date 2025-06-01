@@ -55,7 +55,7 @@ export default function Dashboard() {
         </div>
         <div className={styles.statCard}>
           <i className={`pi pi-briefcase ${styles.statIcon}`}></i>
-          <div className={styles.statTitle}>{t("dashboard.totalPlayers")}</div>
+          <div className={styles.statTitle}>{t("dashboard.totalTeams")}</div>
           <div className={styles.statValue}>{totalTeams}</div>
         </div>
         <div className={styles.statCard}>

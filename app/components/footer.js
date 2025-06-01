@@ -4,8 +4,11 @@ import { useTranslation } from "react-i18next";
 
 import Link from "next/link";
 import styles from "./footer.module.css";
+import { format } from "date-fns";
 
 export default function Footer() {
+  const year = format(new Date(), "yyyy");
+
   const { i18n } = useTranslation();
 
   const changeLang = (lng) => {
@@ -51,13 +54,15 @@ export default function Footer() {
       </div>
 
       <div className={styles.middle}>
-        <p>© 2025 Algaida Volei Club</p>
-        <p>Calle X, Ciudad, País</p>
+        <p>© {year} Algaida Volei Club</p>
+        <p>Casal Pere Capellà,</p>
+        <p>C/ Dels Cavallers Nº 22,</p>
+        <p>07210 Algaida, Mallorca, Islas Baleares, España</p>
         <p>
           <Link href="mailto:contacto@algaidavolei.es">
             contacto@algaidavolei.es
           </Link>{" "}
-          | <Link href="tel:+34123456789">+34 123 456 789</Link>
+          | <Link href="tel:+34651873851">+34 651 873 851</Link>
         </p>
       </div>
 

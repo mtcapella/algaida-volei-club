@@ -1,9 +1,7 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
-// ------------- cambia las RUTAS a tu JSON de credenciales -------------
-//import serviceAccount from "../serviceAccount.json" assert { type: "json" };
-// ----------------------------------------------------------------------
+// helper para añadir el token de Firebase a las peticiones para no tener que pasarlo en cada una
 
 const serviceAccount = {
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -16,7 +14,7 @@ if (!getApps().length) {
 }
 const adminAuth = getAuth();
 
-/** Lanza error si no hay token o es inválido */
+//Lanza error si no hay token o es inválido
 export async function requireFirebaseUser(req) {
   const auth = req.headers.get("authorization") || "";
   if (!auth.startsWith("Bearer ")) throw new Error("NO_TOKEN");

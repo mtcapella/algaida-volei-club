@@ -69,7 +69,7 @@ export default function TeamPage({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  /* ---------- asignar jugador al equipo ----------------------------------------- */
+  /* asignar jugador al equipo */
   const openAssignDialog = async () => {
     if (!team) return;
     setAssignDialogVisible(true);
@@ -131,7 +131,7 @@ export default function TeamPage({ params }) {
     }
   };
 
-  /* --------- borrar jugador ------------------------------------------- */
+  /* borrar jugador  */
   const handleRemove = async (rowData) => {
     const ok = window.confirm(
       `${t("teams.doyouWantEliminatePlayer")} ${rowData.first_name} ${
