@@ -381,8 +381,8 @@ export default function Players() {
         <Column field="lastName" header={t("players.surname")} sortable />
         <Column field="dni" header={t("players.dni")} sortable />
         <Column field="category" header={t("teams.category")} sortable />
-        <Column field="team" header={t("teams.category")} sortable />
-        <Column field="paymentStatus" header={t("teams.team")} sortable />
+        <Column field="team" header={t("teams.team")} sortable />
+        <Column field="paymentStatus" header={t("seasons.status")} sortable />
         <Column
           field="documents"
           header={t("players.document")}
