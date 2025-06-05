@@ -24,7 +24,7 @@ try {
     $mail->Host = 'smtp.ionos.es';
     $mail->SMTPAuth = true;
     $mail->Username = 'miqueltoni@algaidavoleiclub.es';
-    $mail->Password = 'Volei2425';
+    $mail->Password = '********'; // Reemplaza con tu contraseña real
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
 
