@@ -3,15 +3,29 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- 2. Insertar categorías (si no existen):
 INSERT INTO `categories` (`id`,`name`,`min_age`,`max_age`) VALUES
-  (1,'Alevín',   NULL,NULL),
+  (1,'Alevin',   NULL,NULL),
   (2,'Infantil', NULL,NULL),
   (3,'Cadete',   NULL,NULL),
   (4,'Juvenil',  NULL,NULL),
-  (5,'Sénior',   NULL,NULL)
+  (5,'Senior',   NULL,NULL)
 ON DUPLICATE KEY UPDATE name=VALUES(name);
 
--- 3. Insertar la temporada 2024-2025 y marcarla activa
--- Ojo: ajusta start_date/end_date si quieres otras fechas
+-- 3. Insertar estado de formulario abierto para la temporada creada
+INSERT INTO `form_status` (`season_id`, `opens_at`, `closes_at`, `enabled`) VALUES
+  (
+    1,
+    '2025-01-01 00:00:00',
+    '2026-01-01 00:00:00',
+    1
+  )
+ON DUPLICATE KEY UPDATE
+  `opens_at` = VALUES(`opens_at`),
+  `closes_at` = VALUES(`closes_at`),
+  `enabled` = VALUES(`enabled`);
+
+
+-- 4. Insertar la temporada 2024-2025 y marcarla activa
+
 INSERT INTO `seasons` (`id`,`name`,`start_date`,`end_date`,`is_active`,`is_locked`) VALUES
   (1,'Temporada 2024-2025','2024-09-01','2025-06-30',1,0)
 ON DUPLICATE KEY UPDATE
