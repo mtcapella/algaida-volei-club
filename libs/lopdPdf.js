@@ -66,12 +66,12 @@ export default async function generateLOPD(data) {
   // si el campo guardianFirstName y guardianLastName no estan vacios, entonces se firma el tutor
   if (guardianFirstName && guardianLastName) {
     doc.text(tutorCompleto, 30, 782);
-    doc.text(guardianDni, 100, 782);
-    doc.text(`Fecha: ${fecha}`, 170, 782);
+    doc.text(guardianDni, 30, 800);
+    doc.text(`Fecha: ${fecha}`, 170, 800);
   } else {
     doc.text(nombreCompleto, 30, 782);
-    doc.text(dni, 100, 782);
-    doc.text(`Fecha: ${fecha}`, 170, 782);
+    doc.text(dni, 30, 800);
+    doc.text(`Fecha: ${fecha}`, 170, 800);
   }
 
   // Exportar como Blob para descarga o subida
